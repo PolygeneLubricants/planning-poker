@@ -1,0 +1,61 @@
+﻿@page "/server/{id}"
+@using Microsoft.AspNetCore.SignalR.Client
+@using PlanningPoker.Core
+@using PlanningPoker.Core.ViewModels
+@inject NavigationManager NavigationManager
+
+@if (CurrentServer != null)
+{
+    <SessionRenderingComponent @bind-Server="CurrentServer" />
+}
+
+@if(_currentPlayer == null)
+{
+
+    <div class="form-group">
+        <label>
+            Username
+            <input @bind="_username" size="20" class="form-control" />
+        </label>
+    </div>
+
+    <div class="form-group">
+        <button @onclick="Join">Join</button>
+    </div>
+}
+
+@code {
+    private HubConnection _hubConnection;
+
+    private string? _username;
+
+    private PlayerViewModel? _currentPlayer;
+
+    public PokerServerViewModel? CurrentServer { get; set; }
+
+    [Parameter]
+    public string Id { get; set; }
+
+    protected override async Task OnInitializedAsync()
+    {
+        _hubConnection = new HubConnectionBuilder()
+            .WithUrl(NavigationManager.ToAbsoluteUri("/hubs/poker"))
+            .Build();
+
+        _hubConnection.On<PokerServerViewModel>(Messages.UPDATED, newServer =>
+        {
+            CurrentServer = newServer;
+            StateHasChanged();
+        });
+
+        await _hubConnection.StartAsync();
+    }
+
+    async Task Join()
+    {
+        await _hubConnection.SendAsync("Connect", Id);
+        _currentPlayer = await _hubConnection.InvokeAsync<PlayerViewModel>("Join", Id, _username);
+    }
+
+    public bool HasJoined = false;
+}

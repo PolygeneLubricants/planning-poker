@@ -1,0 +1,22 @@
+﻿@using PlanningPoker.Core.ViewModels
+<div>
+    <p>Session</p>
+
+    <ul>
+        @foreach (var player in Server?.Players)
+        {
+            <li>@player.Name</li>
+        }
+    </ul>
+</div>
+
+
+@code {
+
+    [Parameter]
+    public PokerServerViewModel Server { get; set; }
+
+    [Parameter]
+    public EventCallback<PokerServerViewModel> ServerChanged { get; set; }
+
+}

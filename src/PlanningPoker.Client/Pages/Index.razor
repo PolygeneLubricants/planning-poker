@@ -1,0 +1,46 @@
+﻿@page "/"
+@using Microsoft.AspNetCore.SignalR.Client
+@inject NavigationManager NavigationManager
+
+<div class="form-group">
+    <button @onclick="Create" disabled="@(HasCreated)">Create server</button>
+</div>
+
+<hr>
+
+@if (!string.IsNullOrWhiteSpace(CreatedServerAddress))
+{
+    <div class="form-group">
+        <p>
+            <span>Server created at: </span>
+        </p>
+        <p>
+            <a href="@CreatedServerAddress">@CreatedServerAddress</a>
+        </p>
+    </div>
+}
+
+@code {
+    private HubConnection _hubConnection;
+
+    protected override async Task OnInitializedAsync()
+    {
+        _hubConnection = new HubConnectionBuilder()
+            .WithUrl(NavigationManager.ToAbsoluteUri("/hubs/poker"))
+            .Build();
+        await _hubConnection.StartAsync();
+    }
+
+    async Task Create()
+    {
+        var serverId = await _hubConnection.InvokeAsync<Guid>("Create");
+        var uri = $"/server/{serverId}";
+        CreatedServerAddress = uri;
+        HasCreated = true;
+        StateHasChanged();
+    }
+
+    public string? CreatedServerAddress { get; set; }
+
+    public bool HasCreated = false;
+}
