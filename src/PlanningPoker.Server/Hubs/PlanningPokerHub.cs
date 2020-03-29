@@ -39,6 +39,8 @@ namespace PlanningPoker.Server.Hubs
 
         public async Task Vote(Guid serverId, int playerId, int vote)
         {
+            if (!Cards.Values.Contains(vote)) return;
+
             var server = _serverStore.Get(serverId);
             if (!server.CurrentSession.CanVote) return;
 

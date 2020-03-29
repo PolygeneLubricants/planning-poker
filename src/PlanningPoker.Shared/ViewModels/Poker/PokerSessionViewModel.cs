@@ -12,6 +12,6 @@ namespace PlanningPoker.Shared.ViewModels.Poker
 
         public bool CanVote { get; set; }
 
-        public IDictionary<string, int>? Votes { get; set; }
+        public IDictionary<string, string>? Votes { get; set; }
     }
 }

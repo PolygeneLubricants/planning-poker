@@ -10,9 +10,12 @@ namespace PlanningPoker.Server.ViewModelMappers.Poker
     {
         public static PokerSessionViewModel Map(this PokerSession session, IList<Player> participants)
         {
+            var votes = session.IsShown 
+                ? session.Votes.ToDictionary(pair => pair.Key.ToString(), pair => pair.Value.ToString()) 
+                : session.Votes.ToDictionary(pair => pair.Key.ToString(), pair => "?");
             var viewModel = new PokerSessionViewModel
             {
-                Votes = session.Votes.ToDictionary(pair => pair.Key.ToString(), pair => pair.Value),
+                Votes = votes,
                 IsShown = session.IsShown,
                 CanClear = session.CanClear,
                 CanShow = session.CanShow(participants),

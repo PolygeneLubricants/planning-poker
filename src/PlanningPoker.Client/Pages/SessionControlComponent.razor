@@ -1,8 +1,9 @@
 ﻿@using Microsoft.AspNetCore.SignalR.Client
+@using PlanningPoker.Shared
 @using PlanningPoker.Shared.ViewModels
 @using PlanningPoker.Shared.ViewModels.Poker
 <div class="row cards">
-    @foreach (var card in Cards)
+    @foreach (var card in Cards.Values)
     {
         <div class="col card-wrapper">
             <button class="btn @(card == _chosenCard ? "btn-success" : "btn-default") poker_card" @onclick="() => Vote(card)" disabled="@(!Session.CanVote)">
@@ -22,18 +23,6 @@
 </div>
 
 @code {
-
-    private static IEnumerable<int> Cards => new List<int>
-    {
-        1,
-        2,
-        3,
-        5,
-        8,
-        13,
-        21
-    };
-
     private int _chosenCard;
 
     async Task Vote(int vote)
