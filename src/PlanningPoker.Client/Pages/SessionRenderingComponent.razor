@@ -5,13 +5,21 @@
     <ul>
         @foreach (var player in Server?.Players ?? Enumerable.Empty<PlayerViewModel>())
         {
-            <li>@player.Name</li>
+            <li>
+                <span>@player.Name</span>
+            </li>
         }
     </ul>
 </div>
 
 
 @code {
+
+    [Parameter]
+    public PlayerViewModel CurrentPlayer { get; set; }
+    
+    [Parameter]
+    public EventCallback<PlayerViewModel> CurrentPlayerChanged { get; set; }
 
     [Parameter]
     public PokerServerViewModel Server { get; set; }

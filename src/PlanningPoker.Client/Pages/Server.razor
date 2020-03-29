@@ -6,7 +6,7 @@
 
 @if (CurrentServer != null)
 {
-    <SessionRenderingComponent @bind-Server="CurrentServer" />
+    <SessionRenderingComponent @bind-Server="CurrentServer" @bind-CurrentPlayer="_currentPlayer" />
 }
 
 @if(_currentPlayer == null)
