@@ -18,10 +18,4 @@
   <ItemGroup>
     <ProjectReference Include="..\PlanningPoker.Shared\PlanningPoker.Shared.csproj" />
   </ItemGroup>
-
-  <ItemGroup>
-    <!-- extends watching group to include *.razor files -->
-    <Watch Include="**\*.razor" />
-  </ItemGroup>
-
 </Project>
