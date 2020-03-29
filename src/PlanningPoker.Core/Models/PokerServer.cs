@@ -9,14 +9,17 @@ namespace PlanningPoker.Core.Models
         public PokerServer(Guid id)
         {
             Id = id;
-            Players = new List<Player>();
+            Players = new Dictionary<string, Player>();
             CurrentSession = new PokerSession();
+            Created = DateTime.UtcNow;
         }
 
         public Guid Id { get; set; }
 
-        public IList<Player> Players { get; set; }
+        public IDictionary<string, Player> Players { get; set; }
 
         public PokerSession CurrentSession { get; set; }
+
+        public DateTime Created { get; set; }
     }
 }

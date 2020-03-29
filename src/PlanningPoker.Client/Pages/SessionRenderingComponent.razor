@@ -1,23 +1,26 @@
 ﻿@using PlanningPoker.Shared.ViewModels
+@foreach (var player in Server?.Players ?? Enumerable.Empty<PlayerViewModel>())
+{
+    var hasVoted = Server?.CurrentSession?.Votes?.ContainsKey(player.Id.ToString()) ?? false;
+    var currentPlayerVote = hasVoted ? Server.CurrentSession.Votes[player.Id.ToString()] : string.Empty;
+    
     <div class="row">
-        @foreach (var player in Server?.Players ?? Enumerable.Empty<PlayerViewModel>())
-        {
-            <div class="row">
-                <div class="col-md-8">@player.Name</div>
-                @{
-                    var hasVoted = Server?.CurrentSession?.Votes?.ContainsKey(player.Id.ToString()) ?? false;
-                    var currentPlayerVote = hasVoted ? Server.CurrentSession.Votes[player.Id.ToString()].ToString() : string.Empty;
-                }
-                <div class="col-md-4">@currentPlayerVote</div>
-            </div>
-        }
+        <div class="col-md-2">
+            @if (hasVoted)
+            {
+                <span class="oi oi-check"></span>
+            }
+        </div>
+        <div class="col-md-8">@player.Name</div>
+        <div class="col-md-2">@currentPlayerVote</div>
     </div>
+}
 
 @code {
 
     [Parameter]
     public PlayerViewModel CurrentPlayer { get; set; }
-    
+
     [Parameter]
     public EventCallback<PlayerViewModel> CurrentPlayerChanged { get; set; }
 

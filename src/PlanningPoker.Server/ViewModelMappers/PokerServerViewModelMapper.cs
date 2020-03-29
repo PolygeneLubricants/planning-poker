@@ -13,7 +13,7 @@ namespace PlanningPoker.Server.ViewModelMappers
             {
                 Id = server.Id,
                 CurrentSession = server.CurrentSession.Map(server.Players),
-                Players = server.Players.Select(p => p.Map()).ToList()
+                Players = server.Players.Select(p => p.Value.Map()).ToList()
             };
 
             return viewModel;

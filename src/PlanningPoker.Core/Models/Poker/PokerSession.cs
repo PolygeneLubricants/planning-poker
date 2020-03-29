@@ -8,12 +8,12 @@ namespace PlanningPoker.Core.Models.Poker
         public PokerSession()
         {
             IsShown = false;
-            Votes = new Dictionary<int, int>();
+            Votes = new Dictionary<string, int>();
         }
 
         public bool IsShown { get; set; }
 
-        public bool CanShow(ICollection<Player> participants)
+        public bool CanShow(IDictionary<string, Player> participants)
         {
             return Votes.Count == participants.Count && !IsShown;
         }
@@ -22,6 +22,6 @@ namespace PlanningPoker.Core.Models.Poker
 
         public bool CanVote => !IsShown;
 
-        public IDictionary<int, int> Votes { get; set; }
+        public IDictionary<string, int> Votes { get; set; }
     }
 }

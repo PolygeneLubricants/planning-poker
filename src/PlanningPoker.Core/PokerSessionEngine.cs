@@ -5,20 +5,25 @@ namespace PlanningPoker.Core
 {
     public static class PokerSessionEngine
     {
-        public static void SetVote(PokerSession session, int playerId, int vote)
+        public static void SetVote(PokerSession session, string playerId, int vote)
         {
             session.Votes[playerId] = vote;
         }
 
         public static void Clear(PokerSession session)
         {
-            session.Votes = new Dictionary<int, int>();
+            session.Votes = new Dictionary<string, int>();
             session.IsShown = false;
         }
 
         public static void Show(PokerSession session)
         {
             session.IsShown = true;
+        }
+
+        public static void RemovePlayer(PokerSession session, string playerId)
+        {
+            session.Votes.Remove(playerId);
         }
     }
 }

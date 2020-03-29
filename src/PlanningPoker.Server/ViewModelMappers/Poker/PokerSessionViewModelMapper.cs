@@ -8,11 +8,11 @@ namespace PlanningPoker.Server.ViewModelMappers.Poker
 {
     public static class PokerSessionViewModelMapper
     {
-        public static PokerSessionViewModel Map(this PokerSession session, IList<Player> participants)
+        public static PokerSessionViewModel Map(this PokerSession session, IDictionary<string, Player> participants)
         {
             var votes = session.IsShown 
-                ? session.Votes.ToDictionary(pair => pair.Key.ToString(), pair => pair.Value.ToString()) 
-                : session.Votes.ToDictionary(pair => pair.Key.ToString(), pair => "?");
+                ? session.Votes.ToDictionary(pair => pair.Key, pair => pair.Value.ToString()) 
+                : session.Votes.ToDictionary(pair => pair.Key, pair => "?");
             var viewModel = new PokerSessionViewModel
             {
                 Votes = votes,

@@ -23,6 +23,15 @@
 </div>
 
 @code {
+    protected override async Task OnInitializedAsync()
+    {
+        HubConnection.On(Messages.CLEAR, () =>
+        {
+            _chosenCard = default;
+            StateHasChanged();
+        });
+    }
+
     private int _chosenCard;
 
     async Task Vote(int vote)

@@ -23,6 +23,16 @@ namespace PlanningPoker.Server.Hubs
             await Groups.AddToGroupAsync(Context.ConnectionId, id.ToString());
         }
 
+        public override async Task OnDisconnectedAsync(Exception exception)
+        {
+            var serversWithPlayer = _serverStore.RemovePlayerFromAllServers(Context.ConnectionId);
+            foreach (var server in serversWithPlayer)
+            {
+                await Clients.Group(server.Id.ToString()).SendAsync(Messages.UPDATED, server.Map());
+            }
+            await base.OnDisconnectedAsync(exception);
+        }
+
         public Guid Create()
         {
             var server = _serverStore.Create();
@@ -32,12 +42,12 @@ namespace PlanningPoker.Server.Hubs
         public async Task<PlayerViewModel> Join(Guid id, string playerName)
         {
             var server = _serverStore.Get(id);
-            var newPlayer = server.Join(playerName);
+            var newPlayer = server.Join(Context.ConnectionId, playerName);
             await Clients.Group(id.ToString()).SendAsync(Messages.UPDATED, server.Map());
             return newPlayer.Map();
         }
 
-        public async Task Vote(Guid serverId, int playerId, int vote)
+        public async Task Vote(Guid serverId, string playerId, int vote)
         {
             if (!Cards.Values.Contains(vote)) return;
 
@@ -55,6 +65,7 @@ namespace PlanningPoker.Server.Hubs
 
             server.CurrentSession.Clear();
             await Clients.Group(serverId.ToString()).SendAsync(Messages.UPDATED, server.Map());
+            await Clients.Group(serverId.ToString()).SendAsync(Messages.CLEAR);
         }
 
         public async Task Show(Guid serverId)

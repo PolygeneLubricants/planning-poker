@@ -4,7 +4,7 @@ namespace PlanningPoker.Core.Extensions
 {
     public static class PokerSessionExtensions
     {
-        public static void Vote(this PokerSession session, int playerId, int vote)
+        public static void Vote(this PokerSession session, string playerId, int vote)
         {
             PokerSessionEngine.SetVote(session, playerId, vote);
         }
@@ -17,6 +17,11 @@ namespace PlanningPoker.Core.Extensions
         public static void Show(this PokerSession session)
         {
             PokerSessionEngine.Show(session);
+        }
+
+        public static void RemovePlayer(this PokerSession session, string playerId)
+        {
+            PokerSessionEngine.RemovePlayer(session, playerId);
         }
     }
 }

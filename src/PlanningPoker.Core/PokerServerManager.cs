@@ -1,16 +1,21 @@
-﻿using System.Linq;
+﻿using PlanningPoker.Core.Extensions;
 using PlanningPoker.Core.Models;
 
 namespace PlanningPoker.Core
 {
     public static class PokerServerManager
     {
-        public static Player AddPlayer(PokerServer server, string playerName)
+        public static Player AddPlayer(PokerServer server, string playerId, string playerName)
         {
-            var nextId = server.Players.Any() ? server.Players.Max(p => p.Id) + 1 : 0;
-            var player = new Player(nextId, playerName);
-            server.Players.Add(player);
+            var player = new Player(playerId, playerName);
+            server.Players.Add(playerId, player);
             return player;
+        }
+
+        public static void RemovePlayer(PokerServer server, string playerId)
+        {
+            server.Players.Remove(playerId);
+            server.CurrentSession.RemovePlayer(playerId);
         }
     }
 }

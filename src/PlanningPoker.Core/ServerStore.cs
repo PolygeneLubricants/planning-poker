@@ -1,5 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Linq;
+using PlanningPoker.Core.Extensions;
 using PlanningPoker.Core.Models;
 
 namespace PlanningPoker.Core
@@ -9,6 +11,12 @@ namespace PlanningPoker.Core
         PokerServer Create();
 
         PokerServer Get(Guid id);
+
+        IList<PokerServer> RemovePlayerFromAllServers(string playerId);
+
+        ICollection<PokerServer> All();
+
+        void Remove(PokerServer server);
     }
 
     public class ServerStore : IServerStore
@@ -31,6 +39,27 @@ namespace PlanningPoker.Core
         public PokerServer Get(Guid id)
         {
             return _servers[id];
+        }
+
+        public IList<PokerServer> RemovePlayerFromAllServers(string playerId)
+        {
+            var serversWithUser = _servers.Where(s => s.Value.Players.ContainsKey(playerId)).Select(pair => pair.Value).ToList();
+            foreach (var server in serversWithUser)
+            {
+                server.Remove(playerId);
+            }
+
+            return serversWithUser;
+        }
+
+        public ICollection<PokerServer> All()
+        {
+            return _servers.Values;
+        }
+
+        public void Remove(PokerServer server)
+        {
+            _servers.Remove(server.Id);
         }
     }
 }
