@@ -12,7 +12,7 @@ namespace PlanningPoker.Server.ViewModelMappers
             var viewModel = new PokerServerViewModel
             {
                 Id = server.Id,
-                CurrentSession = server.CurrentSession.Map(),
+                CurrentSession = server.CurrentSession.Map(server.Players),
                 Players = server.Players.Select(p => p.Map()).ToList()
             };
 

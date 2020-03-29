@@ -4,8 +4,9 @@
 @using PlanningPoker.Shared.ViewModels
 @inject NavigationManager NavigationManager
 
-@if (CurrentServer != null)
+@if (CurrentServer != null && _currentPlayer != null)
 {
+    <SessionControlComponent @bind-Id="Id" @bind-Session="CurrentServer.CurrentSession" @bind-CurrentPlayer="_currentPlayer" @bind-HubConnection="_hubConnection" />
     <SessionRenderingComponent @bind-Server="CurrentServer" @bind-CurrentPlayer="_currentPlayer" />
 }
 

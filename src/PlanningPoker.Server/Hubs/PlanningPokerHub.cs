@@ -40,6 +40,8 @@ namespace PlanningPoker.Server.Hubs
         public async Task Vote(Guid serverId, int playerId, int vote)
         {
             var server = _serverStore.Get(serverId);
+            if (!server.CurrentSession.CanVote) return;
+
             server.CurrentSession.Vote(playerId, vote);
             await Clients.Group(serverId.ToString()).SendAsync(Messages.UPDATED, server.Map());
         }
@@ -47,6 +49,8 @@ namespace PlanningPoker.Server.Hubs
         public async Task Clear(Guid serverId)
         {
             var server = _serverStore.Get(serverId);
+            if (!server.CurrentSession.CanClear) return;
+
             server.CurrentSession.Clear();
             await Clients.Group(serverId.ToString()).SendAsync(Messages.UPDATED, server.Map());
         }
@@ -54,6 +58,8 @@ namespace PlanningPoker.Server.Hubs
         public async Task Show(Guid serverId)
         {
             var server = _serverStore.Get(serverId);
+            if (!server.CurrentSession.CanShow(server.Players)) return;
+
             server.CurrentSession.Show();
             await Clients.Group(serverId.ToString()).SendAsync(Messages.UPDATED, server.Map());
         }

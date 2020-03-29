@@ -13,6 +13,7 @@ namespace PlanningPoker.Core
         public static void Clear(PokerSession session)
         {
             session.Votes = new Dictionary<int, int>();
+            session.IsShown = false;
         }
 
         public static void Show(PokerSession session)

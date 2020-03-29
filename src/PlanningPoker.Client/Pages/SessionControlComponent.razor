@@ -1,1 +1,78 @@
-﻿
+﻿@using Microsoft.AspNetCore.SignalR.Client
+@using PlanningPoker.Shared.ViewModels
+@using PlanningPoker.Shared.ViewModels.Poker
+<div class="row cards">
+    @foreach (var card in Cards)
+    {
+        <div class="col card-wrapper">
+            <button class="btn @(card == _chosenCard ? "btn-success" : "btn-default") poker_card" @onclick="() => Vote(card)" disabled="@(!Session.CanVote)">
+                @card.ToString()
+            </button>
+        </div>
+    }
+</div>
+
+<div class="row session-controls">
+    <div class="col-md-6">
+        <button class="btn btn-default clear" @onclick="Clear" disabled="@(!Session.CanClear)">Clear</button>
+    </div>
+    <div class="col-md-6">
+        <button class="btn btn-primary show" @onclick="Show" disabled="@(!Session.CanShow)">Show</button>
+    </div>
+</div>
+
+@code {
+
+    private static IEnumerable<int> Cards => new List<int>
+    {
+        1,
+        2,
+        3,
+        5,
+        8,
+        13,
+        21
+    };
+
+    private int _chosenCard;
+
+    async Task Vote(int vote)
+    {
+        _chosenCard = vote;
+        await HubConnection.SendAsync("Vote", Id, CurrentPlayer.Id, vote);
+    }
+
+    Task Clear()
+    {
+        return HubConnection.SendAsync("Clear", Id);
+    }
+
+    Task Show()
+    {
+        return HubConnection.SendAsync("Show", Id);
+    }
+
+    [Parameter]
+    public string Id { get; set; }
+
+    [Parameter]
+    public EventCallback<string> IdChanged { get; set; }
+
+    [Parameter]
+    public PokerSessionViewModel Session { get; set; }
+
+    [Parameter]
+    public EventCallback<PokerSessionViewModel> SessionChanged { get; set; }
+
+    [Parameter]
+    public PlayerViewModel CurrentPlayer { get; set; }
+
+    [Parameter]
+    public EventCallback<PlayerViewModel> CurrentPlayerChanged { get; set; }
+
+    [Parameter]
+    public HubConnection HubConnection { get; set; }
+
+    [Parameter]
+    public EventCallback<HubConnection> HubConnectionChanged { get; set; }
+}

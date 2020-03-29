@@ -1,17 +1,17 @@
 ﻿@using PlanningPoker.Shared.ViewModels
-<div>
-    <p>Session</p>
-
-    <ul>
+    <div class="row">
         @foreach (var player in Server?.Players ?? Enumerable.Empty<PlayerViewModel>())
         {
-            <li>
-                <span>@player.Name</span>
-            </li>
+            <div class="row">
+                <div class="col-md-8">@player.Name</div>
+                @{
+                    var hasVoted = Server?.CurrentSession?.Votes?.ContainsKey(player.Id.ToString()) ?? false;
+                    var currentPlayerVote = hasVoted ? Server.CurrentSession.Votes[player.Id.ToString()].ToString() : string.Empty;
+                }
+                <div class="col-md-4">@currentPlayerVote</div>
+            </div>
         }
-    </ul>
-</div>
-
+    </div>
 
 @code {
 

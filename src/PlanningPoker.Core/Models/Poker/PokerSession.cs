@@ -1,4 +1,5 @@
 ﻿using System.Collections.Generic;
+using System.Linq;
 
 namespace PlanningPoker.Core.Models.Poker
 {
@@ -11,6 +12,15 @@ namespace PlanningPoker.Core.Models.Poker
         }
 
         public bool IsShown { get; set; }
+
+        public bool CanShow(ICollection<Player> participants)
+        {
+            return Votes.Count == participants.Count && !IsShown;
+        }
+
+        public bool CanClear => Votes.Any();
+
+        public bool CanVote => !IsShown;
 
         public IDictionary<int, int> Votes { get; set; }
     }

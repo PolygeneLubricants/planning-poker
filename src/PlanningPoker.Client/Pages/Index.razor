@@ -2,21 +2,35 @@
 @using Microsoft.AspNetCore.SignalR.Client
 @inject NavigationManager NavigationManager
 
-<div class="form-group">
-    <button @onclick="Create" disabled="@(HasCreated)">Create server</button>
-</div>
-
-<hr>
-
-@if (!string.IsNullOrWhiteSpace(CreatedServerAddress))
+@if (string.IsNullOrWhiteSpace(CreatedServerAddress))
 {
-    <div class="form-group">
-        <p>
-            <span>Server created at: </span>
-        </p>
-        <p>
-            <a href="@CreatedServerAddress">@CreatedServerAddress</a>
-        </p>
+    <div class="row">
+        <div class="col-md-12">
+            <h2>Welcome to Planning Poker Lite!</h2>
+            <p>Press below to create a room for you. This will create a link, where you and your participants can create a user and start voting.</p>
+            <p>Happy planning!</p>
+        </div>
+    </div>
+    <div class="row">
+        <div class="col-md-12">
+            <div class="form-group">
+                <button @onclick="Create" disabled="@(HasCreated)">Create room</button>
+            </div>
+        </div>
+    </div>
+}
+else
+{
+    <div class="row">
+        <div class="col-md-12">
+            <a href="@CreatedServerAddress" class="btn btn-primary">Join room</a>
+        </div>
+    </div>
+    <div class="row">
+        <div class="col-md-12">
+            <p>Below is the link to your room. Send this to your participants, and start planning!</p>
+            <input class="form-control" value="@CreatedServerAddress" disabled="disabled"/>
+        </div>
     </div>
 }
 
@@ -34,8 +48,8 @@
     async Task Create()
     {
         var serverId = await _hubConnection.InvokeAsync<Guid>("Create");
-        var uri = $"/server/{serverId}";
-        CreatedServerAddress = uri;
+        var uri = NavigationManager.ToAbsoluteUri($"/server/{serverId}");
+        CreatedServerAddress = uri.AbsoluteUri;
         HasCreated = true;
         StateHasChanged();
     }
