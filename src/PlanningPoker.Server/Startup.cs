@@ -15,7 +15,7 @@ namespace PlanningPoker.Server
         {
             services.RegisterDependencies();
             services.AddSignalR()
-                .AddNewtonsoftJsonProtocol(options => { });
+                .AddJsonProtocol();
             services.AddMvc();
             services.AddResponseCompression(opts =>
             {

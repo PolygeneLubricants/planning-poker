@@ -1,4 +1,5 @@
-﻿using PlanningPoker.Core.Models.Poker;
+﻿using System.Linq;
+using PlanningPoker.Core.Models.Poker;
 using PlanningPoker.Core.ViewModels.Poker;
 
 namespace PlanningPoker.Server.ViewModelMappers.Poker
@@ -9,7 +10,7 @@ namespace PlanningPoker.Server.ViewModelMappers.Poker
         {
             var viewModel = new PokerSessionViewModel
             {
-                Votes = session.Votes,
+                Votes = session.Votes.ToDictionary(pair => pair.Key.ToString(), pair => pair.Value),
                 IsShown = session.IsShown
             };
 

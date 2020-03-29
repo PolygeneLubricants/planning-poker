@@ -8,7 +8,7 @@ namespace PlanningPoker.Core.ViewModels
     {
         public Guid Id { get; set; }
 
-        public IList<PlayerViewModel> Players { get; set; } = new List<PlayerViewModel>();
+        public IList<PlayerViewModel>? Players { get; set; }
 
         public PokerSessionViewModel? CurrentSession { get; set; }
     }

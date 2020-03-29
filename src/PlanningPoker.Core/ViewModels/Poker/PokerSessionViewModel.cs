@@ -6,6 +6,6 @@ namespace PlanningPoker.Core.ViewModels.Poker
     {
         public bool IsShown { get; set; }
 
-        public IDictionary<int, int> Votes { get; set; } = new Dictionary<int, int>();
+        public IDictionary<string, int>? Votes { get; set; }
     }
 }
