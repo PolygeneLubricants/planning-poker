@@ -1,11 +1,11 @@
 ﻿using System;
 using System.Threading.Tasks;
 using Microsoft.AspNetCore.SignalR;
-using Newtonsoft.Json;
 using PlanningPoker.Core;
 using PlanningPoker.Core.Extensions;
-using PlanningPoker.Core.ViewModels;
 using PlanningPoker.Server.ViewModelMappers;
+using PlanningPoker.Shared;
+using PlanningPoker.Shared.ViewModels;
 
 namespace PlanningPoker.Server.Hubs
 {

@@ -13,11 +13,10 @@
     <PackageReference Include="Microsoft.AspNetCore.Blazor.DevServer" Version="3.2.0-preview1.20073.1" PrivateAssets="all" />
     <PackageReference Include="Microsoft.AspNetCore.Blazor.HttpClient" Version="3.2.0-preview3.20168.3" />
     <PackageReference Include="Microsoft.AspNetCore.SignalR.Client" Version="5.0.0-preview.1.20124.5" />
-    <PackageReference Include="Newtonsoft.Json" Version="12.0.3" />
   </ItemGroup>
 
   <ItemGroup>
-    <ProjectReference Include="..\PlanningPoker.Core\PlanningPoker.Core.csproj" />
+    <ProjectReference Include="..\PlanningPoker.Shared\PlanningPoker.Shared.csproj" />
   </ItemGroup>
 
 </Project>

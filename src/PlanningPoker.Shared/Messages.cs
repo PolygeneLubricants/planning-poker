@@ -1,4 +1,4 @@
-﻿namespace PlanningPoker.Core
+﻿namespace PlanningPoker.Shared
 {
     public static class Messages
     {

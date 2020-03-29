@@ -1,8 +1,8 @@
 ﻿using System;
 using System.Collections.Generic;
-using PlanningPoker.Core.ViewModels.Poker;
+using PlanningPoker.Shared.ViewModels.Poker;
 
-namespace PlanningPoker.Core.ViewModels
+namespace PlanningPoker.Shared.ViewModels
 {
     public class PokerServerViewModel
     {

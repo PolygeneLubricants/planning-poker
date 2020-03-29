@@ -3,11 +3,13 @@ Microsoft Visual Studio Solution File, Format Version 12.00
 # Visual Studio Version 16
 VisualStudioVersion = 16.0.29905.134
 MinimumVisualStudioVersion = 10.0.40219.1
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "PlanningPoker.Server", "src\PlanningPoker.Server\PlanningPoker.Server.csproj", "{38AB0D17-8E56-482D-AA87-E55D807E0C34}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "PlanningPoker.Server", "src\PlanningPoker.Server\PlanningPoker.Server.csproj", "{38AB0D17-8E56-482D-AA87-E55D807E0C34}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "PlanningPoker.Client", "src\PlanningPoker.Client\PlanningPoker.Client.csproj", "{6C462AF9-6544-4690-A8A0-1E852FBBD894}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "PlanningPoker.Client", "src\PlanningPoker.Client\PlanningPoker.Client.csproj", "{6C462AF9-6544-4690-A8A0-1E852FBBD894}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "PlanningPoker.Core", "src\PlanningPoker.Core\PlanningPoker.Core.csproj", "{DEC666FD-AB87-4EFC-933B-A071DB8A1ED5}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "PlanningPoker.Core", "src\PlanningPoker.Core\PlanningPoker.Core.csproj", "{DEC666FD-AB87-4EFC-933B-A071DB8A1ED5}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "PlanningPoker.Shared", "src\PlanningPoker.Shared\PlanningPoker.Shared.csproj", "{37AE3044-1CBF-4637-BF63-DA02B743DB01}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
@@ -27,6 +29,10 @@ Global
 		{DEC666FD-AB87-4EFC-933B-A071DB8A1ED5}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{DEC666FD-AB87-4EFC-933B-A071DB8A1ED5}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{DEC666FD-AB87-4EFC-933B-A071DB8A1ED5}.Release|Any CPU.Build.0 = Release|Any CPU
+		{37AE3044-1CBF-4637-BF63-DA02B743DB01}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{37AE3044-1CBF-4637-BF63-DA02B743DB01}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{37AE3044-1CBF-4637-BF63-DA02B743DB01}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{37AE3044-1CBF-4637-BF63-DA02B743DB01}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE

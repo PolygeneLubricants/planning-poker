@@ -1,6 +1,6 @@
 ﻿using System.Linq;
 using PlanningPoker.Core.Models.Poker;
-using PlanningPoker.Core.ViewModels.Poker;
+using PlanningPoker.Shared.ViewModels.Poker;
 
 namespace PlanningPoker.Server.ViewModelMappers.Poker
 {

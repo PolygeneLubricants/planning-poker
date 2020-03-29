@@ -1,9 +1,9 @@
-﻿@using PlanningPoker.Core.ViewModels
+﻿@using PlanningPoker.Shared.ViewModels
 <div>
     <p>Session</p>
 
     <ul>
-        @foreach (var player in Server?.Players)
+        @foreach (var player in Server?.Players ?? Enumerable.Empty<PlayerViewModel>())
         {
             <li>@player.Name</li>
         }

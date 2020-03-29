@@ -1,4 +1,4 @@
-﻿namespace PlanningPoker.Core.ViewModels
+﻿namespace PlanningPoker.Shared.ViewModels
 {
     public class PlayerViewModel
     {
