@@ -48,8 +48,16 @@
 
     async Task Vote(int vote)
     {
-        _chosenCard = vote;
-        await HubConnection.SendAsync("Vote", Id, CurrentPlayer.Id, vote);
+        if (_chosenCard == vote)
+        {
+            _chosenCard = default;
+            await HubConnection.SendAsync("UnVote", Id, CurrentPlayer.Id);
+        }
+        else
+        {
+            _chosenCard = vote;
+            await HubConnection.SendAsync("Vote", Id, CurrentPlayer.Id, vote);
+        }
     }
 
     Task Clear()

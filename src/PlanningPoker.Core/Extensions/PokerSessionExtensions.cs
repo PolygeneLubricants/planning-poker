@@ -9,6 +9,11 @@ namespace PlanningPoker.Core.Extensions
             PokerSessionEngine.SetVote(session, playerId, vote);
         }
 
+        public static void UnVote(this PokerSession session, string playerId)
+        {
+            PokerSessionEngine.RemoveVote(session, playerId);
+        }
+
         public static void Clear(this PokerSession session)
         {
             PokerSessionEngine.Clear(session);

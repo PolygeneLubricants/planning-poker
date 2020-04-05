@@ -10,6 +10,11 @@ namespace PlanningPoker.Core
             session.Votes[playerId] = vote;
         }
 
+        public static void RemoveVote(PokerSession session, string playerId)
+        {
+            session.Votes.Remove(playerId);
+        }
+
         public static void Clear(PokerSession session)
         {
             session.Votes = new Dictionary<string, int>();

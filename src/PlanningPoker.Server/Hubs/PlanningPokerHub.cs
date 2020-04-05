@@ -58,6 +58,15 @@ namespace PlanningPoker.Server.Hubs
             await Clients.Group(serverId.ToString()).SendAsync(Messages.UPDATED, server.Map());
         }
 
+        public async Task UnVote(Guid serverId, string playerId)
+        {
+            var server = _serverStore.Get(serverId);
+            if (!server.CurrentSession.CanVote) return;
+
+            server.CurrentSession.UnVote(playerId);
+            await Clients.Group(serverId.ToString()).SendAsync(Messages.UPDATED, server.Map());
+        }
+
         public async Task Clear(Guid serverId)
         {
             var server = _serverStore.Get(serverId);
