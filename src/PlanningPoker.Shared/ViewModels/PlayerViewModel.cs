@@ -1,4 +1,6 @@
-﻿namespace PlanningPoker.Shared.ViewModels
+﻿using PlanningPoker.Core.Models;
+
+namespace PlanningPoker.Shared.ViewModels
 {
     public class PlayerViewModel
     {
@@ -7,5 +9,7 @@
         public int PublicId { get; set; }
 
         public string? Name { get; set; }
+
+        public PlayerType Type { get; set; }
     }
 }

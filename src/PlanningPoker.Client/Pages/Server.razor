@@ -1,5 +1,6 @@
 ﻿@page "/server/{id}"
 @using Microsoft.AspNetCore.SignalR.Client
+@using PlanningPoker.Core.Models
 @using PlanningPoker.Shared
 @using PlanningPoker.Shared.ViewModels
 @inject NavigationManager NavigationManager
@@ -26,14 +27,22 @@
                     <div class="form-group">
                         <label>
                             Username
-                            <input 
-                                @bind-value="_username" 
-                                @bind-value:event="oninput"
-                                size="20" 
-                                    class="form-control" />
+                            <input @bind-value="_username"
+                                   @bind-value:event="oninput"
+                                   size="20"
+                                   class="form-control" />
                         </label>
                     </div>
-
+                    <div class="form-group">
+                        <label>
+                            Participation type
+                            <select @bind="@_type"
+                                    class="custom-select">
+                                <option value="@PlayerType.Participant">Participant</option>
+                                <option value="@PlayerType.Observer">Observer</option>
+                            </select>
+                        </label>
+                    </div>
                     <div class="form-group">
                         <button @onclick="Join" disabled="@(string.IsNullOrWhiteSpace(_username))">Join</button>
                     </div>
@@ -47,6 +56,8 @@
     private HubConnection _hubConnection;
 
     private string? _username;
+
+    private PlayerType _type = PlayerType.Participant;
 
     private PlayerViewModel? _currentPlayer;
 
@@ -73,7 +84,7 @@
     async Task Join()
     {
         await _hubConnection.SendAsync("Connect", Id);
-        _currentPlayer = await _hubConnection.InvokeAsync<PlayerViewModel>("Join", Id, _username);
+        _currentPlayer = await _hubConnection.InvokeAsync<PlayerViewModel>("Join", Id, _username, _type);
     }
 
     public bool HasJoined = false;

@@ -15,7 +15,10 @@ namespace PlanningPoker.Core.Models.Poker
 
         public bool CanShow(IDictionary<string, Player> participants)
         {
-            return Votes.Count == participants.Count && !IsShown;
+            return 
+                Votes.Count != 0 
+                && Votes.Count == participants.Count(p => p.Value.Type == PlayerType.Participant) 
+                && !IsShown;
         }
 
         public bool CanClear => Votes.Any();

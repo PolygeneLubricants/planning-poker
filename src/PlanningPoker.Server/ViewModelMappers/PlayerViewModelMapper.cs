@@ -11,7 +11,8 @@ namespace PlanningPoker.Server.ViewModelMappers
             {
                 Id = includePrivateId ? player.Id : null,
                 PublicId = player.PublicId,
-                Name = player.Name
+                Name = player.Name,
+                Type = player.Type
             };
 
             return viewModel;

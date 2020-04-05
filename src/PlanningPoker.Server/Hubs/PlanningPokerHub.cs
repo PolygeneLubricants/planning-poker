@@ -3,6 +3,7 @@ using System.Threading.Tasks;
 using Microsoft.AspNetCore.SignalR;
 using PlanningPoker.Core;
 using PlanningPoker.Core.Extensions;
+using PlanningPoker.Core.Models;
 using PlanningPoker.Server.ViewModelMappers;
 using PlanningPoker.Shared;
 using PlanningPoker.Shared.ViewModels;
@@ -39,10 +40,10 @@ namespace PlanningPoker.Server.Hubs
             return server.Id;
         }
 
-        public async Task<PlayerViewModel> Join(Guid id, string playerName)
+        public async Task<PlayerViewModel> Join(Guid id, string playerName, PlayerType type)
         {
             var server = _serverStore.Get(id);
-            var newPlayer = server.Join(Context.ConnectionId, playerName);
+            var newPlayer = server.Join(Context.ConnectionId, playerName, type);
             await Clients.Group(id.ToString()).SendAsync(Messages.UPDATED, server.Map());
             return newPlayer.Map(includePrivateId: true);
         }
@@ -56,6 +57,8 @@ namespace PlanningPoker.Server.Hubs
             if (!server.Players.ContainsKey(playerId)) return;
 
             var player = server.Players[playerId];
+            if (player.Type == PlayerType.Observer) return;
+
             server.CurrentSession.Vote(player.PublicId, vote);
             await Clients.Group(serverId.ToString()).SendAsync(Messages.UPDATED, server.Map());
         }
@@ -67,6 +70,8 @@ namespace PlanningPoker.Server.Hubs
             if (!server.Players.ContainsKey(playerId)) return;
 
             var player = server.Players[playerId];
+            if (player.Type == PlayerType.Observer) return;
+
             server.CurrentSession.UnVote(player.PublicId);
             await Clients.Group(serverId.ToString()).SendAsync(Messages.UPDATED, server.Map());
         }

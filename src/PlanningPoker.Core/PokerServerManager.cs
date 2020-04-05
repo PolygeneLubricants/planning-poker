@@ -7,10 +7,10 @@ namespace PlanningPoker.Core
 {
     public static class PokerServerManager
     {
-        public static Player AddPlayer(PokerServer server, string playerId, string playerName)
+        public static Player AddPlayer(PokerServer server, string playerId, string playerName, PlayerType type)
         {
             var publicId = GeneratePublicId(server.Players);
-            var player = new Player(playerId, publicId, playerName);
+            var player = new Player(playerId, publicId, playerName, type);
             server.Players.Add(playerId, player);
             return player;
         }

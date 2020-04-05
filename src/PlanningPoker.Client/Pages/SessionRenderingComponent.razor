@@ -1,4 +1,5 @@
-﻿@using PlanningPoker.Shared.ViewModels
+﻿@using PlanningPoker.Core.Models
+@using PlanningPoker.Shared.ViewModels
 
 <div class="card">
     <div class="card-body">
@@ -6,32 +7,57 @@
         <div class="row">
             <table class="table table-striped">
                 <thead>
-                    <tr>
-                        <th></th>
-                        <th>Name</th>
-                        <th>Vote</th>
-                    </tr>
+                <tr>
+                    <th></th>
+                    <th>Name</th>
+                    <th>Vote</th>
+                </tr>
                 </thead>
                 <tbody>
-                    @foreach (var player in Server?.Players ?? Enumerable.Empty<PlayerViewModel>())
-                    {
-                        var hasVoted = Server?.CurrentSession?.Votes?.ContainsKey(player.PublicId.ToString()) ?? false;
-                        var currentPlayerVote = hasVoted ? Server.CurrentSession.Votes[player.PublicId.ToString()] : string.Empty;
-                        <tr class="@(hasVoted ? "table-success" : "")">
-                            <td>
-                                @if (hasVoted)
-                                {
-                                    <span class="oi oi-check"></span>
-                                }
-                            </td>
-                            <td>
-                                @player.Name
-                            </td>
-                            <td>
-                                @currentPlayerVote
-                            </td>
-                        </tr>
-                    }
+                @foreach (var player in Server?.Players?.Where(p => p.Type == PlayerType.Participant) ?? Enumerable.Empty<PlayerViewModel>())
+                {
+                    var hasVoted = Server?.CurrentSession?.Votes?.ContainsKey(player.PublicId.ToString()) ?? false;
+                    var currentPlayerVote = hasVoted ? Server.CurrentSession.Votes[player.PublicId.ToString()] : string.Empty;
+                    <tr class="@(hasVoted ? "table-success" : "")">
+                        <td>
+                            @if (hasVoted)
+                            {
+                                <span class="oi oi-check"></span>
+                            }
+                        </td>
+                        <td>
+                            @player.Name
+                        </td>
+                        <td>
+                            @currentPlayerVote
+                        </td>
+                    </tr>
+                }
+                </tbody>
+            </table>
+        </div>
+    </div>
+</div>
+
+<div class="card">
+    <div class="card-body">
+        <h5 class="card-title">Observers</h5>
+        <div class="row">
+            <table class="table table-striped">
+                <thead>
+                <tr>
+                    <th>Name</th>
+                </tr>
+                </thead>
+                <tbody>
+                @foreach (var player in Server?.Players?.Where(p => p.Type == PlayerType.Observer) ?? Enumerable.Empty<PlayerViewModel>())
+                {
+                    <tr>
+                        <td>
+                            @player.Name
+                        </td>
+                    </tr>
+                }
                 </tbody>
             </table>
         </div>
