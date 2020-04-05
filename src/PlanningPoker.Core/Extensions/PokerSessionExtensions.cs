@@ -4,14 +4,14 @@ namespace PlanningPoker.Core.Extensions
 {
     public static class PokerSessionExtensions
     {
-        public static void Vote(this PokerSession session, string playerId, int vote)
+        public static void Vote(this PokerSession session, int playerPublicId, int vote)
         {
-            PokerSessionEngine.SetVote(session, playerId, vote);
+            PokerSessionEngine.SetVote(session, playerPublicId, vote);
         }
 
-        public static void UnVote(this PokerSession session, string playerId)
+        public static void UnVote(this PokerSession session, int playerPublicId)
         {
-            PokerSessionEngine.RemoveVote(session, playerId);
+            PokerSessionEngine.RemoveVote(session, playerPublicId);
         }
 
         public static void Clear(this PokerSession session)
@@ -24,9 +24,9 @@ namespace PlanningPoker.Core.Extensions
             PokerSessionEngine.Show(session);
         }
 
-        public static void RemovePlayer(this PokerSession session, string playerId)
+        public static void RemovePlayer(this PokerSession session, int playerPublicId)
         {
-            PokerSessionEngine.RemovePlayer(session, playerId);
+            PokerSessionEngine.RemovePlayer(session, playerPublicId);
         }
     }
 }

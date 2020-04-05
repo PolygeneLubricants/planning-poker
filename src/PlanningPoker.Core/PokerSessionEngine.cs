@@ -5,19 +5,19 @@ namespace PlanningPoker.Core
 {
     public static class PokerSessionEngine
     {
-        public static void SetVote(PokerSession session, string playerId, int vote)
+        public static void SetVote(PokerSession session, int playerPublicId, int vote)
         {
-            session.Votes[playerId] = vote;
+            session.Votes[playerPublicId] = vote;
         }
 
-        public static void RemoveVote(PokerSession session, string playerId)
+        public static void RemoveVote(PokerSession session, int playerPublicId)
         {
-            session.Votes.Remove(playerId);
+            session.Votes.Remove(playerPublicId);
         }
 
         public static void Clear(PokerSession session)
         {
-            session.Votes = new Dictionary<string, int>();
+            session.Votes = new Dictionary<int, int>();
             session.IsShown = false;
         }
 
@@ -26,9 +26,9 @@ namespace PlanningPoker.Core
             session.IsShown = true;
         }
 
-        public static void RemovePlayer(PokerSession session, string playerId)
+        public static void RemovePlayer(PokerSession session, int playerPublicId)
         {
-            session.Votes.Remove(playerId);
+            session.Votes.Remove(playerPublicId);
         }
     }
 }

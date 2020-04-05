@@ -8,7 +8,7 @@ namespace PlanningPoker.Core.Models.Poker
         public PokerSession()
         {
             IsShown = false;
-            Votes = new Dictionary<string, int>();
+            Votes = new Dictionary<int, int>();
         }
 
         public bool IsShown { get; set; }
@@ -22,6 +22,6 @@ namespace PlanningPoker.Core.Models.Poker
 
         public bool CanVote => !IsShown;
 
-        public IDictionary<string, int> Votes { get; set; }
+        public IDictionary<int, int> Votes { get; set; }
     }
 }

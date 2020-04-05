@@ -10,9 +10,7 @@ namespace PlanningPoker.Server.ViewModelMappers.Poker
     {
         public static PokerSessionViewModel Map(this PokerSession session, IDictionary<string, Player> participants)
         {
-            var votes = session.IsShown 
-                ? session.Votes.ToDictionary(pair => pair.Key, pair => pair.Value.ToString()) 
-                : session.Votes.ToDictionary(pair => pair.Key, pair => "?");
+            var votes = MapVotes(session);
             var viewModel = new PokerSessionViewModel
             {
                 Votes = votes,
@@ -23,6 +21,15 @@ namespace PlanningPoker.Server.ViewModelMappers.Poker
             };
 
             return viewModel;
+        }
+
+        private static IDictionary<string, string> MapVotes(PokerSession session)
+        {
+            var votes = session.IsShown
+                ? session.Votes.ToDictionary(pair => pair.Key.ToString(), pair => pair.Value.ToString())
+                : session.Votes.ToDictionary(pair => pair.Key.ToString(), pair => "?");
+
+            return votes;
         }
     }
 }

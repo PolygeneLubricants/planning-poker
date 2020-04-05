@@ -15,8 +15,8 @@
                 <tbody>
                     @foreach (var player in Server?.Players ?? Enumerable.Empty<PlayerViewModel>())
                     {
-                        var hasVoted = Server?.CurrentSession?.Votes?.ContainsKey(player.Id) ?? false;
-                        var currentPlayerVote = hasVoted ? Server.CurrentSession.Votes[player.Id] : string.Empty;
+                        var hasVoted = Server?.CurrentSession?.Votes?.ContainsKey(player.PublicId.ToString()) ?? false;
+                        var currentPlayerVote = hasVoted ? Server.CurrentSession.Votes[player.PublicId.ToString()] : string.Empty;
                         <tr class="@(hasVoted ? "table-success" : "")">
                             <td>
                                 @if (hasVoted)

@@ -44,7 +44,7 @@ namespace PlanningPoker.Server.Hubs
             var server = _serverStore.Get(id);
             var newPlayer = server.Join(Context.ConnectionId, playerName);
             await Clients.Group(id.ToString()).SendAsync(Messages.UPDATED, server.Map());
-            return newPlayer.Map();
+            return newPlayer.Map(includePrivateId: true);
         }
 
         public async Task Vote(Guid serverId, string playerId, int vote)
@@ -53,8 +53,10 @@ namespace PlanningPoker.Server.Hubs
 
             var server = _serverStore.Get(serverId);
             if (!server.CurrentSession.CanVote) return;
+            if (!server.Players.ContainsKey(playerId)) return;
 
-            server.CurrentSession.Vote(playerId, vote);
+            var player = server.Players[playerId];
+            server.CurrentSession.Vote(player.PublicId, vote);
             await Clients.Group(serverId.ToString()).SendAsync(Messages.UPDATED, server.Map());
         }
 
@@ -62,8 +64,10 @@ namespace PlanningPoker.Server.Hubs
         {
             var server = _serverStore.Get(serverId);
             if (!server.CurrentSession.CanVote) return;
+            if (!server.Players.ContainsKey(playerId)) return;
 
-            server.CurrentSession.UnVote(playerId);
+            var player = server.Players[playerId];
+            server.CurrentSession.UnVote(player.PublicId);
             await Clients.Group(serverId.ToString()).SendAsync(Messages.UPDATED, server.Map());
         }
 
