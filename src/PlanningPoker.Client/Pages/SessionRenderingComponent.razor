@@ -1,20 +1,42 @@
 ﻿@using PlanningPoker.Shared.ViewModels
-@foreach (var player in Server?.Players ?? Enumerable.Empty<PlayerViewModel>())
-{
-    var hasVoted = Server?.CurrentSession?.Votes?.ContainsKey(player.Id.ToString()) ?? false;
-    var currentPlayerVote = hasVoted ? Server.CurrentSession.Votes[player.Id.ToString()] : string.Empty;
-    
-    <div class="row">
-        <div class="col-md-2">
-            @if (hasVoted)
-            {
-                <span class="oi oi-check"></span>
-            }
+
+<div class="card">
+    <div class="card-body">
+        <h5 class="card-title">Participants</h5>
+        <div class="row">
+            <table class="table table-striped">
+                <thead>
+                    <tr>
+                        <th></th>
+                        <th>Name</th>
+                        <th>Vote</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    @foreach (var player in Server?.Players ?? Enumerable.Empty<PlayerViewModel>())
+                    {
+                        var hasVoted = Server?.CurrentSession?.Votes?.ContainsKey(player.Id) ?? false;
+                        var currentPlayerVote = hasVoted ? Server.CurrentSession.Votes[player.Id] : string.Empty;
+                        <tr class="@(hasVoted ? "table-success" : "")">
+                            <td>
+                                @if (hasVoted)
+                                {
+                                    <span class="oi oi-check"></span>
+                                }
+                            </td>
+                            <td>
+                                @player.Name
+                            </td>
+                            <td>
+                                @currentPlayerVote
+                            </td>
+                        </tr>
+                    }
+                </tbody>
+            </table>
         </div>
-        <div class="col-md-8">@player.Name</div>
-        <div class="col-md-2">@currentPlayerVote</div>
     </div>
-}
+</div>
 
 @code {
 

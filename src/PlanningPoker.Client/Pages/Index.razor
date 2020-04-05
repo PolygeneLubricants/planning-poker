@@ -4,34 +4,48 @@
 
 @if (string.IsNullOrWhiteSpace(CreatedServerAddress))
 {
-    <div class="row">
-        <div class="col-md-12">
-            <h2>Welcome to Planning Poker Lite!</h2>
-            <p>Press below to create a room for you. This will create a link, where you and your participants can create a user and start voting.</p>
-            <p>Happy planning!</p>
-        </div>
-    </div>
-    <div class="row">
-        <div class="col-md-12">
-            <div class="form-group">
-                <button @onclick="Create" disabled="@(HasCreated)">Create room</button>
+    <div class="card">
+        <div class="card-body">
+            <div class="row">
+                <div class="col-md-12">
+                    <h2>Welcome to Planning Poker Lite!</h2>
+                    <p>Press below to create a room for you. This will create a link, where you and your participants can create a user and start voting.</p>
+                    <p>Happy planning!</p>
+                </div>
+            </div>
+            <div class="row">
+                <div class="col-md-12">
+                    <div class="form-group">
+                        <button @onclick="Create" disabled="@(HasCreated)">Create room</button>
+                    </div>
+                </div>
             </div>
         </div>
     </div>
 }
 else
 {
-    <div class="row">
-        <div class="col-md-12">
-            <a href="@CreatedServerAddress" class="btn btn-primary">Join room</a>
+    <div class="card">
+        <div class="card-body">
+            <div class="row">
+                <div class="col">
+                    <p>Your room has been created. Click to join!</p>
+                </div>
+            </div>
+            <div class="row">
+                <div class="col-md-12">
+                    <a href="@CreatedServerAddress" class="btn btn-primary">Join room</a>
+                </div>
+            </div>
+            <div class="row">
+                <div class="col-md-12">
+                    <p>Below is the link to your room. Send this to your participants, and start planning!</p>
+                    <input class="form-control" value="@CreatedServerAddress" disabled="disabled"/>
+                </div>
+            </div>
         </div>
     </div>
-    <div class="row">
-        <div class="col-md-12">
-            <p>Below is the link to your room. Send this to your participants, and start planning!</p>
-            <input class="form-control" value="@CreatedServerAddress" disabled="disabled"/>
-        </div>
-    </div>
+    
 }
 
 @code {

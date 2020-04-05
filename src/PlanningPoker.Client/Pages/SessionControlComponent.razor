@@ -2,23 +2,35 @@
 @using PlanningPoker.Shared
 @using PlanningPoker.Shared.ViewModels
 @using PlanningPoker.Shared.ViewModels.Poker
-<div class="row cards">
-    @foreach (var card in Cards.Values)
-    {
-        <div class="col card-wrapper">
-            <button class="btn @(card == _chosenCard ? "btn-success" : "btn-default") poker_card" @onclick="() => Vote(card)" disabled="@(!Session.CanVote)">
-                @card.ToString()
-            </button>
+<div class="card poker_cards">
+    <div class="card-body">
+        <h5 class="card-title">Poker cards</h5>
+        <h6 class="card-subtitle mb-2 text-muted">Click on a card to cast your vote</h6>
+        <div class="row">
+            @foreach (var card in Cards.Values)
+            {
+                <div class="col card-wrapper">
+                    <button class="btn @(card == _chosenCard ? "btn-success" : "btn-default") poker_card btn-lg" @onclick="() => Vote(card)" disabled="@(!Session.CanVote)">
+                        @card.ToString()
+                    </button>
+                </div>
+            }
         </div>
-    }
+    </div>
 </div>
 
-<div class="row session-controls">
-    <div class="col-md-6">
-        <button class="btn btn-default clear" @onclick="Clear" disabled="@(!Session.CanClear)">Clear</button>
-    </div>
-    <div class="col-md-6">
-        <button class="btn btn-primary show" @onclick="Show" disabled="@(!Session.CanShow)">Show</button>
+<div class="card session-controls">
+    <div class="card-body">
+        <h5 class="card-title">Session Controls</h5>
+        <h6 class="card-subtitle mb-2 text-muted">Clear all current votes, or show once everyone has voted</h6>
+        <div class="row">
+            <div class="col-md-6 col-sm-6 col-xs-6">
+                <button class="btn btn-default btn-block clear" @onclick="Clear" disabled="@(!Session.CanClear)">Clear</button>
+            </div>
+            <div class="col-md-6 col-sm-6 col-xs-6">
+                <button class="btn btn-primary btn-block show" @onclick="Show" disabled="@(!Session.CanShow)">Show</button>
+            </div>
+        </div>
     </div>
 </div>
 

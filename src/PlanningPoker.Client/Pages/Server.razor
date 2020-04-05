@@ -12,16 +12,30 @@
 
 @if(_currentPlayer == null)
 {
+    <div class="card">
+        <div class="card-body">
+            <div class="row">
+                <div class="col">
+                    <p>
+                        Pick a username, and begin planning!
+                    </p>
+                </div>
+            </div>
+            <div class="row">
+                <div class="col">
+                    <div class="form-group">
+                        <label>
+                            Username
+                            <input @bind="_username" size="20" class="form-control" />
+                        </label>
+                    </div>
 
-    <div class="form-group">
-        <label>
-            Username
-            <input @bind="_username" size="20" class="form-control" />
-        </label>
-    </div>
-
-    <div class="form-group">
-        <button @onclick="Join">Join</button>
+                    <div class="form-group">
+                        <button @onclick="Join">Join</button>
+                    </div>
+                </div>
+            </div>
+        </div>
     </div>
 }
 
