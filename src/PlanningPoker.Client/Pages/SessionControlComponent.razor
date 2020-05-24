@@ -115,6 +115,11 @@
             return default;
         }
 
+        if (Session?.Votes == null || !Session.Votes.Any())
+        {
+            return default;
+        }
+
         var sum = CalculateSum();
         if(!sum.HasValue)
         {
