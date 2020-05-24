@@ -1,4 +1,5 @@
 ﻿using System.Collections.Generic;
+using System.Linq;
 using PlanningPoker.Core.Models;
 using PlanningPoker.Core.Models.Poker;
 
@@ -30,6 +31,10 @@ namespace PlanningPoker.Core
         public static void RemovePlayer(PokerSession session, int playerPublicId)
         {
             session.Votes.Remove(playerPublicId);
+            if (!session.Votes.Any())
+            {
+                session.IsShown = false;
+            }
         }
     }
 }
