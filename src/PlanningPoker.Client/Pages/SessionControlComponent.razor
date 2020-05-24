@@ -20,16 +20,44 @@
     </div>
 </div>
 
-<div class="card session-controls">
-    <div class="card-body">
-        <h5 class="card-title">Session Controls</h5>
-        <h6 class="card-subtitle mb-2 text-muted">Clear all current votes, or show once everyone has voted</h6>
-        <div class="row">
-            <div class="col-md-6 col-sm-6 col-xs-6">
-                <button class="btn btn-default btn-block clear" @onclick="Clear" disabled="@(!Session.CanClear)">Clear</button>
+<div class="row juxtaposed">
+    <div class="col col-md-6 left">
+        <div class="card session-controls">
+            <div class="card-body">
+                <h5 class="card-title">Session Controls</h5>
+                <h6 class="card-subtitle mb-2 text-muted">Clear all current votes, or show once everyone has voted</h6>
+                <div class="row">
+                    <div class="col-md-6 col-sm-6 col-xs-6">
+                        <button class="btn btn-default btn-block clear" @onclick="Clear" disabled="@(!Session.CanClear)">Clear</button>
+                    </div>
+                    <div class="col-md-6 col-sm-6 col-xs-6">
+                        <button class="btn btn-primary btn-block show" @onclick="Show" disabled="@(!Session.CanShow)">Show</button>
+                    </div>
+                </div>
             </div>
-            <div class="col-md-6 col-sm-6 col-xs-6">
-                <button class="btn btn-primary btn-block show" @onclick="Show" disabled="@(!Session.CanShow)">Show</button>
+        </div>
+    </div>
+    <div class="col col-md-6 right">
+        <div class="card session-results">
+            <div class="card-body">
+                <h5 class="card-title">Session Results</h5>
+                <div class="row">
+                    @if (Session.IsShown)
+                    {
+                        <table class="table table-striped">
+                            <tbody>
+                            <tr>
+                                <td>Avg. value</td>
+                                <td>@(GetVoteAvg()?.ToString("#.#"))</td>
+                            </tr>
+                            <tr>
+                                <td>Mode value</td>
+                                <td>@GetVoteMode()</td>
+                            </tr>
+                            </tbody>
+                        </table>
+                    }
+                </div>
             </div>
         </div>
     </div>
@@ -69,6 +97,49 @@
     Task Show()
     {
         return HubConnection.SendAsync("Show", Id);
+    }
+
+    int? GetVoteMode()
+    {
+        return Session?.Votes?
+            .GroupBy(pair => IntParseOrDefault(pair.Value))
+            .Where(group => group.Key.HasValue)
+            .OrderByDescending(group => group.Count())
+            .Select(group => group.Key).FirstOrDefault();
+    }
+
+    decimal? GetVoteAvg()
+    {
+        if (!Session.IsShown)
+        {
+            return default;
+        }
+
+        var sum = CalculateSum();
+        if(!sum.HasValue)
+        {
+
+            return default;
+        }
+
+        return sum.Value / Session.Votes.Count;
+    }
+
+    decimal? CalculateSum()
+    {
+        return Session.Votes?.Sum(pair => DecimalParseOrDefault(pair.Value) ?? default);
+    }
+
+    decimal? DecimalParseOrDefault(string val)
+    {
+        var parsed = decimal.TryParse(val, out var parsedResult);
+        return parsed ? parsedResult : default;
+    }
+
+    int? IntParseOrDefault(string val)
+    {
+        var parsed = int.TryParse(val, out var parsedResult);
+        return parsed ? parsedResult : default;
     }
 
     [Parameter]

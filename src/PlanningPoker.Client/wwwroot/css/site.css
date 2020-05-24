@@ -2,10 +2,25 @@
     margin-bottom: 10px;
 }
 
+.card {
+    margin: 12px 0;
+}
 
+.row.juxtaposed {
+    margin: 0;
+}
 
+.row.juxtaposed .left .card {
+    margin-right: 6px;
+}
 
+.row.juxtaposed .right .card {
+    margin-left: 6px;
+}
 
+.row.juxtaposed .col {
+    padding: 0;
+}
 
 #blazor-error-ui {
     background: lightyellow;
