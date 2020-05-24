@@ -1,0 +1,53 @@
+﻿@using Microsoft.AspNetCore.SignalR.Client
+@using PlanningPoker.Shared
+<div class="card log">
+    <div class="card-body">
+        <h5 class="card-title">Log</h5>
+        <h6 class="card-subtitle mb-2 text-muted">When a user interacts with the session, all actions will be displayed here (capped at 20 messages).</h6>
+        <div class="row">
+            @if (Log != null && Log.Any())
+            {
+                <table class="table table-fixed table-sm table-striped scroll-table">
+                    <thead>
+                    <tr>
+                        <th>Timestamp</th>
+                        <th>Initiator</th>
+                        <th>Message</th>
+                    </tr>
+                    </thead>
+                    <tbody>
+                    @foreach (var message in Log)
+                    {
+                        <tr>
+                            <td>@message.Timestamp.ToLocalTime().ToString("T")</td>
+                            <td>@message.User</td>
+                            <td>@message.Message</td>
+                        </tr>
+                    }
+                    </tbody>
+                </table>
+            }
+        </div>
+    </div>
+</div>
+
+@code {
+    protected override async Task OnInitializedAsync()
+    {
+        Log = new DropOutStack<LogMessage>(20);
+
+        HubConnection.On<LogMessage>(Messages.LOG, logMessage =>
+        {
+            Log.Push(logMessage);
+            StateHasChanged();
+        });
+    }
+
+    public DropOutStack<LogMessage> Log { get; set; }
+
+    [Parameter]
+    public HubConnection HubConnection { get; set; }
+
+    [Parameter]
+    public EventCallback<HubConnection> HubConnectionChanged { get; set; }
+}

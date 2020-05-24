@@ -13,5 +13,10 @@ namespace PlanningPoker.Core.Extensions
         {
             PokerServerManager.RemovePlayer(server, playerId);
         }
+
+        public static Player GetPlayer(this PokerServer server, string playerId)
+        {
+            return PokerServerManager.GetPlayer(server, playerId);
+        }
     }
 }

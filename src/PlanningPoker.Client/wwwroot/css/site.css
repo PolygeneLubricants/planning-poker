@@ -22,6 +22,42 @@
     padding: 0;
 }
 
+/* SCROLLABLE TABLE */
+
+.scroll-table {
+    width: 100%
+}
+
+.scroll-table > thead,
+.scroll-table > tbody,
+.scroll-table > thead > tr,
+.scroll-table > tbody > tr,
+.scroll-table > thead > tr > th,
+.scroll-table > tbody > tr > td {
+    display: block;
+}
+
+.scroll-table> tbody > tr:after,
+.scroll-table > thead > tr:after {
+    content: ' ';
+    display: block;
+    visibility: hidden;
+    clear: both;
+}
+
+.scroll-table > tbody {
+    overflow-y: auto;
+    height: 150px;
+}
+
+.scroll-table > tbody > tr > td,
+.scroll-table > thead > tr > th {
+    width: 33.33%;
+    float: left;
+}
+
+/* END SCROLLABLE TABLE */
+
 #blazor-error-ui {
     background: lightyellow;
     bottom: 0;

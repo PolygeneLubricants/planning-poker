@@ -1,4 +1,5 @@
 ﻿using System.Collections.Generic;
+using PlanningPoker.Core.Models;
 using PlanningPoker.Core.Models.Poker;
 
 namespace PlanningPoker.Core

@@ -35,5 +35,11 @@ namespace PlanningPoker.Core
             server.Players.Remove(playerId);
             server.CurrentSession.RemovePlayer(player.PublicId);
         }
+
+        public static Player GetPlayer(PokerServer server, string playerId)
+        {
+            var player = server.Players[playerId];
+            return player;
+        }
     }
 }

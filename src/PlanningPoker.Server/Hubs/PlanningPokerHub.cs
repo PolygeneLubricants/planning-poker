@@ -4,6 +4,7 @@ using Microsoft.AspNetCore.SignalR;
 using PlanningPoker.Core;
 using PlanningPoker.Core.Extensions;
 using PlanningPoker.Core.Models;
+using PlanningPoker.Core.Utilities;
 using PlanningPoker.Server.ViewModelMappers;
 using PlanningPoker.Shared;
 using PlanningPoker.Shared.ViewModels;
@@ -13,10 +14,14 @@ namespace PlanningPoker.Server.Hubs
     public class PlanningPokerHub : Hub
     {
         private readonly IServerStore _serverStore;
+        private readonly IDateTimeProvider _dateTimeProvider;
 
-        public PlanningPokerHub(IServerStore serverStore)
+        public PlanningPokerHub(
+            IServerStore serverStore, 
+            IDateTimeProvider dateTimeProvider)
         {
             _serverStore = serverStore;
+            _dateTimeProvider = dateTimeProvider;
         }
 
         public async Task Connect(Guid id)
@@ -45,6 +50,7 @@ namespace PlanningPoker.Server.Hubs
             var server = _serverStore.Get(id);
             var newPlayer = server.Join(Context.ConnectionId, playerName, type);
             await Clients.Group(id.ToString()).SendAsync(Messages.UPDATED, server.Map());
+            await BroadcastLog(id.ToString(), playerName, "Joined the server.");
             return newPlayer.Map(includePrivateId: true);
         }
 
@@ -56,11 +62,12 @@ namespace PlanningPoker.Server.Hubs
             if (!server.CurrentSession.CanVote) return;
             if (!server.Players.ContainsKey(playerId)) return;
 
-            var player = server.Players[playerId];
+            var player = server.GetPlayer(playerId);
             if (player.Type == PlayerType.Observer) return;
 
             server.CurrentSession.Vote(player.PublicId, vote);
             await Clients.Group(serverId.ToString()).SendAsync(Messages.UPDATED, server.Map());
+            await BroadcastLog(serverId.ToString(), player.Name, "Voted.");
         }
 
         public async Task UnVote(Guid serverId, string playerId)
@@ -69,11 +76,12 @@ namespace PlanningPoker.Server.Hubs
             if (!server.CurrentSession.CanVote) return;
             if (!server.Players.ContainsKey(playerId)) return;
 
-            var player = server.Players[playerId];
+            var player = server.GetPlayer(playerId);
             if (player.Type == PlayerType.Observer) return;
 
             server.CurrentSession.UnVote(player.PublicId);
             await Clients.Group(serverId.ToString()).SendAsync(Messages.UPDATED, server.Map());
+            await BroadcastLog(serverId.ToString(), player.Name, "Redacted their vote.");
         }
 
         public async Task Clear(Guid serverId)
@@ -82,8 +90,10 @@ namespace PlanningPoker.Server.Hubs
             if (!server.CurrentSession.CanClear) return;
 
             server.CurrentSession.Clear();
+            var player = server.GetPlayer(Context.ConnectionId);
             await Clients.Group(serverId.ToString()).SendAsync(Messages.UPDATED, server.Map());
             await Clients.Group(serverId.ToString()).SendAsync(Messages.CLEAR);
+            await BroadcastLog(serverId.ToString(), player.Name, "Cleared all votes.");
         }
 
         public async Task Show(Guid serverId)
@@ -92,7 +102,22 @@ namespace PlanningPoker.Server.Hubs
             if (!server.CurrentSession.CanShow(server.Players)) return;
 
             server.CurrentSession.Show();
+            var player = server.GetPlayer(Context.ConnectionId);
             await Clients.Group(serverId.ToString()).SendAsync(Messages.UPDATED, server.Map());
+            await BroadcastLog(serverId.ToString(), player.Name, "Made all votes visible.");
+        }
+
+        public async Task BroadcastLog(string serverId, string user, string message)
+        {
+            var now = _dateTimeProvider.GetUtcNow();
+            var logMessage = new LogMessage
+            {
+                User = user,
+                Message = message,
+                Timestamp = now
+            };
+
+            await Clients.Group(serverId).SendAsync(Messages.LOG, logMessage);
         }
     }
 }
