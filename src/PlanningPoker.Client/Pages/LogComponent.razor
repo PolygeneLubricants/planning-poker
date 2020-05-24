@@ -1,5 +1,6 @@
 ﻿@using Microsoft.AspNetCore.SignalR.Client
 @using PlanningPoker.Shared
+@inject Blazored.Localisation.Services.IBrowserDateTimeProvider BrowserDateTimeProvider
 <div class="card log">
     <div class="card-body">
         <h5 class="card-title">Log</h5>
@@ -9,21 +10,21 @@
             {
                 <table class="table table-fixed table-sm table-striped scroll-table">
                     <thead>
-                    <tr>
-                        <th>Timestamp</th>
-                        <th>Initiator</th>
-                        <th>Message</th>
-                    </tr>
+                        <tr>
+                            <th>Timestamp</th>
+                            <th>Initiator</th>
+                            <th>Message</th>
+                        </tr>
                     </thead>
                     <tbody>
-                    @foreach (var message in Log)
-                    {
-                        <tr>
-                            <td>@message.Timestamp.ToLocalTime().ToString("T")</td>
-                            <td>@message.User</td>
-                            <td>@message.Message</td>
-                        </tr>
-                    }
+                        @foreach (var message in Log)
+                        {
+                            <tr>
+                                <td>@ToLocalTime(message.Timestamp).ToString("T")</td>
+                                <td>@message.User</td>
+                                <td>@message.Message</td>
+                            </tr>
+                        }
                     </tbody>
                 </table>
             }
@@ -42,6 +43,22 @@
             StateHasChanged();
         });
     }
+
+    protected override async Task OnAfterRenderAsync(bool firstRender)
+    {
+        if (firstRender)
+        {
+            var browserDateTime = await BrowserDateTimeProvider.GetInstance();            
+            LocalTimeZoneInfo = browserDateTime.LocalTimeZoneInfo;
+        }
+    }
+
+    public DateTime ToLocalTime(DateTime time)
+    {
+        return LocalTimeZoneInfo != null ? TimeZoneInfo.ConvertTimeFromUtc(time, LocalTimeZoneInfo) : time;
+    }
+
+    public TimeZoneInfo LocalTimeZoneInfo { get; set; }
 
     public DropOutStack<LogMessage> Log { get; set; }
 
