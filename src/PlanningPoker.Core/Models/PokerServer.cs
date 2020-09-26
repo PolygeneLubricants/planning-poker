@@ -6,11 +6,11 @@ namespace PlanningPoker.Core.Models
 {
     public class PokerServer
     {
-        public PokerServer(Guid id)
+        public PokerServer(Guid id, IList<string> cardSet)
         {
             Id = id;
             Players = new Dictionary<string, Player>();
-            CurrentSession = new PokerSession();
+            CurrentSession = new PokerSession(cardSet);
             Created = DateTime.UtcNow;
         }
 

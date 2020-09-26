@@ -2,7 +2,6 @@
 using System.Threading.Tasks;
 using Microsoft.AspNetCore.SignalR;
 using PlanningPoker.Core;
-using PlanningPoker.Core.Extensions;
 using PlanningPoker.Core.Models;
 using PlanningPoker.Core.Utilities;
 using PlanningPoker.Server.ViewModelMappers;
@@ -32,8 +31,8 @@ namespace PlanningPoker.Server.Hubs
         public async Task Kick(Guid id, string playerId, int playerPublicIdToRemove)
         {
             var server = _serverStore.Get(id);
-            var player = server.GetPlayer(playerId);
-            var wasRemoved = server.TryRemovePlayer(playerPublicIdToRemove, out var removedPlayer);
+            var player = PokerServerManager.GetPlayer(server, playerId);
+            var wasRemoved = PokerServerManager.TryRemovePlayer(server, playerPublicIdToRemove, out var removedPlayer);
             if (wasRemoved && removedPlayer != null)
             {
                 await Clients.Group(server.Id.ToString()).SendAsync(Messages.KICKED, removedPlayer.Map(false));
@@ -53,33 +52,45 @@ namespace PlanningPoker.Server.Hubs
             await base.OnDisconnectedAsync(exception);
         }
 
-        public Guid Create()
+        public ServerCreationResult Create(string desiredCardSet)
         {
-            var server = _serverStore.Create();
-            return server.Id;
+            var isParsed = CardSetProcessor.TryParseCardSet(desiredCardSet, out var cardSet, out var validationMessage);
+            var creationResult = new ServerCreationResult
+            {
+                ValidationMessage = validationMessage
+            };
+
+            if (isParsed)
+            {
+                var server = _serverStore.Create(cardSet);
+                creationResult.ServerId = server.Id;
+                creationResult.Created = true;
+            }
+
+            creationResult.ValidationMessage = validationMessage;
+            return creationResult;
         }
 
         public async Task<PlayerViewModel> Join(Guid id, string playerName, PlayerType type)
         {
             var server = _serverStore.Get(id);
-            var newPlayer = server.Join(Context.ConnectionId, playerName, type);
+            var newPlayer = PokerServerManager.AddPlayer(server, Context.ConnectionId, playerName, type);
             await Clients.Group(id.ToString()).SendAsync(Messages.UPDATED, server.Map());
             await BroadcastLog(id.ToString(), playerName, "Joined the server.");
             return newPlayer.Map(includePrivateId: true);
         }
 
-        public async Task Vote(Guid serverId, string playerId, int vote)
+        public async Task Vote(Guid serverId, string playerId, string vote)
         {
-            if (!Cards.Values.Contains(vote)) return;
-
             var server = _serverStore.Get(serverId);
+            if (!server.CurrentSession.CardSet.Contains(vote)) return;
             if (!server.CurrentSession.CanVote) return;
             if (!server.Players.ContainsKey(playerId)) return;
 
-            var player = server.GetPlayer(playerId);
+            var player = PokerServerManager.GetPlayer(server, playerId);
             if (player.Type == PlayerType.Observer) return;
 
-            server.CurrentSession.Vote(player.PublicId, vote);
+            PokerSessionEngine.SetVote(server.CurrentSession, player.PublicId, vote);
             await Clients.Group(serverId.ToString()).SendAsync(Messages.UPDATED, server.Map());
             await BroadcastLog(serverId.ToString(), player.Name, "Voted.");
         }
@@ -90,10 +101,10 @@ namespace PlanningPoker.Server.Hubs
             if (!server.CurrentSession.CanVote) return;
             if (!server.Players.ContainsKey(playerId)) return;
 
-            var player = server.GetPlayer(playerId);
+            var player = PokerServerManager.GetPlayer(server, playerId);
             if (player.Type == PlayerType.Observer) return;
 
-            server.CurrentSession.UnVote(player.PublicId);
+            PokerSessionEngine.RemoveVote(server.CurrentSession, player.PublicId);
             await Clients.Group(serverId.ToString()).SendAsync(Messages.UPDATED, server.Map());
             await BroadcastLog(serverId.ToString(), player.Name, "Redacted their vote.");
         }
@@ -103,8 +114,8 @@ namespace PlanningPoker.Server.Hubs
             var server = _serverStore.Get(serverId);
             if (!server.CurrentSession.CanClear) return;
 
-            server.CurrentSession.Clear();
-            var player = server.GetPlayer(Context.ConnectionId);
+            PokerSessionEngine.Clear(server.CurrentSession);
+            var player = PokerServerManager.GetPlayer(server, Context.ConnectionId);
             await Clients.Group(serverId.ToString()).SendAsync(Messages.UPDATED, server.Map());
             await Clients.Group(serverId.ToString()).SendAsync(Messages.CLEAR);
             await BroadcastLog(serverId.ToString(), player.Name, "Cleared all votes.");
@@ -115,8 +126,8 @@ namespace PlanningPoker.Server.Hubs
             var server = _serverStore.Get(serverId);
             if (!server.CurrentSession.CanShow(server.Players)) return;
 
-            server.CurrentSession.Show();
-            var player = server.GetPlayer(Context.ConnectionId);
+            PokerSessionEngine.Show(server.CurrentSession);
+            var player = PokerServerManager.GetPlayer(server, Context.ConnectionId);
             await Clients.Group(serverId.ToString()).SendAsync(Messages.UPDATED, server.Map());
             await BroadcastLog(serverId.ToString(), player.Name, "Made all votes visible.");
         }

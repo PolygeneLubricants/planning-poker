@@ -1,13 +1,12 @@
 ﻿using System.Collections.Generic;
 using System.Linq;
-using PlanningPoker.Core.Models;
 using PlanningPoker.Core.Models.Poker;
 
 namespace PlanningPoker.Core
 {
     public static class PokerSessionEngine
     {
-        public static void SetVote(PokerSession session, int playerPublicId, int vote)
+        public static void SetVote(PokerSession session, int playerPublicId, string vote)
         {
             session.Votes[playerPublicId] = vote;
         }
@@ -19,7 +18,7 @@ namespace PlanningPoker.Core
 
         public static void Clear(PokerSession session)
         {
-            session.Votes = new Dictionary<int, int>();
+            session.Votes = new Dictionary<int, string>();
             session.IsShown = false;
         }
 

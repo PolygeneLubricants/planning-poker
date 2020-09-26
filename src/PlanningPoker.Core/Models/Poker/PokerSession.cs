@@ -5,10 +5,11 @@ namespace PlanningPoker.Core.Models.Poker
 {
     public class PokerSession
     {
-        public PokerSession()
+        public PokerSession(IList<string> cardSet)
         {
             IsShown = false;
-            Votes = new Dictionary<int, int>();
+            Votes = new Dictionary<int, string>();
+            CardSet = cardSet;
         }
 
         public bool IsShown { get; set; }
@@ -25,6 +26,8 @@ namespace PlanningPoker.Core.Models.Poker
 
         public bool CanVote => !IsShown;
 
-        public IDictionary<int, int> Votes { get; set; }
+        public IDictionary<int, string> Votes { get; set; }
+
+        public IList<string> CardSet { get; set; }
     }
 }

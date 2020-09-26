@@ -17,7 +17,8 @@ namespace PlanningPoker.Server.ViewModelMappers.Poker
                 IsShown = session.IsShown,
                 CanClear = session.CanClear,
                 CanShow = session.CanShow(participants),
-                CanVote = session.CanVote
+                CanVote = session.CanVote,
+                CardSet = session.CardSet
             };
 
             return viewModel;

@@ -8,11 +8,11 @@
         <h5 class="card-title">Poker cards</h5>
         <h6 class="card-subtitle mb-2 text-muted">Click on a card to cast your vote</h6>
         <div class="row">
-            @foreach (var card in Cards.Values)
+            @foreach (var card in Session.CardSet ?? Enumerable.Empty<string>())
             {
                 <div class="col card-wrapper">
                     <button class="btn @(card == _chosenCard ? "btn-success" : "btn-default") poker_card btn-lg" @onclick="() => Vote(card)" disabled="@(!Session.CanVote || CurrentPlayer.Type == PlayerType.Observer)">
-                        @card.ToString()
+                        @card
                     </button>
                 </div>
             }
@@ -73,9 +73,9 @@
         });
     }
 
-    private int _chosenCard;
+    private string _chosenCard;
 
-    async Task Vote(int vote)
+    async Task Vote(string vote)
     {
         if (_chosenCard == vote)
         {
@@ -102,7 +102,9 @@
     int? GetVoteMode()
     {
         return Session?.Votes?
-            .GroupBy(pair => IntParseOrDefault(pair.Value))
+            .Select(unparsedVote => IntParseOrNull(unparsedVote.Value))
+            .Where(vote => vote != null)
+            .GroupBy(parsedVote => parsedVote)
             .Where(group => group.Key.HasValue)
             .OrderByDescending(group => group.Count())
             .Select(group => group.Key).FirstOrDefault();
@@ -127,24 +129,32 @@
             return default;
         }
 
-        return sum.Value / Session.Votes.Count;
+        var totalValidVotes = Session.Votes
+            .Select(unparsedVote => IntParseOrNull(unparsedVote.Value))
+            .Count(vote => vote != null);
+        if (totalValidVotes == 0)
+        {
+            return default;
+        }
+
+        return sum.Value / totalValidVotes;
     }
 
     decimal? CalculateSum()
     {
-        return Session.Votes?.Sum(pair => DecimalParseOrDefault(pair.Value) ?? default);
+        return Session.Votes?.Sum(pair => DecimalParseOrNull(pair.Value) ?? default);
     }
 
-    decimal? DecimalParseOrDefault(string val)
+    decimal? DecimalParseOrNull(string val)
     {
         var parsed = decimal.TryParse(val, out var parsedResult);
-        return parsed ? parsedResult : default;
+        return parsed ? (decimal?)parsedResult : null;
     }
 
-    int? IntParseOrDefault(string val)
+    int? IntParseOrNull(string val)
     {
         var parsed = int.TryParse(val, out var parsedResult);
-        return parsed ? parsedResult : default;
+        return parsed ? (int?)parsedResult : null;
     }
 
     [Parameter]

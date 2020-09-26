@@ -1,5 +1,7 @@
 ﻿@page "/"
 @using Microsoft.AspNetCore.SignalR.Client
+@using PlanningPoker.Shared
+@using PlanningPoker.Shared.ViewModels
 @inject NavigationManager NavigationManager
 
 @if (string.IsNullOrWhiteSpace(CreatedServerAddress))
@@ -9,6 +11,26 @@
             <div class="row">
                 <div class="col-md-12">
                     <h2>Welcome to Planning Poker Lite!</h2>
+                    <p>The planning room has a default set of cards, but you can modify this set in the input below. Separate card values with ',' (comma).</p>
+                    <div class="form-group">
+                        <label>
+                            Card set
+                            <input @bind-value="_cardSet"
+                                   @bind-value:event="oninput"
+                                   size="200"
+                                   class="form-control" />
+                        </label>
+                        @if (_creationResult != null && !string.IsNullOrWhiteSpace(_creationResult.ValidationMessage))
+                        {
+                            <small class="text-danger">
+                                @_creationResult.ValidationMessage
+                            </small>
+                        }
+                    </div>
+                </div>
+            </div>
+            <div class="row">
+                <div class="col-md-12">
                     <p>Press below to create a room for you. This will create a link, where you and your participants can create a user and start voting.</p>
                     <p>Happy planning!</p>
                 </div>
@@ -16,7 +38,7 @@
             <div class="row">
                 <div class="col-md-12">
                     <div class="form-group">
-                        <button @onclick="Create" disabled="@(HasCreated)">Create room</button>
+                        <button @onclick="Create" disabled="@(HasCreated)" class="btn btn-primary">Create room</button>
                     </div>
                 </div>
             </div>
@@ -51,8 +73,13 @@ else
 @code {
     private HubConnection _hubConnection;
 
+    private string _cardSet;
+
+    private ServerCreationResult _creationResult;
+
     protected override async Task OnInitializedAsync()
     {
+        _cardSet = string.Join(",", Cards.DefaultCardSet);
         _hubConnection = new HubConnectionBuilder()
             .WithUrl(NavigationManager.ToAbsoluteUri("/hubs/poker"))
             .Build();
@@ -61,10 +88,15 @@ else
 
     async Task Create()
     {
-        var serverId = await _hubConnection.InvokeAsync<Guid>("Create");
-        var uri = NavigationManager.ToAbsoluteUri($"/server/{serverId}");
-        CreatedServerAddress = uri.AbsoluteUri;
-        HasCreated = true;
+        var creationResult = await _hubConnection.InvokeAsync<ServerCreationResult>("Create", _cardSet);
+        _creationResult = creationResult;
+        if (_creationResult.Created)
+        {
+            var uri = NavigationManager.ToAbsoluteUri($"/server/{_creationResult.ServerId}");
+            CreatedServerAddress = uri.AbsoluteUri;
+            HasCreated = true;
+        }
+
         StateHasChanged();
     }
 

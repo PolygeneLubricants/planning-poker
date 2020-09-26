@@ -1,14 +1,13 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Linq;
-using PlanningPoker.Core.Extensions;
 using PlanningPoker.Core.Models;
 
 namespace PlanningPoker.Core
 {
     public interface IServerStore
     {
-        PokerServer Create();
+        PokerServer Create(IList<string> cardSet);
 
         PokerServer Get(Guid id);
 
@@ -28,10 +27,10 @@ namespace PlanningPoker.Core
             _servers = new Dictionary<Guid, PokerServer>();
         }
 
-        public PokerServer Create()
+        public PokerServer Create(IList<string> cardSet)
         {
             var newServerId = Guid.NewGuid();
-            var newServer = new PokerServer(newServerId);
+            var newServer = new PokerServer(newServerId, cardSet);
             _servers.Add(newServerId, newServer);
             return newServer;
         }
@@ -46,7 +45,7 @@ namespace PlanningPoker.Core
             var serversWithUser = _servers.Where(s => s.Value.Players.ContainsKey(playerId)).Select(pair => pair.Value).ToList();
             foreach (var server in serversWithUser)
             {
-                server.Remove(playerId);
+                PokerServerManager.RemovePlayer(server, playerId);
             }
 
             return serversWithUser;

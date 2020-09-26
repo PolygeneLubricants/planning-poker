@@ -1,6 +1,5 @@
 ﻿using System.Collections.Generic;
 using System.Linq;
-using PlanningPoker.Core.Extensions;
 using PlanningPoker.Core.Models;
 
 namespace PlanningPoker.Core
@@ -33,7 +32,7 @@ namespace PlanningPoker.Core
         {
             var player = server.Players[playerId];
             server.Players.Remove(playerId);
-            server.CurrentSession.RemovePlayer(player.PublicId);
+            PokerSessionEngine.RemovePlayer(server.CurrentSession, player.PublicId);
         }
 
         public static bool TryRemovePlayer(PokerServer server, int playerPublicId, out Player? removedPlayer)
