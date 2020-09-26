@@ -1,5 +1,6 @@
 ﻿@using PlanningPoker.Core.Models
 @using PlanningPoker.Shared.ViewModels
+@using Microsoft.AspNetCore.SignalR.Client
 
 <div class="card">
     <div class="card-body">
@@ -11,6 +12,7 @@
                     <th></th>
                     <th>Name</th>
                     <th>Vote</th>
+                    <th></th>
                 </tr>
                 </thead>
                 <tbody>
@@ -30,6 +32,11 @@
                         </td>
                         <td>
                             @currentPlayerVote
+                        </td>
+                        <td>
+                            <button class="kick-btn btn float-right" @onclick="() => Kick(player.PublicId)">
+                                <span class="kick-icon oi oi-x"></span>
+                            </button>
                         </td>
                     </tr>
                 }
@@ -65,6 +72,17 @@
 </div>
 
 @code {
+    [Parameter]
+    public string Id { get; set; }
+
+    [Parameter]
+    public EventCallback<string> IdChanged { get; set; }
+
+    [Parameter]
+    public HubConnection HubConnection { get; set; }
+
+    [Parameter]
+    public EventCallback<HubConnection> HubConnectionChanged { get; set; }
 
     [Parameter]
     public PlayerViewModel CurrentPlayer { get; set; }
@@ -77,5 +95,10 @@
 
     [Parameter]
     public EventCallback<PokerServerViewModel> ServerChanged { get; set; }
+
+    Task Kick(int playerPublicId)
+    {
+        return HubConnection.SendAsync("Kick", Id, CurrentPlayer.Id, playerPublicId);
+    }
 
 }

@@ -51,7 +51,7 @@ namespace PlanningPoker.Core
 
             return serversWithUser;
         }
-
+        
         public ICollection<PokerServer> All()
         {
             return _servers.Values;

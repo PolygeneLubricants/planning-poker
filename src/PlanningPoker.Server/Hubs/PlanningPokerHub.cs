@@ -29,6 +29,20 @@ namespace PlanningPoker.Server.Hubs
             await Groups.AddToGroupAsync(Context.ConnectionId, id.ToString());
         }
 
+        public async Task Kick(Guid id, string playerId, int playerPublicIdToRemove)
+        {
+            var server = _serverStore.Get(id);
+            var player = server.GetPlayer(playerId);
+            var wasRemoved = server.TryRemovePlayer(playerPublicIdToRemove, out var removedPlayer);
+            if (wasRemoved && removedPlayer != null)
+            {
+                await Clients.Group(server.Id.ToString()).SendAsync(Messages.KICKED, removedPlayer.Map(false));
+                await Groups.RemoveFromGroupAsync(removedPlayer.Id, id.ToString());
+                await Clients.Group(server.Id.ToString()).SendAsync(Messages.UPDATED, server.Map());
+                await BroadcastLog(id.ToString(), player.Name, $"Kicked {removedPlayer.Name}.");
+            }
+        }
+
         public override async Task OnDisconnectedAsync(Exception exception)
         {
             var serversWithPlayer = _serverStore.RemovePlayerFromAllServers(Context.ConnectionId);

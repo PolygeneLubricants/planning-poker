@@ -1,4 +1,5 @@
-﻿using System.Collections.Generic;
+﻿using System;
+using System.Collections.Generic;
 using Blazored.SessionStorage;
 
 namespace PlanningPoker.Client.Storage
@@ -8,6 +9,8 @@ namespace PlanningPoker.Client.Storage
         bool TryGetSession(string serverId, out ServerSession? session);
 
         void SetSession(ServerSession session);
+
+        void RemoveSession(string sessionId);
     }
 
     public class ServerSessionManager : IServerSessionManager
@@ -37,6 +40,15 @@ namespace PlanningPoker.Client.Storage
         {
             var sessions = _sessionStorage.GetItem<Dictionary<string, ServerSession>>(SessionStoreName) ?? new Dictionary<string, ServerSession>();
             sessions.Add(session.ServerId, session);
+            _sessionStorage.SetItem(SessionStoreName, sessions);
+        }
+
+        public void RemoveSession(string sessionId)
+        {
+            if (sessionId == null) throw new ArgumentNullException(nameof(sessionId));
+
+            var sessions = _sessionStorage.GetItem<Dictionary<string, ServerSession>>(SessionStoreName);
+            sessions?.Remove(sessionId);
             _sessionStorage.SetItem(SessionStoreName, sessions);
         }
     }

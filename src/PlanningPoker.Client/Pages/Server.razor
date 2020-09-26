@@ -10,7 +10,7 @@
 @if (CurrentServer != null && _currentPlayer != null)
 {
     <SessionControlComponent @bind-Id="Id" @bind-Session="CurrentServer.CurrentSession" @bind-CurrentPlayer="_currentPlayer" @bind-HubConnection="_hubConnection" />
-    <SessionRenderingComponent @bind-Server="CurrentServer" @bind-CurrentPlayer="_currentPlayer" />
+    <SessionRenderingComponent @bind-Id="Id" @bind-Server="CurrentServer" @bind-CurrentPlayer="_currentPlayer" @bind-HubConnection="_hubConnection" />
     <LogComponent @bind-HubConnection="_hubConnection" />
 }
 
@@ -91,6 +91,16 @@
         _hubConnection.On<PokerServerViewModel>(Messages.UPDATED, newServer =>
         {
             CurrentServer = newServer;
+            StateHasChanged();
+        });
+
+        _hubConnection.On<PlayerViewModel>(Messages.KICKED, kickedPlayer =>
+        {
+            if (kickedPlayer.PublicId != _currentPlayer.PublicId) return;
+
+            sessionManager.RemoveSession(Id);
+            CurrentServer = null;
+            _currentPlayer = null;
             StateHasChanged();
         });
 

@@ -36,6 +36,20 @@ namespace PlanningPoker.Core
             server.CurrentSession.RemovePlayer(player.PublicId);
         }
 
+        public static bool TryRemovePlayer(PokerServer server, int playerPublicId, out Player? removedPlayer)
+        {
+            var player = server.Players.Where(kvp => kvp.Value.PublicId == playerPublicId).Select(kvp => kvp.Value).FirstOrDefault();
+            if (player != null)
+            {
+                RemovePlayer(server, player.Id);
+                removedPlayer = player;
+                return true;
+            }
+
+            removedPlayer = null;
+            return false;
+        }
+
         public static Player GetPlayer(PokerServer server, string playerId)
         {
             var player = server.Players[playerId];
