@@ -1,9 +1,11 @@
 ﻿@page "/server/{id}"
 @using Microsoft.AspNetCore.SignalR.Client
+@using PlanningPoker.Client.Storage
 @using PlanningPoker.Core.Models
 @using PlanningPoker.Shared
 @using PlanningPoker.Shared.ViewModels
 @inject NavigationManager NavigationManager
+@inject IServerSessionManager sessionManager
 
 @if (CurrentServer != null && _currentPlayer != null)
 {
@@ -67,6 +69,19 @@
     [Parameter]
     public string Id { get; set; }
 
+    protected override async Task OnAfterRenderAsync(bool firstRender)
+    {
+        if (!firstRender) return;
+
+        // Try get session from session storage, to see if the user should simply reconnect.
+        var sessionExists = sessionManager.TryGetSession(Id, out var savedSession);
+        if (sessionExists)
+        {
+            _username = savedSession.Username;
+            Join();
+        }
+    }
+
     protected override async Task OnInitializedAsync()
     {
         _hubConnection = new HubConnectionBuilder()
@@ -86,6 +101,13 @@
     {
         await _hubConnection.SendAsync("Connect", Id);
         _currentPlayer = await _hubConnection.InvokeAsync<PlayerViewModel>("Join", Id, _username, _type);
+        var serverSession = new ServerSession
+        {
+            ServerId = Id,
+            Username = _username
+        };
+
+        sessionManager.SetSession(serverSession);
     }
 
     public bool HasJoined = false;
