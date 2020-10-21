@@ -73,6 +73,7 @@ namespace PlanningPoker.Server.Hubs
 
         public async Task<PlayerViewModel> Join(Guid id, string playerName, PlayerType type)
         {
+            if(string.IsNullOrWhiteSpace(playerName)) throw new HubException($"Player name must have a value.");
             var server = _serverStore.Get(id);
             var newPlayer = PokerServerManager.AddPlayer(server, Context.ConnectionId, playerName, type);
             await Clients.Group(id.ToString()).SendAsync(Messages.UPDATED, server.Map());
@@ -83,12 +84,12 @@ namespace PlanningPoker.Server.Hubs
         public async Task Vote(Guid serverId, string playerId, string vote)
         {
             var server = _serverStore.Get(serverId);
-            if (!server.CurrentSession.CardSet.Contains(vote)) return;
-            if (!server.CurrentSession.CanVote) return;
-            if (!server.Players.ContainsKey(playerId)) return;
+            if (!server.CurrentSession.CardSet.Contains(vote)) throw new HubException($"Vote does not exist in card set.");
+            if (!server.CurrentSession.CanVote) throw new HubException($"Session not in state where players can vote.");
+            if (!server.Players.ContainsKey(playerId)) throw new HubException($"Player is not part of session.");
 
             var player = PokerServerManager.GetPlayer(server, playerId);
-            if (player.Type == PlayerType.Observer) return;
+            if (player.Type == PlayerType.Observer) throw new HubException($"Player is not in a {nameof(PlayerType)} to vote.");
 
             PokerSessionEngine.SetVote(server.CurrentSession, player.PublicId, vote);
             await Clients.Group(serverId.ToString()).SendAsync(Messages.UPDATED, server.Map());
@@ -98,11 +99,11 @@ namespace PlanningPoker.Server.Hubs
         public async Task UnVote(Guid serverId, string playerId)
         {
             var server = _serverStore.Get(serverId);
-            if (!server.CurrentSession.CanVote) return;
-            if (!server.Players.ContainsKey(playerId)) return;
+            if (!server.CurrentSession.CanVote) throw new HubException($"Session not in state where players can unvote.");
+            if (!server.Players.ContainsKey(playerId)) throw new HubException($"Player is not part of session.");
 
             var player = PokerServerManager.GetPlayer(server, playerId);
-            if (player.Type == PlayerType.Observer) return;
+            if (player.Type == PlayerType.Observer) throw new HubException($"Player is not in a {nameof(PlayerType)} to vote.");
 
             PokerSessionEngine.RemoveVote(server.CurrentSession, player.PublicId);
             await Clients.Group(serverId.ToString()).SendAsync(Messages.UPDATED, server.Map());
@@ -112,7 +113,7 @@ namespace PlanningPoker.Server.Hubs
         public async Task Clear(Guid serverId)
         {
             var server = _serverStore.Get(serverId);
-            if (!server.CurrentSession.CanClear) return;
+            if (!server.CurrentSession.CanClear) throw new HubException($"Session not in state where votes can be cleared.");
 
             PokerSessionEngine.Clear(server.CurrentSession);
             var player = PokerServerManager.GetPlayer(server, Context.ConnectionId);
@@ -124,7 +125,7 @@ namespace PlanningPoker.Server.Hubs
         public async Task Show(Guid serverId)
         {
             var server = _serverStore.Get(serverId);
-            if (!server.CurrentSession.CanShow(server.Players)) return;
+            if (!server.CurrentSession.CanShow(server.Players)) throw new HubException($"Session not in state where votes can be shown.");
 
             PokerSessionEngine.Show(server.CurrentSession);
             var player = PokerServerManager.GetPlayer(server, Context.ConnectionId);
