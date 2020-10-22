@@ -1,8 +1,8 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Threading.Tasks;
-using Microsoft.AspNetCore.SignalR.Client;
 using PlanningPoker.Core.Models;
+using PlanningPoker.Hub.Client;
 using PlanningPoker.Shared.ViewModels;
 using Xunit;
 
@@ -19,7 +19,7 @@ namespace PlanningPoker.FunctionalTests.Tests.Hubs
             var expectedPlayerType = PlayerType.Participant;
 
             // Act
-            var exceptionRecord = await Record.ExceptionAsync(() => builder.Connection.InvokeAsync<PlayerViewModel>(PlanningPokerHubTestBuilder.Endpoints.Join, Guid.NewGuid(), expectedPlayerName, expectedPlayerType));
+            var exceptionRecord = await Record.ExceptionAsync(() => builder.HubClient.JoinServer(Guid.NewGuid(), expectedPlayerName, expectedPlayerType));
 
             // Assert
             Assert.NotNull(exceptionRecord);
@@ -35,11 +35,11 @@ namespace PlanningPoker.FunctionalTests.Tests.Hubs
             var expectedPlayerType = PlayerType.Participant;
 
             // Act
-            var result = await builder.Connection.InvokeAsync<PlayerViewModel>(PlanningPokerHubTestBuilder.Endpoints.Join, serverId, expectedPlayerName, expectedPlayerType);
+            var result = await builder.HubClient.JoinServer(serverId, expectedPlayerName, expectedPlayerType);
 
             // Assert
             Assert.NotNull(result);
-            Assert.Equal(builder.Connection.ConnectionId, result.Id);
+            Assert.Equal(builder.HubClient.ConnectionId, result.Id);
             Assert.Equal(expectedPlayerName, result.Name);
             Assert.Equal(expectedPlayerType, result.Type);
             Assert.Equal(0, result.PublicId);
@@ -50,11 +50,11 @@ namespace PlanningPoker.FunctionalTests.Tests.Hubs
         {
             // Arrange
             var builder = CreateBuilder();
-            var playerConnections = new List<HubConnection>
+            var playerConnections = new List<IPlanningPokerHubClient>
             {
-                CreateBuilder().Connection,
-                CreateBuilder().Connection,
-                CreateBuilder().Connection
+                CreateBuilder().HubClient,
+                CreateBuilder().HubClient,
+                CreateBuilder().HubClient
             };
 
             builder.WithServer(out var serverId);
@@ -70,7 +70,7 @@ namespace PlanningPoker.FunctionalTests.Tests.Hubs
             var results = new List<PlayerViewModel?>();
             for (var i = 0; i < playerConnections.Count; i++)
             {
-                results.Add(await playerConnections[i].InvokeAsync<PlayerViewModel>(PlanningPokerHubTestBuilder.Endpoints.Join, serverId, expectedPlayerNames[i], expectedPlayerType));
+                results.Add(await playerConnections[i].JoinServer(serverId, expectedPlayerNames[i], expectedPlayerType));
             }
 
             // Assert
@@ -94,7 +94,7 @@ namespace PlanningPoker.FunctionalTests.Tests.Hubs
             var expectedPlayerType = PlayerType.Participant;
 
             // Act
-            var exceptionRecord = await Record.ExceptionAsync(() => builder.Connection.InvokeAsync<PlayerViewModel>(PlanningPokerHubTestBuilder.Endpoints.Join, serverId, expectedPlayerName, expectedPlayerType));
+            var exceptionRecord = await Record.ExceptionAsync(() => builder.HubClient.JoinServer(serverId, expectedPlayerName, expectedPlayerType));
 
             // Assert
             Assert.NotNull(exceptionRecord);
@@ -110,11 +110,11 @@ namespace PlanningPoker.FunctionalTests.Tests.Hubs
             var expectedPlayerType = PlayerType.Observer;
 
             // Act
-            var result = await builder.Connection.InvokeAsync<PlayerViewModel>(PlanningPokerHubTestBuilder.Endpoints.Join, serverId, expectedPlayerName, expectedPlayerType);
+            var result = await builder.HubClient.JoinServer(serverId, expectedPlayerName, expectedPlayerType);
 
             // Assert
             Assert.NotNull(result);
-            Assert.Equal(builder.Connection.ConnectionId, result.Id);
+            Assert.Equal(builder.HubClient.ConnectionId, result.Id);
             Assert.Equal(expectedPlayerName, result.Name);
             Assert.Equal(expectedPlayerType, result.Type);
             Assert.Equal(0, result.PublicId);

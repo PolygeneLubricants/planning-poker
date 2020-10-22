@@ -1,5 +1,6 @@
 ﻿@page "/"
 @using Microsoft.AspNetCore.SignalR.Client
+@using PlanningPoker.Hub.Client
 @using PlanningPoker.Shared
 @using PlanningPoker.Shared.ViewModels
 @inject NavigationManager NavigationManager
@@ -72,7 +73,7 @@ else
 }
 
 @code {
-    private HubConnection _hubConnection;
+    private IPlanningPokerHubClient _hubClient;
 
     private string _cardSet;
 
@@ -81,15 +82,16 @@ else
     protected override async Task OnInitializedAsync()
     {
         _cardSet = string.Join(",", Cards.DefaultCardSet);
-        _hubConnection = new HubConnectionBuilder()
+        var connection = new HubConnectionBuilder()
             .WithUrl(NavigationManager.ToAbsoluteUri("/hubs/poker"))
             .Build();
-        await _hubConnection.StartAsync();
+        await connection.StartAsync();
+        _hubClient = new PlanningPokerHubClient(connection);
     }
 
     async Task Create()
     {
-        var creationResult = await _hubConnection.InvokeAsync<ServerCreationResult>("Create", _cardSet);
+        var creationResult = await _hubClient.CreateServer(_cardSet);
         _creationResult = creationResult;
         if (_creationResult.Created)
         {

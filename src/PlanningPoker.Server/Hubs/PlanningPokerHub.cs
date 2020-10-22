@@ -10,7 +10,7 @@ using PlanningPoker.Shared.ViewModels;
 
 namespace PlanningPoker.Server.Hubs
 {
-    public class PlanningPokerHub : Hub
+    public class PlanningPokerHub : Microsoft.AspNetCore.SignalR.Hub
     {
         private readonly IServerStore _serverStore;
         private readonly IDateTimeProvider _dateTimeProvider;
@@ -28,10 +28,10 @@ namespace PlanningPoker.Server.Hubs
             await Groups.AddToGroupAsync(Context.ConnectionId, id.ToString());
         }
 
-        public async Task Kick(Guid id, string playerId, int playerPublicIdToRemove)
+        public async Task Kick(Guid id, string initiatingPlayerPrivateId, int playerPublicIdToRemove)
         {
             var server = _serverStore.Get(id);
-            var player = PokerServerManager.GetPlayer(server, playerId);
+            var player = PokerServerManager.GetPlayer(server, initiatingPlayerPrivateId);
             var wasRemoved = PokerServerManager.TryRemovePlayer(server, playerPublicIdToRemove, out var removedPlayer);
             if (wasRemoved && removedPlayer != null)
             {

@@ -1,8 +1,6 @@
 ﻿using System;
 using System.Threading;
 using System.Threading.Tasks;
-using Microsoft.AspNetCore.SignalR.Client;
-using PlanningPoker.Shared;
 using PlanningPoker.Shared.ViewModels;
 using Xunit;
 
@@ -17,7 +15,7 @@ namespace PlanningPoker.FunctionalTests.Tests.Hubs
             var builder = CreateBuilder();
 
             // Act
-            var exceptionRecord = await Record.ExceptionAsync(() => builder.Connection.InvokeAsync(PlanningPokerHubTestBuilder.Endpoints.Kick, Guid.NewGuid(), Guid.NewGuid()));
+            var exceptionRecord = await Record.ExceptionAsync(() => builder.HubClient.KickPlayer(Guid.NewGuid(), Guid.NewGuid().ToString(), 1));
 
             // Assert
             Assert.NotNull(exceptionRecord);
@@ -31,7 +29,7 @@ namespace PlanningPoker.FunctionalTests.Tests.Hubs
             builder.WithServer(out var serverId);
 
             // Act
-            var exceptionRecord = await Record.ExceptionAsync(() => builder.Connection.InvokeAsync(PlanningPokerHubTestBuilder.Endpoints.Kick, serverId, Guid.NewGuid()));
+            var exceptionRecord = await Record.ExceptionAsync(() => builder.HubClient.KickPlayer(serverId, Guid.NewGuid().ToString(), 1));
 
             // Assert
             Assert.NotNull(exceptionRecord);
@@ -51,7 +49,7 @@ namespace PlanningPoker.FunctionalTests.Tests.Hubs
             var awaitUpdateResponse = new SemaphoreSlim(0);
             var awaitKickResponse = new SemaphoreSlim(0);
             var playerCount = 2;
-            player1Builder.Connection.On<PokerServerViewModel>(Messages.UPDATED, viewModel =>
+            player1Builder.HubClient.OnSessionUpdated(viewModel =>
             {
                 playerCount = viewModel.Players.Count;
                 awaitUpdateResponse.Release();
@@ -59,7 +57,7 @@ namespace PlanningPoker.FunctionalTests.Tests.Hubs
 
             var kickCommandInvoked = false;
             PlayerViewModel kickedPlayer = null;
-            player1Builder.Connection.On<PlayerViewModel>(Messages.KICKED, viewModel =>
+            player1Builder.HubClient.OnPlayerKicked(viewModel =>
             {
                 kickCommandInvoked = true;
                 kickedPlayer = viewModel;
@@ -67,7 +65,7 @@ namespace PlanningPoker.FunctionalTests.Tests.Hubs
             });
 
             // Act
-            await player1Builder.Connection.InvokeAsync(PlanningPokerHubTestBuilder.Endpoints.Kick, serverId, player1.Id, player2.PublicId);
+            await player1Builder.HubClient.KickPlayer(serverId, player1.Id, player2.PublicId);
 
             // Assert
             await awaitUpdateResponse.WaitAsync(TimeSpan.FromSeconds(5));

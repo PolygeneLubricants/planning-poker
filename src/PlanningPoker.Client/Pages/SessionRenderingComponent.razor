@@ -1,6 +1,7 @@
 ﻿@using PlanningPoker.Core.Models
 @using PlanningPoker.Shared.ViewModels
 @using Microsoft.AspNetCore.SignalR.Client
+@using PlanningPoker.Hub.Client
 
 <div class="card">
     <div class="card-body">
@@ -73,16 +74,16 @@
 
 @code {
     [Parameter]
-    public string Id { get; set; }
+    public Guid Id { get; set; }
 
     [Parameter]
-    public EventCallback<string> IdChanged { get; set; }
+    public EventCallback<Guid> IdChanged { get; set; }
 
     [Parameter]
-    public HubConnection HubConnection { get; set; }
+    public IPlanningPokerHubClient HubClient { get; set; }
 
     [Parameter]
-    public EventCallback<HubConnection> HubConnectionChanged { get; set; }
+    public EventCallback<IPlanningPokerHubClient> HubClientChanged { get; set; }
 
     [Parameter]
     public PlayerViewModel CurrentPlayer { get; set; }
@@ -98,7 +99,7 @@
 
     Task Kick(int playerPublicId)
     {
-        return HubConnection.SendAsync("Kick", Id, CurrentPlayer.Id, playerPublicId);
+        return HubClient.KickPlayer(Id, CurrentPlayer.Id, playerPublicId);
     }
 
 }

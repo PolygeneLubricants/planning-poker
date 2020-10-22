@@ -1,5 +1,6 @@
 ﻿@using Microsoft.AspNetCore.SignalR.Client
 @using PlanningPoker.Core.Models
+@using PlanningPoker.Hub.Client
 @using PlanningPoker.Shared
 @using PlanningPoker.Shared.ViewModels
 @using PlanningPoker.Shared.ViewModels.Poker
@@ -66,7 +67,7 @@
 @code {
     protected override async Task OnInitializedAsync()
     {
-        HubConnection.On(Messages.CLEAR, () =>
+        HubClient.OnVotesCleared(() =>
         {
             _chosenCard = default;
             StateHasChanged();
@@ -80,23 +81,23 @@
         if (_chosenCard == vote)
         {
             _chosenCard = default;
-            await HubConnection.SendAsync("UnVote", Id, CurrentPlayer.Id);
+            await HubClient.UnVote(Id, CurrentPlayer.Id);
         }
         else
         {
             _chosenCard = vote;
-            await HubConnection.SendAsync("Vote", Id, CurrentPlayer.Id, vote);
+            await HubClient.Vote(Id, CurrentPlayer.Id, vote);
         }
     }
 
     Task Clear()
     {
-        return HubConnection.SendAsync("Clear", Id);
+        return HubClient.ClearVotes(Id);
     }
 
     Task Show()
     {
-        return HubConnection.SendAsync("Show", Id);
+        return HubClient.ShowVotes(Id);
     }
 
     int? GetVoteMode()
@@ -158,10 +159,10 @@
     }
 
     [Parameter]
-    public string Id { get; set; }
+    public Guid Id { get; set; }
 
     [Parameter]
-    public EventCallback<string> IdChanged { get; set; }
+    public EventCallback<Guid> IdChanged { get; set; }
 
     [Parameter]
     public PokerSessionViewModel Session { get; set; }
@@ -176,8 +177,8 @@
     public EventCallback<PlayerViewModel> CurrentPlayerChanged { get; set; }
 
     [Parameter]
-    public HubConnection HubConnection { get; set; }
+    public IPlanningPokerHubClient HubClient { get; set; }
 
     [Parameter]
-    public EventCallback<HubConnection> HubConnectionChanged { get; set; }
+    public EventCallback<IPlanningPokerHubClient> HubClientChanged { get; set; }
 }

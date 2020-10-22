@@ -1,10 +1,4 @@
-﻿using System;
-using System.Net.Http;
-using System.Threading.Tasks;
-using AutoFixture;
-using Microsoft.AspNetCore.Http.Connections;
-using Microsoft.AspNetCore.SignalR.Client;
-using Xunit;
+﻿using Xunit;
 
 namespace PlanningPoker.FunctionalTests.Tests.Hubs
 {
@@ -21,12 +15,11 @@ namespace PlanningPoker.FunctionalTests.Tests.Hubs
         public void Ctor_InitializationOk_ConnectionOpenedOk()
         {
             // Arrange
-            var connection = CreateBuilder().Connection;
+            var connection = CreateBuilder().HubClient;
 
             // Act
 
             // Assert
-            Assert.Equal(HubConnectionState.Connected, connection.State);
             Assert.NotNull(connection.ConnectionId);
         }
 

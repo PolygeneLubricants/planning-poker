@@ -6,11 +6,11 @@ namespace PlanningPoker.Core
 {
     public static class PokerServerManager
     {
-        public static Player AddPlayer(PokerServer server, string playerId, string playerName, PlayerType type)
+        public static Player AddPlayer(PokerServer server, string playerPrivateId, string playerName, PlayerType type)
         {
             var publicId = GeneratePublicId(server.Players);
-            var player = new Player(playerId, publicId, playerName, type);
-            server.Players.Add(playerId, player);
+            var player = new Player(playerPrivateId, publicId, playerName, type);
+            server.Players.Add(playerPrivateId, player);
             return player;
         }
 
@@ -28,10 +28,10 @@ namespace PlanningPoker.Core
             }
         }
 
-        public static void RemovePlayer(PokerServer server, string playerId)
+        public static void RemovePlayer(PokerServer server, string playerPrivateId)
         {
-            var player = server.Players[playerId];
-            server.Players.Remove(playerId);
+            var player = server.Players[playerPrivateId];
+            server.Players.Remove(playerPrivateId);
             PokerSessionEngine.RemovePlayer(server.CurrentSession, player.PublicId);
         }
 
@@ -49,9 +49,9 @@ namespace PlanningPoker.Core
             return false;
         }
 
-        public static Player GetPlayer(PokerServer server, string playerId)
+        public static Player GetPlayer(PokerServer server, string playerPrivateId)
         {
-            var player = server.Players[playerId];
+            var player = server.Players[playerPrivateId];
             return player;
         }
     }

@@ -1,9 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
-using System.Linq;
 using System.Threading.Tasks;
-using Microsoft.AspNetCore.SignalR.Client;
-using PlanningPoker.Shared.ViewModels;
 using Xunit;
 
 namespace PlanningPoker.FunctionalTests.Tests.Hubs
@@ -18,7 +15,7 @@ namespace PlanningPoker.FunctionalTests.Tests.Hubs
             var validCardSet = "1,2,3,5,8,13,21,?";
 
             // Act
-            var result = await builder.Connection.InvokeAsync<ServerCreationResult>(PlanningPokerHubTestBuilder.Endpoints.Create, validCardSet);
+            var result = await builder.HubClient.CreateServer(validCardSet);
 
             // Assert
             Assert.NotNull(result);
@@ -36,7 +33,7 @@ namespace PlanningPoker.FunctionalTests.Tests.Hubs
             var builder = CreateBuilder();
 
             // Act
-            var result = await builder.Connection.InvokeAsync<ServerCreationResult>(PlanningPokerHubTestBuilder.Endpoints.Create, invalidCardSet);
+            var result = await builder.HubClient.CreateServer(invalidCardSet);
 
             // Assert
             Assert.NotNull(result);

@@ -1,11 +1,6 @@
 ﻿using System;
-using System.Collections.Generic;
-using System.Linq;
 using System.Threading;
 using System.Threading.Tasks;
-using Microsoft.AspNetCore.SignalR.Client;
-using PlanningPoker.Shared;
-using PlanningPoker.Shared.ViewModels;
 using Xunit;
 
 namespace PlanningPoker.FunctionalTests.Tests.Hubs
@@ -20,7 +15,7 @@ namespace PlanningPoker.FunctionalTests.Tests.Hubs
             var validVote = "1";
 
             // Act
-            var exceptionRecord = await Record.ExceptionAsync(() => builder.Connection.InvokeAsync(PlanningPokerHubTestBuilder.Endpoints.UnVote, Guid.NewGuid(), Guid.NewGuid()));
+            var exceptionRecord = await Record.ExceptionAsync(() => builder.HubClient.UnVote(Guid.NewGuid(), Guid.NewGuid().ToString()));
 
             // Assert
             Assert.NotNull(exceptionRecord);
@@ -35,7 +30,7 @@ namespace PlanningPoker.FunctionalTests.Tests.Hubs
             var validVote = "1";
 
             // Act
-            var exceptionRecord = await Record.ExceptionAsync(() => builder.Connection.InvokeAsync(PlanningPokerHubTestBuilder.Endpoints.UnVote, serverId, Guid.NewGuid()));
+            var exceptionRecord = await Record.ExceptionAsync(() => builder.HubClient.UnVote(serverId, Guid.NewGuid().ToString()));
 
             // Assert
             Assert.NotNull(exceptionRecord);
@@ -50,14 +45,14 @@ namespace PlanningPoker.FunctionalTests.Tests.Hubs
             builder.WithPlayer(serverId, out var player);
             var voteExists = true;
             SemaphoreSlim awaitResponse = new SemaphoreSlim(0);
-            builder.Connection.On<PokerServerViewModel>(Messages.UPDATED, viewModel =>
+            builder.HubClient.OnSessionUpdated(viewModel =>
             {
                 voteExists = viewModel.CurrentSession.Votes.ContainsKey(player.PublicId.ToString());
                 awaitResponse.Release();
             });
 
             // Act
-            await builder.Connection.InvokeAsync(PlanningPokerHubTestBuilder.Endpoints.UnVote, serverId, player.Id);
+            await builder.HubClient.UnVote(serverId, player.Id);
 
             // Assert
             await awaitResponse.WaitAsync(TimeSpan.FromSeconds(5));
@@ -75,14 +70,14 @@ namespace PlanningPoker.FunctionalTests.Tests.Hubs
             builder.WithPlayerVoted(serverId, player.Id, validVote);
             var voteExists = true;
             SemaphoreSlim awaitResponse = new SemaphoreSlim(0);
-            builder.Connection.On<PokerServerViewModel>(Messages.UPDATED, viewModel =>
+            builder.HubClient.OnSessionUpdated(viewModel =>
             {
                 voteExists = viewModel.CurrentSession.Votes.ContainsKey(player.PublicId.ToString());
                 awaitResponse.Release();
             });
 
             // Act
-            await builder.Connection.InvokeAsync(PlanningPokerHubTestBuilder.Endpoints.UnVote, serverId, player.Id);
+            await builder.HubClient.UnVote(serverId, player.Id);
 
             // Assert
             await awaitResponse.WaitAsync(TimeSpan.FromSeconds(5));

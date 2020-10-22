@@ -5,6 +5,7 @@ using System.Threading;
 using System.Threading.Tasks;
 using Microsoft.AspNetCore.SignalR.Client;
 using PlanningPoker.Core.Models;
+using PlanningPoker.Hub.Client;
 using PlanningPoker.Shared;
 using PlanningPoker.Shared.ViewModels;
 using Xunit;
@@ -20,7 +21,7 @@ namespace PlanningPoker.FunctionalTests.Tests.Hubs
             var serverBuilder = CreateBuilder();
 
             // Act
-            var exceptionRecord = await Record.ExceptionAsync(() => serverBuilder.Connection.InvokeAsync(PlanningPokerHubTestBuilder.Endpoints.Clear, Guid.NewGuid()));
+            var exceptionRecord = await Record.ExceptionAsync(() => serverBuilder.HubClient.ClearVotes(Guid.NewGuid()));
 
             // Assert
             Assert.NotNull(exceptionRecord);
@@ -32,15 +33,15 @@ namespace PlanningPoker.FunctionalTests.Tests.Hubs
             // Arrange
             var serverBuilder = CreateBuilder();
             serverBuilder.WithServer(out var serverId);
-            var playerConnections = new List<HubConnection>
+            var playerConnections = new List<IPlanningPokerHubClient>
             {
-                CreateBuilder().WithPlayer(serverId, out var player1).Connection,
-                CreateBuilder().WithPlayer(serverId, out var player2).Connection,
-                CreateBuilder().WithPlayer(serverId, out var player3).Connection
+                CreateBuilder().WithPlayer(serverId, out var player1).HubClient,
+                CreateBuilder().WithPlayer(serverId, out var player2).HubClient,
+                CreateBuilder().WithPlayer(serverId, out var player3).HubClient
             };
 
             // Act
-            var exceptionRecord = await Record.ExceptionAsync(() => serverBuilder.Connection.InvokeAsync(PlanningPokerHubTestBuilder.Endpoints.Clear, serverId));
+            var exceptionRecord = await Record.ExceptionAsync(() => serverBuilder.HubClient.ClearVotes(serverId));
 
             // Assert
             Assert.NotNull(exceptionRecord);
@@ -54,25 +55,25 @@ namespace PlanningPoker.FunctionalTests.Tests.Hubs
             serverBuilder.WithServer(out var serverId);
             var validVote = "1";
             var hasVotes = true;
-            var playerConnections = new List<HubConnection>
+            var playerConnections = new List<IPlanningPokerHubClient>
             {
-                CreateBuilder().WithPlayer(serverId, out var player1).Connection,
-                CreateBuilder().WithPlayer(serverId, out var player2).Connection,
-                CreateBuilder().WithPlayer(serverId, out var player3).Connection
+                CreateBuilder().WithPlayer(serverId, out var player1).HubClient,
+                CreateBuilder().WithPlayer(serverId, out var player2).HubClient,
+                CreateBuilder().WithPlayer(serverId, out var player3).HubClient
             };
 
-            await playerConnections[0].InvokeAsync(PlanningPokerHubTestBuilder.Endpoints.Vote, serverId, player1.Id, validVote);
-            await playerConnections[1].InvokeAsync(PlanningPokerHubTestBuilder.Endpoints.Vote, serverId, player2.Id, validVote);
+            await playerConnections[0].Vote(serverId, player1.Id, validVote);
+            await playerConnections[1].Vote(serverId, player2.Id, validVote);
 
             SemaphoreSlim awaitResponse = new SemaphoreSlim(0);
-            playerConnections[2].On<PokerServerViewModel>(Messages.UPDATED, viewModel =>
+            playerConnections[2].OnSessionUpdated(viewModel =>
             {
                 hasVotes = viewModel.CurrentSession.Votes.Any();
                 awaitResponse.Release();
             });
 
             // Act
-            await playerConnections[2].InvokeAsync(PlanningPokerHubTestBuilder.Endpoints.Clear, serverId);
+            await playerConnections[2].ClearVotes(serverId);
 
             // Assert
             await awaitResponse.WaitAsync(TimeSpan.FromSeconds(5));
@@ -87,26 +88,26 @@ namespace PlanningPoker.FunctionalTests.Tests.Hubs
             serverBuilder.WithServer(out var serverId);
             var validVote = "1";
             var hasVotes = true;
-            var playerConnections = new List<HubConnection>
+            var playerConnections = new List<IPlanningPokerHubClient>
             {
-                CreateBuilder().WithPlayer(serverId, out var player1).Connection,
-                CreateBuilder().WithPlayer(serverId, out var player2).Connection,
-                CreateBuilder().WithPlayer(serverId, out var player3).Connection
+                CreateBuilder().WithPlayer(serverId, out var player1).HubClient,
+                CreateBuilder().WithPlayer(serverId, out var player2).HubClient,
+                CreateBuilder().WithPlayer(serverId, out var player3).HubClient
             };
 
-            await playerConnections[0].InvokeAsync(PlanningPokerHubTestBuilder.Endpoints.Vote, serverId, player1.Id, validVote);
-            await playerConnections[1].InvokeAsync(PlanningPokerHubTestBuilder.Endpoints.Vote, serverId, player2.Id, validVote);
-            await playerConnections[2].InvokeAsync(PlanningPokerHubTestBuilder.Endpoints.Vote, serverId, player3.Id, validVote);
+            await playerConnections[0].Vote(serverId, player1.Id, validVote);
+            await playerConnections[1].Vote(serverId, player2.Id, validVote);
+            await playerConnections[2].Vote(serverId, player3.Id, validVote);
 
             SemaphoreSlim awaitResponse = new SemaphoreSlim(0);
-            playerConnections[2].On<PokerServerViewModel>(Messages.UPDATED, viewModel =>
+            playerConnections[2].OnSessionUpdated(viewModel =>
             {
                 hasVotes = viewModel.CurrentSession.Votes.Any();
                 awaitResponse.Release();
             });
 
             // Act
-            await playerConnections[2].InvokeAsync(PlanningPokerHubTestBuilder.Endpoints.Clear, serverId);
+            await playerConnections[2].ClearVotes(serverId);
 
             // Assert
             await awaitResponse.WaitAsync(TimeSpan.FromSeconds(5));
@@ -122,24 +123,24 @@ namespace PlanningPoker.FunctionalTests.Tests.Hubs
             builder.WithObserver(serverId, out var observer);
             var validVote = "1";
             var hasVotes = true;
-            var playerConnections = new List<HubConnection>
+            var playerConnections = new List<IPlanningPokerHubClient>
             {
-                CreateBuilder().WithPlayer(serverId, out var player1).Connection,
-                CreateBuilder().WithPlayer(serverId, out var player2).Connection,
-                CreateBuilder().WithPlayer(serverId, out var player3).Connection
+                CreateBuilder().WithPlayer(serverId, out var player1).HubClient,
+                CreateBuilder().WithPlayer(serverId, out var player2).HubClient,
+                CreateBuilder().WithPlayer(serverId, out var player3).HubClient
             };
 
-            await playerConnections[0].InvokeAsync(PlanningPokerHubTestBuilder.Endpoints.Vote, serverId, player1.Id, validVote);
+            await playerConnections[0].Vote(serverId, player1.Id, validVote);
 
             SemaphoreSlim awaitResponse = new SemaphoreSlim(0);
-            builder.Connection.On<PokerServerViewModel>(Messages.UPDATED, viewModel =>
+            builder.HubClient.OnSessionUpdated(viewModel =>
             {
                 hasVotes = viewModel.CurrentSession.Votes.Any();
                 awaitResponse.Release();
             });
 
             // Act
-            await builder.Connection.InvokeAsync(PlanningPokerHubTestBuilder.Endpoints.Clear, serverId);
+            await builder.HubClient.ClearVotes(serverId);
 
             // Assert
             await awaitResponse.WaitAsync(TimeSpan.FromSeconds(5));

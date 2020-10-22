@@ -15,6 +15,7 @@
   </ItemGroup>
 
   <ItemGroup>
+    <ProjectReference Include="..\..\src\PlanningPoker.Hub.Client\PlanningPoker.Hub.Client.csproj" />
     <ProjectReference Include="..\..\src\PlanningPoker.Server\PlanningPoker.Server.csproj" />
   </ItemGroup>
 

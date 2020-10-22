@@ -1,4 +1,5 @@
 ﻿@using Microsoft.AspNetCore.SignalR.Client
+@using PlanningPoker.Hub.Client
 @using PlanningPoker.Shared
 @inject Blazored.Localisation.Services.IBrowserDateTimeProvider BrowserDateTimeProvider
 <div class="card log">
@@ -37,7 +38,7 @@
     {
         Log = new DropOutStack<LogMessage>(20);
 
-        HubConnection.On<LogMessage>(Messages.LOG, logMessage =>
+        HubClient.OnLogMessageReceived(logMessage =>
         {
             Log.Push(logMessage);
             StateHasChanged();
@@ -63,8 +64,8 @@
     public DropOutStack<LogMessage> Log { get; set; }
 
     [Parameter]
-    public HubConnection HubConnection { get; set; }
+    public IPlanningPokerHubClient HubClient { get; set; }
 
     [Parameter]
-    public EventCallback<HubConnection> HubConnectionChanged { get; set; }
+    public EventCallback<IPlanningPokerHubClient> HubClientChanged { get; set; }
 }

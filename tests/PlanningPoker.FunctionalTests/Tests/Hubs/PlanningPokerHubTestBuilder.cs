@@ -2,6 +2,7 @@
 using Microsoft.AspNetCore.Http.Connections;
 using Microsoft.AspNetCore.SignalR.Client;
 using PlanningPoker.Core.Models;
+using PlanningPoker.Hub.Client;
 using PlanningPoker.Shared.ViewModels;
 
 namespace PlanningPoker.FunctionalTests.Tests.Hubs
@@ -12,11 +13,12 @@ namespace PlanningPoker.FunctionalTests.Tests.Hubs
 
         public PlanningPokerHubTestBuilder(PlanningPokerWebApplicationFactory factory)
         {
-            Connection = CreateConnection(factory);
-            Connection.StartAsync().GetAwaiter().GetResult();
+            var hubConnection = CreateConnection(factory);
+            hubConnection.StartAsync().GetAwaiter().GetResult();
+            HubClient = new PlanningPokerHubClient(hubConnection);
         }
 
-        public HubConnection Connection { get; }
+        public IPlanningPokerHubClient HubClient { get; }
 
         private HubConnection CreateConnection(PlanningPokerWebApplicationFactory factory)
         {
@@ -35,7 +37,7 @@ namespace PlanningPoker.FunctionalTests.Tests.Hubs
         public PlanningPokerHubTestBuilder WithServer(out Guid serverId)
         {
             const string validCardSet = "1,2,3,5,8,13,21,?";
-            var result = Connection.InvokeAsync<ServerCreationResult>(Endpoints.Create, validCardSet).GetAwaiter().GetResult();
+            var result = HubClient.CreateServer(validCardSet).GetAwaiter().GetResult();
             serverId = result.ServerId ?? throw new ArgumentNullException(nameof(result.ServerId));
             return this;
         }
@@ -52,28 +54,15 @@ namespace PlanningPoker.FunctionalTests.Tests.Hubs
 
         public PlanningPokerHubTestBuilder WithPlayerVoted(Guid serverId, string playerPrivateId, string vote)
         {
-            Connection.InvokeAsync(Endpoints.Vote, serverId, playerPrivateId, vote).GetAwaiter().GetResult();
+            HubClient.Vote(serverId, playerPrivateId, vote).GetAwaiter().GetResult();
             return this;
         }
 
         private PlanningPokerHubTestBuilder WithPlayer(Guid serverId, PlayerType playerType, string playerName, out PlayerViewModel player)
         {
-            Connection.InvokeAsync(Endpoints.Connect, serverId).GetAwaiter().GetResult();
-            player = Connection.InvokeAsync<PlayerViewModel>(Endpoints.Join, serverId, playerName, playerType).GetAwaiter().GetResult();
+            HubClient.Connect(serverId).GetAwaiter().GetResult();
+            player = HubClient.JoinServer(serverId, playerName, playerType).GetAwaiter().GetResult();
             return this;
-        }
-
-        public static class Endpoints
-        {
-            public const string Clear = "Clear";
-            public const string Connect = "Connect";
-            public const string Create = "Create";
-            public const string Join = "Join";
-            public const string Kick = "Kick";
-            public const string Show = "Show";
-            public const string UnVote = "UnVote";
-            public const string Vote = "Vote";
-
         }
     }
 }

@@ -18,6 +18,7 @@
   </ItemGroup>
 
   <ItemGroup>
+    <ProjectReference Include="..\PlanningPoker.Hub.Client\PlanningPoker.Hub.Client.csproj" />
     <ProjectReference Include="..\PlanningPoker.Shared\PlanningPoker.Shared.csproj" />
   </ItemGroup>
 </Project>

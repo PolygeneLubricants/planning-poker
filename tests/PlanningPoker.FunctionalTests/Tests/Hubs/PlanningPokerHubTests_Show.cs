@@ -3,9 +3,7 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Threading;
 using System.Threading.Tasks;
-using Microsoft.AspNetCore.SignalR.Client;
-using PlanningPoker.Shared;
-using PlanningPoker.Shared.ViewModels;
+using PlanningPoker.Hub.Client;
 using Xunit;
 
 namespace PlanningPoker.FunctionalTests.Tests.Hubs
@@ -19,7 +17,7 @@ namespace PlanningPoker.FunctionalTests.Tests.Hubs
             var builder = CreateBuilder();
 
             // Act
-            var exceptionRecord = await Record.ExceptionAsync(() => builder.Connection.InvokeAsync(PlanningPokerHubTestBuilder.Endpoints.Show, Guid.NewGuid()));
+            var exceptionRecord = await Record.ExceptionAsync(() => builder.HubClient.ShowVotes(Guid.NewGuid()));
 
             // Assert
             Assert.NotNull(exceptionRecord);
@@ -32,18 +30,18 @@ namespace PlanningPoker.FunctionalTests.Tests.Hubs
             var serverBuilder = CreateBuilder();
             serverBuilder.WithServer(out var serverId);
             var validVote = "1";
-            var playerConnections = new List<HubConnection>
+            var playerConnections = new List<IPlanningPokerHubClient>
             {
-                CreateBuilder().WithPlayer(serverId, out var player1).Connection,
-                CreateBuilder().WithPlayer(serverId, out var player2).Connection,
-                CreateBuilder().WithPlayer(serverId, out var player3).Connection
+                CreateBuilder().WithPlayer(serverId, out var player1).HubClient,
+                CreateBuilder().WithPlayer(serverId, out var player2).HubClient,
+                CreateBuilder().WithPlayer(serverId, out var player3).HubClient
             };
 
-            await playerConnections[0].InvokeAsync(PlanningPokerHubTestBuilder.Endpoints.Vote, serverId, player1.Id, validVote);
-            await playerConnections[1].InvokeAsync(PlanningPokerHubTestBuilder.Endpoints.Vote, serverId, player2.Id, validVote);
+            await playerConnections[0].Vote(serverId, player1.Id, validVote);
+            await playerConnections[1].Vote(serverId, player2.Id, validVote);
             
             // Act
-            var exceptionRecord = await Record.ExceptionAsync(() => playerConnections[2].InvokeAsync(PlanningPokerHubTestBuilder.Endpoints.Show, serverId));
+            var exceptionRecord = await Record.ExceptionAsync(() => playerConnections[2].ShowVotes(serverId));
 
             // Assert
             Assert.NotNull(exceptionRecord);
@@ -58,17 +56,17 @@ namespace PlanningPoker.FunctionalTests.Tests.Hubs
             var validVote = "1";
             var isShown = false;
             var actualVotes = new List<string>();
-            var playerConnections = new List<HubConnection>
+            var playerConnections = new List<IPlanningPokerHubClient>
             {
-                CreateBuilder().WithPlayer(serverId, out var player1).Connection,
-                CreateBuilder().WithPlayer(serverId, out var player2).Connection
+                CreateBuilder().WithPlayer(serverId, out var player1).HubClient,
+                CreateBuilder().WithPlayer(serverId, out var player2).HubClient
             };
 
-            await playerConnections[0].InvokeAsync(PlanningPokerHubTestBuilder.Endpoints.Vote, serverId, player1.Id, validVote);
-            await playerConnections[1].InvokeAsync(PlanningPokerHubTestBuilder.Endpoints.Vote, serverId, player2.Id, validVote);
+            await playerConnections[0].Vote(serverId, player1.Id, validVote);
+            await playerConnections[1].Vote(serverId, player2.Id, validVote);
 
             SemaphoreSlim awaitResponse = new SemaphoreSlim(0);
-            playerConnections[1].On<PokerServerViewModel>(Messages.UPDATED, viewModel =>
+            playerConnections[1].OnSessionUpdated(viewModel =>
             {
                 actualVotes = viewModel.CurrentSession.Votes.Values.ToList();
                 isShown = viewModel.CurrentSession.IsShown;
@@ -76,7 +74,7 @@ namespace PlanningPoker.FunctionalTests.Tests.Hubs
             });
 
             // Act
-            await playerConnections[1].InvokeAsync(PlanningPokerHubTestBuilder.Endpoints.Show, serverId);
+            await playerConnections[1].ShowVotes(serverId);
 
             // Assert
             await awaitResponse.WaitAsync(TimeSpan.FromSeconds(5));

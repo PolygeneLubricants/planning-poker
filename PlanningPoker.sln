@@ -11,9 +11,11 @@ Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "PlanningPoker.Core", "src\P
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "PlanningPoker.Shared", "src\PlanningPoker.Shared\PlanningPoker.Shared.csproj", "{37AE3044-1CBF-4637-BF63-DA02B743DB01}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "PlanningPoker.FunctionalTests", "tests\PlanningPoker.FunctionalTests\PlanningPoker.FunctionalTests.csproj", "{43487EA0-9BEB-49CF-BFD0-6CBE17F210D0}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "PlanningPoker.FunctionalTests", "tests\PlanningPoker.FunctionalTests\PlanningPoker.FunctionalTests.csproj", "{43487EA0-9BEB-49CF-BFD0-6CBE17F210D0}"
 EndProject
 Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Tests", "Tests", "{219A5527-0C8F-4904-B568-6A783A7D5B67}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "PlanningPoker.Hub.Client", "src\PlanningPoker.Hub.Client\PlanningPoker.Hub.Client.csproj", "{4EF65F5B-49CD-4EB5-9747-98B04DC1B933}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
@@ -41,6 +43,10 @@ Global
 		{43487EA0-9BEB-49CF-BFD0-6CBE17F210D0}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{43487EA0-9BEB-49CF-BFD0-6CBE17F210D0}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{43487EA0-9BEB-49CF-BFD0-6CBE17F210D0}.Release|Any CPU.Build.0 = Release|Any CPU
+		{4EF65F5B-49CD-4EB5-9747-98B04DC1B933}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{4EF65F5B-49CD-4EB5-9747-98B04DC1B933}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{4EF65F5B-49CD-4EB5-9747-98B04DC1B933}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{4EF65F5B-49CD-4EB5-9747-98B04DC1B933}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE

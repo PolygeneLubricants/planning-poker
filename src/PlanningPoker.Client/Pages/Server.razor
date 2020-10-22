@@ -2,6 +2,7 @@
 @using Microsoft.AspNetCore.SignalR.Client
 @using PlanningPoker.Client.Storage
 @using PlanningPoker.Core.Models
+@using PlanningPoker.Hub.Client
 @using PlanningPoker.Shared
 @using PlanningPoker.Shared.ViewModels
 @inject NavigationManager NavigationManager
@@ -9,9 +10,9 @@
 
 @if (CurrentServer != null && _currentPlayer != null)
 {
-    <SessionControlComponent @bind-Id="Id" @bind-Session="CurrentServer.CurrentSession" @bind-CurrentPlayer="_currentPlayer" @bind-HubConnection="_hubConnection" />
-    <SessionRenderingComponent @bind-Id="Id" @bind-Server="CurrentServer" @bind-CurrentPlayer="_currentPlayer" @bind-HubConnection="_hubConnection" />
-    <LogComponent @bind-HubConnection="_hubConnection" />
+    <SessionControlComponent @bind-Id="_parsedId" @bind-Session="CurrentServer.CurrentSession" @bind-CurrentPlayer="_currentPlayer" @bind-HubClient="_hubClient" />
+    <SessionRenderingComponent @bind-Id="_parsedId" @bind-Server="CurrentServer" @bind-CurrentPlayer="_currentPlayer" @bind-HubClient="_hubClient" />
+    <LogComponent @bind-HubClient="_hubClient" />
 }
 
 @if (_currentPlayer == null)
@@ -56,7 +57,7 @@
 }
 
 @code {
-    private HubConnection _hubConnection;
+    private IPlanningPokerHubClient _hubClient;
 
     private string? _username;
 
@@ -66,8 +67,20 @@
 
     public PokerServerViewModel? CurrentServer { get; set; }
 
+    private string _id;
+
     [Parameter]
-    public string Id { get; set; }
+    public string Id
+    {
+        get => _id;
+        set
+        {
+            _id = value;
+            _parsedId = Guid.Parse(_id);
+        }
+    }
+
+    private Guid _parsedId;
 
     protected override async Task OnAfterRenderAsync(bool firstRender)
     {
@@ -84,17 +97,18 @@
 
     protected override async Task OnInitializedAsync()
     {
-        _hubConnection = new HubConnectionBuilder()
+        var connection = new HubConnectionBuilder()
             .WithUrl(NavigationManager.ToAbsoluteUri("/hubs/poker"))
             .Build();
 
-        _hubConnection.On<PokerServerViewModel>(Messages.UPDATED, newServer =>
+        _hubClient = new PlanningPokerHubClient(connection);
+        _hubClient.OnSessionUpdated(newServer =>
         {
             CurrentServer = newServer;
             StateHasChanged();
         });
 
-        _hubConnection.On<PlayerViewModel>(Messages.KICKED, kickedPlayer =>
+        _hubClient.OnPlayerKicked(kickedPlayer =>
         {
             if (kickedPlayer.PublicId != _currentPlayer.PublicId) return;
 
@@ -104,16 +118,16 @@
             StateHasChanged();
         });
 
-        await _hubConnection.StartAsync();
+        await connection.StartAsync();
     }
 
     async Task Join()
     {
-        await _hubConnection.SendAsync("Connect", Id);
-        _currentPlayer = await _hubConnection.InvokeAsync<PlayerViewModel>("Join", Id, _username, _type);
+        await _hubClient.Connect(_parsedId);
+        _currentPlayer = await _hubClient.JoinServer(_parsedId, _username, _type);
         var serverSession = new ServerSession
         {
-            ServerId = Id,
+            ServerId = _parsedId,
             Username = _username
         };
 
