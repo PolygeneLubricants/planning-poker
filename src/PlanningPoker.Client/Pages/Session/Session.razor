@@ -9,9 +9,9 @@
 
 @if (CurrentServer != null && _currentPlayer != null)
 {
-    <SessionControlComponent @bind-Id="_parsedId" @bind-Session="CurrentServer.CurrentSession" @bind-CurrentPlayer="_currentPlayer" @bind-HubClient="_hubClient" />
-    <SessionRenderingComponent @bind-Id="_parsedId" @bind-Server="CurrentServer" @bind-CurrentPlayer="_currentPlayer" @bind-HubClient="_hubClient" />
-    <LogComponent @bind-HubClient="_hubClient" />
+    <_sessionControlComponent @bind-Id="_parsedId" @bind-Session="CurrentServer.CurrentSession" @bind-CurrentPlayer="_currentPlayer" @bind-HubClient="_hubClient" />
+    <_sessionRenderingComponent @bind-Id="_parsedId" @bind-Server="CurrentServer" @bind-CurrentPlayer="_currentPlayer" @bind-HubClient="_hubClient" />
+    <_sessionLogComponent @bind-HubClient="_hubClient" />
 }
 
 @if (_currentPlayer == null)
