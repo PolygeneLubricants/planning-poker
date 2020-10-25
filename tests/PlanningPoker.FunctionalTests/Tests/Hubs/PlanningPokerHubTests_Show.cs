@@ -3,7 +3,6 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Threading;
 using System.Threading.Tasks;
-using PlanningPoker.Hub.Client;
 using PlanningPoker.Hub.Client.Abstractions;
 using Xunit;
 

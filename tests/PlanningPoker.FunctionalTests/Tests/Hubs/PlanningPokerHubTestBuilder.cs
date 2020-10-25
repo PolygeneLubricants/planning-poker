@@ -1,7 +1,6 @@
 ﻿using System;
 using Microsoft.AspNetCore.Http.Connections;
 using Microsoft.AspNetCore.SignalR.Client;
-using PlanningPoker.Core.Models;
 using PlanningPoker.Hub.Client;
 using PlanningPoker.Hub.Client.Abstractions;
 using PlanningPoker.Hub.Client.Abstractions.ViewModels;
@@ -38,7 +37,12 @@ namespace PlanningPoker.FunctionalTests.Tests.Hubs
         public PlanningPokerHubTestBuilder WithServer(out Guid serverId)
         {
             const string validCardSet = "1,2,3,5,8,13,21,?";
-            var result = HubClient.CreateServer(validCardSet).GetAwaiter().GetResult();
+            return WithServer(validCardSet, out serverId);
+        }
+
+        public PlanningPokerHubTestBuilder WithServer(string cardSet, out Guid serverId)
+        {
+            var result = HubClient.CreateServer(cardSet).GetAwaiter().GetResult();
             serverId = result.ServerId ?? throw new ArgumentNullException(nameof(result.ServerId));
             return this;
         }
@@ -56,6 +60,30 @@ namespace PlanningPoker.FunctionalTests.Tests.Hubs
         public PlanningPokerHubTestBuilder WithPlayerVoted(Guid serverId, string playerPrivateId, string vote)
         {
             HubClient.Vote(serverId, playerPrivateId, vote).GetAwaiter().GetResult();
+            return this;
+        }
+
+        public PlanningPokerHubTestBuilder WithPlayerUnVoted(Guid serverId, string playerPrivateId)
+        {
+            HubClient.UnVote(serverId, playerPrivateId).GetAwaiter().GetResult();
+            return this;
+        }
+
+        public PlanningPokerHubTestBuilder WithVotesShown(Guid serverId)
+        {
+            HubClient.ShowVotes(serverId);
+            return this;
+        }
+
+        public PlanningPokerHubTestBuilder WithVotesCleared(Guid serverId)
+        {
+            HubClient.ClearVotes(serverId);
+            return this;
+        }
+
+        public PlanningPokerHubTestBuilder WithPlayerKicked(Guid serverId, string initiatingPlayerPrivateId, int kickedPlayerPublicId)
+        {
+            HubClient.KickPlayer(serverId, initiatingPlayerPrivateId, kickedPlayerPublicId);
             return this;
         }
 
