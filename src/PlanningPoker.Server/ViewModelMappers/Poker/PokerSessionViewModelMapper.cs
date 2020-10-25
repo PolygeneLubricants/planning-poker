@@ -2,7 +2,7 @@
 using System.Linq;
 using PlanningPoker.Core.Models;
 using PlanningPoker.Core.Models.Poker;
-using PlanningPoker.Shared.ViewModels.Poker;
+using PlanningPoker.Hub.Client.Abstractions.ViewModels.Poker;
 
 namespace PlanningPoker.Server.ViewModelMappers.Poker
 {

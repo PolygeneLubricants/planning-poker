@@ -1,5 +1,5 @@
 ﻿using PlanningPoker.Core.Models;
-using PlanningPoker.Shared.ViewModels;
+using PlanningPoker.Hub.Client.Abstractions.ViewModels;
 
 namespace PlanningPoker.Server.ViewModelMappers
 {
@@ -12,7 +12,7 @@ namespace PlanningPoker.Server.ViewModelMappers
                 Id = includePrivateId ? player.Id : null,
                 PublicId = player.PublicId,
                 Name = player.Name,
-                Type = player.Type
+                Type = player.Type.Map()
             };
 
             return viewModel;

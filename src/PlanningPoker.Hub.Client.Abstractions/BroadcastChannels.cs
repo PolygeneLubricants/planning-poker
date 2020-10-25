@@ -1,6 +1,6 @@
-﻿namespace PlanningPoker.Shared
+﻿namespace PlanningPoker.Hub.Client.Abstractions
 {
-    public static class Messages
+    public static class BroadcastChannels
     {
         public const string CLEAR = "CLEAR";
         public const string UPDATED = "UPDATED";

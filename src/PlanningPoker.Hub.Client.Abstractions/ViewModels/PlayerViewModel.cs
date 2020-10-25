@@ -1,6 +1,4 @@
-﻿using PlanningPoker.Core.Models;
-
-namespace PlanningPoker.Shared.ViewModels
+﻿namespace PlanningPoker.Hub.Client.Abstractions.ViewModels
 {
     public class PlayerViewModel
     {

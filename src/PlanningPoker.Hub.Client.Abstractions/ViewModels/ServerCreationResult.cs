@@ -1,6 +1,6 @@
 ﻿using System;
 
-namespace PlanningPoker.Shared.ViewModels
+namespace PlanningPoker.Hub.Client.Abstractions.ViewModels
 {
     public class ServerCreationResult
     {

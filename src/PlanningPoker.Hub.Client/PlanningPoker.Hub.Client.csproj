@@ -10,7 +10,7 @@
   </ItemGroup>
 
   <ItemGroup>
-    <ProjectReference Include="..\PlanningPoker.Shared\PlanningPoker.Shared.csproj" />
+    <ProjectReference Include="..\PlanningPoker.Hub.Client.Abstractions\PlanningPoker.Hub.Client.Abstractions.csproj" />
   </ItemGroup>
 
 </Project>

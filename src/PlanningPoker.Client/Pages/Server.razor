@@ -1,10 +1,9 @@
 ﻿@page "/server/{id}"
 @using Microsoft.AspNetCore.SignalR.Client
 @using PlanningPoker.Client.Storage
-@using PlanningPoker.Core.Models
 @using PlanningPoker.Hub.Client
-@using PlanningPoker.Shared
-@using PlanningPoker.Shared.ViewModels
+@using PlanningPoker.Hub.Client.Abstractions
+@using PlanningPoker.Hub.Client.Abstractions.ViewModels
 @inject NavigationManager NavigationManager
 @inject IServerSessionManager sessionManager
 

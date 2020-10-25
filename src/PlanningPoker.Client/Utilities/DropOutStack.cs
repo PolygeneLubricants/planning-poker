@@ -1,6 +1,6 @@
 ﻿using System.Collections.Generic;
 
-namespace PlanningPoker.Shared
+namespace PlanningPoker.Client.Utilities
 {
     public class DropOutStack<T> : LinkedList<T>
     {

@@ -1,7 +1,7 @@
 ﻿using System;
 using System.Threading;
 using System.Threading.Tasks;
-using PlanningPoker.Shared.ViewModels;
+using PlanningPoker.Hub.Client.Abstractions.ViewModels;
 using Xunit;
 
 namespace PlanningPoker.FunctionalTests.Tests.Hubs

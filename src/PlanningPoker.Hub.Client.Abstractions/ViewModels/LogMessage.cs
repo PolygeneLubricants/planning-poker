@@ -1,6 +1,6 @@
 ﻿using System;
 
-namespace PlanningPoker.Shared
+namespace PlanningPoker.Hub.Client.Abstractions.ViewModels
 {
     public class LogMessage
     {

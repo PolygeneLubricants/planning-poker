@@ -1,6 +1,6 @@
 ﻿using System.Collections.Generic;
 
-namespace PlanningPoker.Shared.ViewModels.Poker
+namespace PlanningPoker.Hub.Client.Abstractions.ViewModels.Poker
 {
     public class PokerSessionViewModel
     {

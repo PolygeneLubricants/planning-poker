@@ -1,41 +1,11 @@
 ﻿using System;
 using System.Threading.Tasks;
 using Microsoft.AspNetCore.SignalR.Client;
-using PlanningPoker.Core.Models;
-using PlanningPoker.Shared;
-using PlanningPoker.Shared.ViewModels;
+using PlanningPoker.Hub.Client.Abstractions;
+using PlanningPoker.Hub.Client.Abstractions.ViewModels;
 
 namespace PlanningPoker.Hub.Client
 {
-    public interface IPlanningPokerHubClient
-    {
-        string? ConnectionId { get; }
-
-        Task Connect(Guid serverId);
-
-        Task ClearVotes(Guid serverId);
-
-        Task<ServerCreationResult> CreateServer(string cardSet);
-
-        Task<PlayerViewModel> JoinServer(Guid serverId, string playerName, PlayerType playerType);
-
-        Task KickPlayer(Guid serverId, string initiatingPlayerPrivateId, int kickedPlayerPublicId);
-
-        Task ShowVotes(Guid serverId);
-
-        Task UnVote(Guid serverId, string playerPrivateId);
-
-        Task Vote(Guid serverId, string playerPrivateId, string vote);
-
-        void OnSessionUpdated(Action<PokerServerViewModel> onSessionUpdatedHandler);
-
-        void OnPlayerKicked(Action<PlayerViewModel> onPlayerKickedHandler);
-
-        void OnLogMessageReceived(Action<LogMessage> onLogMessageReceivedHandler);
-
-        void OnVotesCleared(Action onVotesClearedHandler);
-    }
-
     public class PlanningPokerHubClient : IPlanningPokerHubClient
     {
         private readonly HubConnection _hubConnection;
@@ -89,22 +59,22 @@ namespace PlanningPoker.Hub.Client
 
         public void OnSessionUpdated(Action<PokerServerViewModel> onSessionUpdatedHandler)
         {
-            _hubConnection.On(Messages.UPDATED, onSessionUpdatedHandler);
+            _hubConnection.On(BroadcastChannels.UPDATED, onSessionUpdatedHandler);
         }
 
         public void OnPlayerKicked(Action<PlayerViewModel> onPlayerKickedHandler)
         {
-            _hubConnection.On(Messages.KICKED, onPlayerKickedHandler);
+            _hubConnection.On(BroadcastChannels.KICKED, onPlayerKickedHandler);
         }
 
         public void OnLogMessageReceived(Action<LogMessage> onLogMessageReceivedHandler)
         {
-            _hubConnection.On(Messages.LOG, onLogMessageReceivedHandler);
+            _hubConnection.On(BroadcastChannels.LOG, onLogMessageReceivedHandler);
         }
 
         public void OnVotesCleared(Action onVotesClearedHandler)
         {
-            _hubConnection.On(Messages.CLEAR, onVotesClearedHandler);
+            _hubConnection.On(BroadcastChannels.CLEAR, onVotesClearedHandler);
         }
     }
 }

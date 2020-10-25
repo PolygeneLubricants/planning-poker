@@ -6,8 +6,8 @@ using System.Threading.Tasks;
 using Microsoft.AspNetCore.SignalR.Client;
 using PlanningPoker.Core.Models;
 using PlanningPoker.Hub.Client;
+using PlanningPoker.Hub.Client.Abstractions;
 using PlanningPoker.Shared;
-using PlanningPoker.Shared.ViewModels;
 using Xunit;
 
 namespace PlanningPoker.FunctionalTests.Tests.Hubs
