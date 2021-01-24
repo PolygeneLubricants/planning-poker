@@ -14,7 +14,10 @@ namespace PlanningPoker.Server
         public void ConfigureServices(IServiceCollection services)
         {
             services.RegisterDependencies();
-            services.AddSignalR()
+            services.AddSignalR(options =>
+                {
+                    options.EnableDetailedErrors = true;
+                })
                 .AddJsonProtocol();
             services.AddMvc();
             services.AddResponseCompression(opts =>

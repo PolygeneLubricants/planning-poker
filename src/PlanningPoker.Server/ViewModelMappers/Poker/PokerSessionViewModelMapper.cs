@@ -1,7 +1,7 @@
 ﻿using System.Collections.Generic;
 using System.Linq;
-using PlanningPoker.Core.Models;
-using PlanningPoker.Core.Models.Poker;
+using PlanningPoker.Engine.Core.Models;
+using PlanningPoker.Engine.Core.Models.Poker;
 using PlanningPoker.Hub.Client.Abstractions.ViewModels.Poker;
 
 namespace PlanningPoker.Server.ViewModelMappers.Poker

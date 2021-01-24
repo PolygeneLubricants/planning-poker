@@ -7,15 +7,19 @@ Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "PlanningPoker.Server", "src
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "PlanningPoker.Client", "src\PlanningPoker.Client\PlanningPoker.Client.csproj", "{6C462AF9-6544-4690-A8A0-1E852FBBD894}"
 EndProject
-Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "PlanningPoker.Core", "src\PlanningPoker.Core\PlanningPoker.Core.csproj", "{DEC666FD-AB87-4EFC-933B-A071DB8A1ED5}"
-EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "PlanningPoker.FunctionalTests", "tests\PlanningPoker.FunctionalTests\PlanningPoker.FunctionalTests.csproj", "{43487EA0-9BEB-49CF-BFD0-6CBE17F210D0}"
 EndProject
 Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Tests", "Tests", "{219A5527-0C8F-4904-B568-6A783A7D5B67}"
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "PlanningPoker.Hub.Client", "src\PlanningPoker.Hub.Client\PlanningPoker.Hub.Client.csproj", "{4EF65F5B-49CD-4EB5-9747-98B04DC1B933}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "PlanningPoker.Hub.Client.Abstractions", "src\PlanningPoker.Hub.Client.Abstractions\PlanningPoker.Hub.Client.Abstractions.csproj", "{81F81743-97DE-4FCB-91EB-048F1A7F549A}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "PlanningPoker.Hub.Client.Abstractions", "src\PlanningPoker.Hub.Client.Abstractions\PlanningPoker.Hub.Client.Abstractions.csproj", "{81F81743-97DE-4FCB-91EB-048F1A7F549A}"
+EndProject
+Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Engine", "Engine", "{27F6346C-D523-43C4-A495-8D72B67051FB}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "PlanningPoker.Engine.Core", "src\PlanningPoker.Engine.Core\PlanningPoker.Engine.Core.csproj", "{8B85B3F7-2905-4769-BF3F-2A7B4835999F}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "PlanningPoker.Engine.Core.Models", "src\PlanningPoker.Engine.Core.Models\PlanningPoker.Engine.Core.Models.csproj", "{3C249517-BD12-49D3-95D2-84CA0DD0CC20}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
@@ -31,10 +35,6 @@ Global
 		{6C462AF9-6544-4690-A8A0-1E852FBBD894}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{6C462AF9-6544-4690-A8A0-1E852FBBD894}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{6C462AF9-6544-4690-A8A0-1E852FBBD894}.Release|Any CPU.Build.0 = Release|Any CPU
-		{DEC666FD-AB87-4EFC-933B-A071DB8A1ED5}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
-		{DEC666FD-AB87-4EFC-933B-A071DB8A1ED5}.Debug|Any CPU.Build.0 = Debug|Any CPU
-		{DEC666FD-AB87-4EFC-933B-A071DB8A1ED5}.Release|Any CPU.ActiveCfg = Release|Any CPU
-		{DEC666FD-AB87-4EFC-933B-A071DB8A1ED5}.Release|Any CPU.Build.0 = Release|Any CPU
 		{43487EA0-9BEB-49CF-BFD0-6CBE17F210D0}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
 		{43487EA0-9BEB-49CF-BFD0-6CBE17F210D0}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{43487EA0-9BEB-49CF-BFD0-6CBE17F210D0}.Release|Any CPU.ActiveCfg = Release|Any CPU
@@ -47,12 +47,22 @@ Global
 		{81F81743-97DE-4FCB-91EB-048F1A7F549A}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{81F81743-97DE-4FCB-91EB-048F1A7F549A}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{81F81743-97DE-4FCB-91EB-048F1A7F549A}.Release|Any CPU.Build.0 = Release|Any CPU
+		{8B85B3F7-2905-4769-BF3F-2A7B4835999F}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{8B85B3F7-2905-4769-BF3F-2A7B4835999F}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{8B85B3F7-2905-4769-BF3F-2A7B4835999F}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{8B85B3F7-2905-4769-BF3F-2A7B4835999F}.Release|Any CPU.Build.0 = Release|Any CPU
+		{3C249517-BD12-49D3-95D2-84CA0DD0CC20}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{3C249517-BD12-49D3-95D2-84CA0DD0CC20}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{3C249517-BD12-49D3-95D2-84CA0DD0CC20}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{3C249517-BD12-49D3-95D2-84CA0DD0CC20}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
 	EndGlobalSection
 	GlobalSection(NestedProjects) = preSolution
 		{43487EA0-9BEB-49CF-BFD0-6CBE17F210D0} = {219A5527-0C8F-4904-B568-6A783A7D5B67}
+		{8B85B3F7-2905-4769-BF3F-2A7B4835999F} = {27F6346C-D523-43C4-A495-8D72B67051FB}
+		{3C249517-BD12-49D3-95D2-84CA0DD0CC20} = {27F6346C-D523-43C4-A495-8D72B67051FB}
 	EndGlobalSection
 	GlobalSection(ExtensibilityGlobals) = postSolution
 		SolutionGuid = {3FA17895-475B-4744-9E61-9A15148FA41A}

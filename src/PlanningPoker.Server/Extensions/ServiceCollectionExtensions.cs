@@ -1,7 +1,7 @@
 ﻿using Microsoft.Extensions.DependencyInjection;
-using PlanningPoker.Core;
-using PlanningPoker.Core.Utilities;
+using PlanningPoker.Engine.Core;
 using PlanningPoker.Server.HostedServices;
+using PlanningPoker.Server.Hubs;
 
 namespace PlanningPoker.Server.Extensions
 {
@@ -10,7 +10,9 @@ namespace PlanningPoker.Server.Extensions
         public static IServiceCollection RegisterDependencies(this IServiceCollection services)
         {
             services.AddSingleton<IServerStore, ServerStore>();
+            services.AddSingleton<IPlanningPokerEngine, PlanningPokerEngine>();
             services.AddSingleton<IDateTimeProvider, DateTimeProvider>();
+            services.AddSingleton<IPlanningPokerEventBroadcaster, PlanningPokerEventBroadcaster>();
             services.AddHostedService<CleanupServerJob>();
 
             return services;

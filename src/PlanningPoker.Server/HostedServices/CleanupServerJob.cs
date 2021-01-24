@@ -3,7 +3,7 @@ using System.Linq;
 using System.Threading;
 using System.Threading.Tasks;
 using Microsoft.Extensions.Hosting;
-using PlanningPoker.Core;
+using PlanningPoker.Engine.Core;
 
 namespace PlanningPoker.Server.HostedServices
 {

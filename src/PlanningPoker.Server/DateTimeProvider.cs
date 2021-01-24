@@ -1,6 +1,6 @@
 ﻿using System;
 
-namespace PlanningPoker.Core.Utilities
+namespace PlanningPoker.Server
 {
     public interface IDateTimeProvider
     {

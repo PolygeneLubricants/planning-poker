@@ -1,4 +1,4 @@
-﻿using PlanningPoker.Core.Models;
+﻿using PlanningPoker.Engine.Core.Models;
 using PlanningPoker.Hub.Client.Abstractions.ViewModels;
 
 namespace PlanningPoker.Server.ViewModelMappers

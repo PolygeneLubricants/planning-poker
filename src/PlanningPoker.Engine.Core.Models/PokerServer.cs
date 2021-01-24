@@ -1,8 +1,8 @@
 ﻿using System;
 using System.Collections.Generic;
-using PlanningPoker.Core.Models.Poker;
+using PlanningPoker.Engine.Core.Models.Poker;
 
-namespace PlanningPoker.Core.Models
+namespace PlanningPoker.Engine.Core.Models
 {
     public class PokerServer
     {

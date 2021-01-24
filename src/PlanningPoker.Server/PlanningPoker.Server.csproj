@@ -12,6 +12,7 @@
 
   <ItemGroup>
     <ProjectReference Include="..\PlanningPoker.Client\PlanningPoker.Client.csproj" />
-    <ProjectReference Include="..\PlanningPoker.Core\PlanningPoker.Core.csproj" />
+    <ProjectReference Include="..\PlanningPoker.Engine.Core\PlanningPoker.Engine.Core.csproj" />
+    <ProjectReference Include="..\PlanningPoker.Hub.Client.Abstractions\PlanningPoker.Hub.Client.Abstractions.csproj" />
   </ItemGroup>
 </Project>

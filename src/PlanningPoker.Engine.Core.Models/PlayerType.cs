@@ -1,4 +1,4 @@
-﻿namespace PlanningPoker.Shared
+﻿namespace PlanningPoker.Engine.Core.Models
 {
     public enum PlayerType
     {

@@ -1,0 +1,157 @@
+﻿using System;
+using PlanningPoker.Engine.Core.Events;
+using PlanningPoker.Engine.Core.Exceptions;
+using PlanningPoker.Engine.Core.Models;
+
+namespace PlanningPoker.Engine.Core
+{
+    public interface IPlanningPokerEngine
+    {
+        event EventHandler<PlayerKickedEventArgs> PlayerKicked;
+        event EventHandler<RoomUpdatedEventArgs> RoomUpdated;
+        event EventHandler<LogUpdatedEventArgs> LogUpdated;
+        event EventHandler<RoomClearedEventArgs> RoomCleared;
+
+        void Kick(Guid id, string initiatingPlayerPrivateId, int playerPublicIdToRemove);
+        void RemovePlayerFromAllRooms(string playerPrivateId);
+        (bool wasCreated, Guid? serverId, string? validationMessages) CreateRoom(string desiredCardSet);
+        Player JoinRoom(Guid id, string playerName, string playerPrivateId, PlayerType type);
+        void Vote(Guid serverId, string playerPrivateId, string vote);
+        void RedactVote(Guid serverId, string playerPrivateId);
+        void ClearVotes(Guid serverId, string playerPrivateId);
+        void ShowVotes(Guid serverId, string playerPrivateId);
+    }
+
+    public class PlanningPokerEngine : IPlanningPokerEngine
+    {
+        private readonly IServerStore _serverStore;
+
+        public PlanningPokerEngine(
+            IServerStore serverStore)
+        {
+            _serverStore = serverStore;
+        }
+
+        public event EventHandler<PlayerKickedEventArgs> PlayerKicked;
+        public event EventHandler<RoomUpdatedEventArgs> RoomUpdated;
+        public event EventHandler<LogUpdatedEventArgs> LogUpdated;
+        public event EventHandler<RoomClearedEventArgs> RoomCleared;
+        
+        public void Kick(Guid id, string initiatingPlayerPrivateId, int playerPublicIdToRemove)
+        {
+            var server = _serverStore.Get(id);
+            var player = PokerServerManager.GetPlayer(server, initiatingPlayerPrivateId);
+            var wasRemoved = PokerServerManager.TryRemovePlayer(server, playerPublicIdToRemove, out var kickedPlayer);
+            if (wasRemoved && kickedPlayer != null)
+            {
+                RaisePlayerKicked(id, kickedPlayer);
+                RaiseRoomUpdated(id, server);
+                RaiseLogUpdated(id, player.Name, $"Kicked {kickedPlayer.Name}.");
+            }
+        }
+
+        public void RemovePlayerFromAllRooms(string playerPrivateId)
+        {
+            var serversWithPlayer = _serverStore.RemovePlayerFromAllServers(playerPrivateId);
+            foreach (var server in serversWithPlayer)
+            {
+                RaiseRoomUpdated(server.Id, server);
+            }
+        }
+
+        public (bool wasCreated, Guid? serverId, string? validationMessages) CreateRoom(string desiredCardSet)
+        {
+            var isParsed = CardSetProcessor.TryParseCardSet(desiredCardSet, out var cardSet, out var validationMessage);
+            if (!isParsed)
+            {
+                return (false, null, validationMessage);
+            }
+
+            var server = _serverStore.Create(cardSet);
+            return (true, server.Id, validationMessage);
+        }
+
+        public Player JoinRoom(Guid id, string playerName, string playerPrivateId, PlayerType type)
+        {
+            if (string.IsNullOrWhiteSpace(playerName)) throw new MissingPlayerNameException();
+
+            var server = _serverStore.Get(id);
+            var newPlayer = PokerServerManager.AddPlayer(server, playerPrivateId, playerName, type);
+            RaiseRoomUpdated(id, server);
+            RaiseLogUpdated(id, playerName, "Joined the server.");
+            return newPlayer;
+        }
+
+        public void Vote(Guid serverId, string playerPrivateId, string vote)
+        {
+            var server = _serverStore.Get(serverId);
+            if (!server.CurrentSession.CardSet.Contains(vote)) throw new VoteException($"Vote does not exist in card set.");
+            if (!server.CurrentSession.CanVote) throw new VoteException($"Session not in state where players can vote.");
+            if (!server.Players.ContainsKey(playerPrivateId)) throw new VoteException($"Player is not part of session.");
+
+            var player = PokerServerManager.GetPlayer(server, playerPrivateId);
+            if (player.Type == PlayerType.Observer) throw new VoteException($"Player is of type '{player.Type}' and cannot vote.");
+
+            PokerSessionEngine.SetVote(server.CurrentSession, player.PublicId, vote);
+            RaiseRoomUpdated(server.Id, server);
+            RaiseLogUpdated(server.Id, player.Name, "Voted.");
+        }
+
+        public void RedactVote(Guid serverId, string playerPrivateId)
+        {
+            var server = _serverStore.Get(serverId);
+            if (!server.CurrentSession.CanVote) throw new VoteException($"Session not in state where players can unvote.");
+            if (!server.Players.ContainsKey(playerPrivateId)) throw new VoteException($"Player is not part of session.");
+
+            var player = PokerServerManager.GetPlayer(server, playerPrivateId);
+            if (player.Type == PlayerType.Observer) throw new VoteException($"Player is of type '{player.Type}' and cannot vote.");
+
+            PokerSessionEngine.RemoveVote(server.CurrentSession, player.PublicId);
+            RaiseRoomUpdated(server.Id, server);
+            RaiseLogUpdated(server.Id, player.Name, "Redacted their vote.");
+        }
+
+        public void ClearVotes(Guid serverId, string playerPrivateId)
+        {
+            var server = _serverStore.Get(serverId);
+            if (!server.CurrentSession.CanClear) throw new VoteException($"Session not in state where votes can be cleared.");
+
+            PokerSessionEngine.Clear(server.CurrentSession);
+            var player = PokerServerManager.GetPlayer(server, playerPrivateId);
+            RaiseRoomUpdated(server.Id, server);
+            RaiseRoomCleared(server.Id);
+            RaiseLogUpdated(server.Id, player.Name, "Cleared all votes.");
+        }
+
+        public void ShowVotes(Guid serverId, string playerPrivateId)
+        {
+            var server = _serverStore.Get(serverId);
+            if (!server.CurrentSession.CanShow(server.Players)) throw new VoteException($"Session not in state where votes can be shown.");
+
+            PokerSessionEngine.Show(server.CurrentSession);
+            var player = PokerServerManager.GetPlayer(server, playerPrivateId); 
+            RaiseRoomUpdated(server.Id, server);
+            RaiseLogUpdated(server.Id, player.Name, "Made all votes visible.");
+        }
+
+        private void RaiseRoomCleared(Guid serverId)
+        {
+            RoomCleared.Invoke(this, new RoomClearedEventArgs(serverId));
+        }
+
+        private void RaiseLogUpdated(Guid serverId, string initiatingPlayerName, string logMessage)
+        {
+            LogUpdated.Invoke(this, new LogUpdatedEventArgs(serverId, initiatingPlayerName, logMessage));
+        }
+
+        private void RaiseRoomUpdated(Guid serverId, PokerServer updatedServer)
+        {
+            RoomUpdated.Invoke(this, new RoomUpdatedEventArgs(serverId, updatedServer));
+        }
+
+        private void RaisePlayerKicked(Guid serverId, Player kickedPlayer)
+        {
+            PlayerKicked.Invoke(this, new PlayerKickedEventArgs(serverId, kickedPlayer));
+        }
+    }
+}

@@ -1,8 +1,7 @@
 ﻿using System.Collections.Generic;
 using System.Linq;
-using PlanningPoker.Shared;
 
-namespace PlanningPoker.Core.Models.Poker
+namespace PlanningPoker.Engine.Core.Models.Poker
 {
     public class PokerSession
     {

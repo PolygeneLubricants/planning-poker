@@ -1,6 +1,4 @@
-﻿using PlanningPoker.Shared;
-
-namespace PlanningPoker.Core.Models
+﻿namespace PlanningPoker.Engine.Core.Models
 {
     public class Player
     {
