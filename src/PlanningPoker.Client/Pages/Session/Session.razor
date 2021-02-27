@@ -90,7 +90,9 @@
         if (sessionExists)
         {
             _username = savedSession.Username;
-            Join();
+            _type = savedSession.Type;
+            await Join();
+            StateHasChanged();
         }
     }
 
@@ -127,7 +129,8 @@
         var serverSession = new ServerSession
         {
             ServerId = _parsedId,
-            Username = _username
+            Username = _username,
+            Type = _type
         };
 
         sessionManager.SetSession(serverSession);

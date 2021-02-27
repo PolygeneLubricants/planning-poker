@@ -39,7 +39,7 @@ namespace PlanningPoker.Client.Storage
         public void SetSession(ServerSession session)
         {
             var sessions = _sessionStorage.GetItem<Dictionary<string, ServerSession>>(SessionStoreName) ?? new Dictionary<string, ServerSession>();
-            sessions.Add(session.ServerId.ToString(), session);
+            sessions[session.ServerId.ToString()] = session;
             _sessionStorage.SetItem(SessionStoreName, sessions);
         }
 

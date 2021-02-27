@@ -6,11 +6,11 @@ namespace PlanningPoker.Engine.Core.Managers
 {
     internal static class ServerManager
     {
-        internal static Player AddPlayer(PokerServer server, string playerPrivateId, string playerName, PlayerType type)
+        internal static Player AddOrUpdatePlayer(PokerServer server, string playerPrivateId, string playerName, PlayerType type)
         {
             var publicId = GeneratePublicId(server.Players);
             var player = new Player(playerPrivateId, publicId, playerName, type);
-            server.Players.Add(playerPrivateId, player);
+            server.Players[playerPrivateId] = player;
             return player;
         }
 
