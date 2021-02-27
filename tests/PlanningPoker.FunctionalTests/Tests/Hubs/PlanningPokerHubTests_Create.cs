@@ -46,10 +46,10 @@ namespace PlanningPoker.FunctionalTests.Tests.Hubs
             new List<object[]>
             {
                 new object[] { "" },
-                new object[] { "abc" },
+                new object[] { "abcde" },
                 new object[] { " " },
                 new object[] { (string)null },
-                new object[] { "1,2,3,abc" },
+                new object[] { "1,2,3,abcde" },
                 new object[] { "a  b  c, 1,2,3" },
             };
     }

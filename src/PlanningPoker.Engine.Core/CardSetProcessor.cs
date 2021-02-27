@@ -18,7 +18,7 @@ namespace PlanningPoker.Engine.Core
 
             if (!splitCards.All(IsValidCard))
             {
-                validationMessage = "One or more cards are invalid. Please ensure cards are either whole numbers, or single characters.";
+                validationMessage = "One or more cards are invalid. Please ensure cards are either whole numbers, or less than 4 characters.";
                 cardSet = null;
                 return false;
             }
@@ -33,7 +33,7 @@ namespace PlanningPoker.Engine.Core
         internal static bool IsValidCard(string card)
         {
             var isNumber = int.TryParse(card, NumberStyles.Integer, CultureInfo.InvariantCulture, out var parsedCard);
-            if (!isNumber) return card.Length == 1;
+            if (!isNumber) return card.Length > 0 && card.Length < 4;
 
             return true;
         }
