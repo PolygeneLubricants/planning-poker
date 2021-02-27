@@ -5,7 +5,7 @@ using System.Threading.Tasks;
 using Microsoft.Extensions.Hosting;
 using PlanningPoker.Engine.Core;
 
-namespace PlanningPoker.Server.HostedServices
+namespace PlanningPoker.Server.Infrastructure.HostedServices
 {
     public class CleanupServerJob : IHostedService, IDisposable
     {

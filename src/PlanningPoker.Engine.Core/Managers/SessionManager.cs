@@ -2,32 +2,32 @@
 using System.Linq;
 using PlanningPoker.Engine.Core.Models.Poker;
 
-namespace PlanningPoker.Engine.Core
+namespace PlanningPoker.Engine.Core.Managers
 {
-    public static class PokerSessionEngine
+    internal static class SessionManager
     {
-        public static void SetVote(PokerSession session, int playerPublicId, string vote)
+        internal static void SetVote(PokerSession session, int playerPublicId, string vote)
         {
             session.Votes[playerPublicId] = vote;
         }
 
-        public static void RemoveVote(PokerSession session, int playerPublicId)
+        internal static void RemoveVote(PokerSession session, int playerPublicId)
         {
             session.Votes.Remove(playerPublicId);
         }
 
-        public static void Clear(PokerSession session)
+        internal static void Clear(PokerSession session)
         {
             session.Votes = new Dictionary<int, string>();
             session.IsShown = false;
         }
 
-        public static void Show(PokerSession session)
+        internal static void Show(PokerSession session)
         {
             session.IsShown = true;
         }
 
-        public static void RemovePlayer(PokerSession session, int playerPublicId)
+        internal static void RemovePlayer(PokerSession session, int playerPublicId)
         {
             session.Votes.Remove(playerPublicId);
             if (!session.Votes.Any())

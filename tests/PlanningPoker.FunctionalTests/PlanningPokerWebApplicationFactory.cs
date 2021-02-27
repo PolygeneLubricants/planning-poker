@@ -5,7 +5,7 @@ using Microsoft.AspNetCore.Mvc.Testing;
 using Microsoft.AspNetCore.TestHost;
 using Microsoft.Extensions.DependencyInjection;
 using PlanningPoker.Server;
-using PlanningPoker.Server.HostedServices;
+using PlanningPoker.Server.Infrastructure.HostedServices;
 
 namespace PlanningPoker.FunctionalTests
 {

@@ -1,23 +1,10 @@
 ﻿using System;
 using System.Collections.Generic;
-using System.Linq;
+using PlanningPoker.Engine.Core;
 using PlanningPoker.Engine.Core.Models;
 
-namespace PlanningPoker.Engine.Core
+namespace PlanningPoker.Server.Infrastructure
 {
-    public interface IServerStore
-    {
-        PokerServer Create(IList<string> cardSet);
-
-        PokerServer Get(Guid id);
-
-        IList<PokerServer> RemovePlayerFromAllServers(string playerId);
-
-        ICollection<PokerServer> All();
-
-        void Remove(PokerServer server);
-    }
-
     public class ServerStore : IServerStore
     {
         private readonly IDictionary<Guid, PokerServer> _servers;
@@ -38,17 +25,6 @@ namespace PlanningPoker.Engine.Core
         public PokerServer Get(Guid id)
         {
             return _servers[id];
-        }
-
-        public IList<PokerServer> RemovePlayerFromAllServers(string playerId)
-        {
-            var serversWithUser = _servers.Where(s => s.Value.Players.ContainsKey(playerId)).Select(pair => pair.Value).ToList();
-            foreach (var server in serversWithUser)
-            {
-                PokerServerManager.RemovePlayer(server, playerId);
-            }
-
-            return serversWithUser;
         }
         
         public ICollection<PokerServer> All()

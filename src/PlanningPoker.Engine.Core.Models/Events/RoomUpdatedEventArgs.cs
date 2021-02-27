@@ -1,7 +1,6 @@
 ﻿using System;
-using PlanningPoker.Engine.Core.Models;
 
-namespace PlanningPoker.Engine.Core.Events
+namespace PlanningPoker.Engine.Core.Models.Events
 {
     public class RoomUpdatedEventArgs : PlanningPokerEventArgs
     {

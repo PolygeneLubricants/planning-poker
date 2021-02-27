@@ -1,8 +1,9 @@
 ﻿using Microsoft.AspNetCore.SignalR;
 using PlanningPoker.Engine.Core;
-using PlanningPoker.Engine.Core.Events;
+using PlanningPoker.Engine.Core.Models.Events;
 using PlanningPoker.Hub.Client.Abstractions;
 using PlanningPoker.Hub.Client.Abstractions.ViewModels;
+using PlanningPoker.Server.Infrastructure;
 using PlanningPoker.Server.ViewModelMappers;
 
 namespace PlanningPoker.Server.Hubs
@@ -11,6 +12,11 @@ namespace PlanningPoker.Server.Hubs
     {
     }
 
+    // TODO: Fix this component, which is awkward.
+    // 1. The broadcaster sits in PlanningPoker.Server, as it needs the HubContext as a dependency,
+    //    however, it belongs in Infrastructure.
+    // 2. The logic of EventBroadcaster works by injecting it into the hub, and then everything happens magically.
+    //    It's not intuitive that it works this way.
     public class PlanningPokerEventBroadcaster : IPlanningPokerEventBroadcaster
     {
         private readonly IDateTimeProvider _dateTimeProvider;

@@ -4,8 +4,8 @@ using Microsoft.AspNetCore.Hosting;
 using Microsoft.AspNetCore.ResponseCompression;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Hosting;
-using PlanningPoker.Server.Extensions;
 using PlanningPoker.Server.Hubs;
+using PlanningPoker.Server.Infrastructure.Extensions;
 
 namespace PlanningPoker.Server
 {
@@ -14,6 +14,7 @@ namespace PlanningPoker.Server
         public void ConfigureServices(IServiceCollection services)
         {
             services.RegisterDependencies();
+            services.AddSingleton<IPlanningPokerEventBroadcaster, PlanningPokerEventBroadcaster>();
             services.AddSignalR(options =>
                 {
                     options.EnableDetailedErrors = true;

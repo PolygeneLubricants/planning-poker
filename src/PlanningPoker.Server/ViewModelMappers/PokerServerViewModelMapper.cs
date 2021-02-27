@@ -1,7 +1,6 @@
 ﻿using System.Linq;
 using PlanningPoker.Engine.Core.Models;
 using PlanningPoker.Hub.Client.Abstractions.ViewModels;
-using PlanningPoker.Server.ViewModelMappers.Poker;
 
 namespace PlanningPoker.Server.ViewModelMappers
 {

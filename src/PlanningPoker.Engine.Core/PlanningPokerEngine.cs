@@ -1,7 +1,8 @@
 ﻿using System;
-using PlanningPoker.Engine.Core.Events;
 using PlanningPoker.Engine.Core.Exceptions;
+using PlanningPoker.Engine.Core.Managers;
 using PlanningPoker.Engine.Core.Models;
+using PlanningPoker.Engine.Core.Models.Events;
 
 namespace PlanningPoker.Engine.Core
 {
@@ -40,8 +41,8 @@ namespace PlanningPoker.Engine.Core
         public void Kick(Guid id, string initiatingPlayerPrivateId, int playerPublicIdToRemove)
         {
             var server = _serverStore.Get(id);
-            var player = PokerServerManager.GetPlayer(server, initiatingPlayerPrivateId);
-            var wasRemoved = PokerServerManager.TryRemovePlayer(server, playerPublicIdToRemove, out var kickedPlayer);
+            var player = ServerManager.GetPlayer(server, initiatingPlayerPrivateId);
+            var wasRemoved = ServerManager.TryRemovePlayer(server, playerPublicIdToRemove, out var kickedPlayer);
             if (wasRemoved && kickedPlayer != null)
             {
                 RaisePlayerKicked(id, kickedPlayer);
@@ -52,7 +53,7 @@ namespace PlanningPoker.Engine.Core
 
         public void RemovePlayerFromAllRooms(string playerPrivateId)
         {
-            var serversWithPlayer = _serverStore.RemovePlayerFromAllServers(playerPrivateId);
+            var serversWithPlayer = ServerManager.RemovePlayerFromAllServers(_serverStore.All(), playerPrivateId);
             foreach (var server in serversWithPlayer)
             {
                 RaiseRoomUpdated(server.Id, server);
@@ -76,7 +77,7 @@ namespace PlanningPoker.Engine.Core
             if (string.IsNullOrWhiteSpace(playerName)) throw new MissingPlayerNameException();
 
             var server = _serverStore.Get(id);
-            var newPlayer = PokerServerManager.AddPlayer(server, playerPrivateId, playerName, type);
+            var newPlayer = ServerManager.AddPlayer(server, playerPrivateId, playerName, type);
             RaiseRoomUpdated(id, server);
             RaiseLogUpdated(id, playerName, "Joined the server.");
             return newPlayer;
@@ -89,10 +90,10 @@ namespace PlanningPoker.Engine.Core
             if (!server.CurrentSession.CanVote) throw new VoteException($"Session not in state where players can vote.");
             if (!server.Players.ContainsKey(playerPrivateId)) throw new VoteException($"Player is not part of session.");
 
-            var player = PokerServerManager.GetPlayer(server, playerPrivateId);
+            var player = ServerManager.GetPlayer(server, playerPrivateId);
             if (player.Type == PlayerType.Observer) throw new VoteException($"Player is of type '{player.Type}' and cannot vote.");
 
-            PokerSessionEngine.SetVote(server.CurrentSession, player.PublicId, vote);
+            SessionManager.SetVote(server.CurrentSession, player.PublicId, vote);
             RaiseRoomUpdated(server.Id, server);
             RaiseLogUpdated(server.Id, player.Name, "Voted.");
         }
@@ -103,10 +104,10 @@ namespace PlanningPoker.Engine.Core
             if (!server.CurrentSession.CanVote) throw new VoteException($"Session not in state where players can unvote.");
             if (!server.Players.ContainsKey(playerPrivateId)) throw new VoteException($"Player is not part of session.");
 
-            var player = PokerServerManager.GetPlayer(server, playerPrivateId);
+            var player = ServerManager.GetPlayer(server, playerPrivateId);
             if (player.Type == PlayerType.Observer) throw new VoteException($"Player is of type '{player.Type}' and cannot vote.");
 
-            PokerSessionEngine.RemoveVote(server.CurrentSession, player.PublicId);
+            SessionManager.RemoveVote(server.CurrentSession, player.PublicId);
             RaiseRoomUpdated(server.Id, server);
             RaiseLogUpdated(server.Id, player.Name, "Redacted their vote.");
         }
@@ -116,8 +117,8 @@ namespace PlanningPoker.Engine.Core
             var server = _serverStore.Get(serverId);
             if (!server.CurrentSession.CanClear) throw new VoteException($"Session not in state where votes can be cleared.");
 
-            PokerSessionEngine.Clear(server.CurrentSession);
-            var player = PokerServerManager.GetPlayer(server, playerPrivateId);
+            SessionManager.Clear(server.CurrentSession);
+            var player = ServerManager.GetPlayer(server, playerPrivateId);
             RaiseRoomUpdated(server.Id, server);
             RaiseRoomCleared(server.Id);
             RaiseLogUpdated(server.Id, player.Name, "Cleared all votes.");
@@ -128,8 +129,8 @@ namespace PlanningPoker.Engine.Core
             var server = _serverStore.Get(serverId);
             if (!server.CurrentSession.CanShow(server.Players)) throw new VoteException($"Session not in state where votes can be shown.");
 
-            PokerSessionEngine.Show(server.CurrentSession);
-            var player = PokerServerManager.GetPlayer(server, playerPrivateId); 
+            SessionManager.Show(server.CurrentSession);
+            var player = ServerManager.GetPlayer(server, playerPrivateId); 
             RaiseRoomUpdated(server.Id, server);
             RaiseLogUpdated(server.Id, player.Name, "Made all votes visible.");
         }

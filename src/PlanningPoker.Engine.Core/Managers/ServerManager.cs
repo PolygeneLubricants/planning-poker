@@ -2,11 +2,11 @@
 using System.Linq;
 using PlanningPoker.Engine.Core.Models;
 
-namespace PlanningPoker.Engine.Core
+namespace PlanningPoker.Engine.Core.Managers
 {
-    public static class PokerServerManager
+    internal static class ServerManager
     {
-        public static Player AddPlayer(PokerServer server, string playerPrivateId, string playerName, PlayerType type)
+        internal static Player AddPlayer(PokerServer server, string playerPrivateId, string playerName, PlayerType type)
         {
             var publicId = GeneratePublicId(server.Players);
             var player = new Player(playerPrivateId, publicId, playerName, type);
@@ -28,14 +28,25 @@ namespace PlanningPoker.Engine.Core
             }
         }
 
-        public static void RemovePlayer(PokerServer server, string playerPrivateId)
+        internal static void RemovePlayer(PokerServer server, string playerPrivateId)
         {
             var player = server.Players[playerPrivateId];
             server.Players.Remove(playerPrivateId);
-            PokerSessionEngine.RemovePlayer(server.CurrentSession, player.PublicId);
+            SessionManager.RemovePlayer(server.CurrentSession, player.PublicId);
         }
 
-        public static bool TryRemovePlayer(PokerServer server, int playerPublicId, out Player? removedPlayer)
+        internal static IList<PokerServer> RemovePlayerFromAllServers(IEnumerable<PokerServer> servers, string playerId)
+        {
+            var serversWithUser = servers.Where(s => s.Players.ContainsKey(playerId)).ToList();
+            foreach (var server in serversWithUser)
+            {
+                RemovePlayer(server, playerId);
+            }
+
+            return serversWithUser;
+        }
+
+        internal static bool TryRemovePlayer(PokerServer server, int playerPublicId, out Player? removedPlayer)
         {
             var player = server.Players.Where(kvp => kvp.Value.PublicId == playerPublicId).Select(kvp => kvp.Value).FirstOrDefault();
             if (player != null)
@@ -49,7 +60,7 @@ namespace PlanningPoker.Engine.Core
             return false;
         }
 
-        public static Player GetPlayer(PokerServer server, string playerPrivateId)
+        internal static Player GetPlayer(PokerServer server, string playerPrivateId)
         {
             var player = server.Players[playerPrivateId];
             return player;

@@ -4,9 +4,9 @@ using System.Linq;
 
 namespace PlanningPoker.Engine.Core
 {
-    public static class CardSetProcessor
+    internal static class CardSetProcessor
     {
-        public static bool TryParseCardSet(string rawCardSet, out IList<string>? cardSet, out string? validationMessage)
+        internal static bool TryParseCardSet(string rawCardSet, out IList<string>? cardSet, out string? validationMessage)
         {
             var splitCards = rawCardSet?.Split(',')?.Select(c => c.Trim())?.ToList();
             if (splitCards == null || !splitCards.Any())
@@ -30,7 +30,7 @@ namespace PlanningPoker.Engine.Core
             return true;
         }
 
-        public static bool IsValidCard(string card)
+        internal static bool IsValidCard(string card)
         {
             var isNumber = int.TryParse(card, NumberStyles.Integer, CultureInfo.InvariantCulture, out var parsedCard);
             if (!isNumber) return card.Length == 1;

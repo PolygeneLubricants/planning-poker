@@ -4,7 +4,7 @@ using PlanningPoker.Engine.Core.Models;
 using PlanningPoker.Engine.Core.Models.Poker;
 using PlanningPoker.Hub.Client.Abstractions.ViewModels.Poker;
 
-namespace PlanningPoker.Server.ViewModelMappers.Poker
+namespace PlanningPoker.Server.ViewModelMappers
 {
     public static class PokerSessionViewModelMapper
     {
