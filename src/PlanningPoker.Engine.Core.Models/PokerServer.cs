@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Collections.Concurrent;
 using System.Collections.Generic;
 using PlanningPoker.Engine.Core.Models.Poker;
 
@@ -9,7 +10,7 @@ namespace PlanningPoker.Engine.Core.Models
         public PokerServer(Guid id, IList<string> cardSet)
         {
             Id = id;
-            Players = new Dictionary<string, Player>();
+            Players = new ConcurrentDictionary<string, Player>();
             CurrentSession = new PokerSession(cardSet);
             Created = DateTime.UtcNow;
         }

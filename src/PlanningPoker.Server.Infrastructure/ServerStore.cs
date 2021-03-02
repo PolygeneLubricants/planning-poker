@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Collections.Concurrent;
 using System.Collections.Generic;
 using PlanningPoker.Engine.Core;
 using PlanningPoker.Engine.Core.Models;
@@ -11,7 +12,7 @@ namespace PlanningPoker.Server.Infrastructure
 
         public ServerStore()
         {
-            _servers = new Dictionary<Guid, PokerServer>();
+            _servers = new ConcurrentDictionary<Guid, PokerServer>();
         }
 
         public PokerServer Create(IList<string> cardSet)

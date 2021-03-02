@@ -1,4 +1,5 @@
-﻿using System.Collections.Generic;
+﻿using System.Collections.Concurrent;
+using System.Collections.Generic;
 using System.Linq;
 
 namespace PlanningPoker.Engine.Core.Models.Poker
@@ -8,7 +9,7 @@ namespace PlanningPoker.Engine.Core.Models.Poker
         public PokerSession(IList<string> cardSet)
         {
             IsShown = false;
-            Votes = new Dictionary<int, string>();
+            Votes = new ConcurrentDictionary<int, string>();
             CardSet = cardSet;
         }
 
