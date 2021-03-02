@@ -64,6 +64,17 @@
     color: darkred;
 }
 
+.changetype-btn {
+    background: none;
+    color: #F7C600;
+}
+
+.changetype-btn[disabled] {
+    background: none;
+    color: #bdb4b4;
+}
+
+
 #blazor-error-ui {
     background: lightyellow;
     bottom: 0;

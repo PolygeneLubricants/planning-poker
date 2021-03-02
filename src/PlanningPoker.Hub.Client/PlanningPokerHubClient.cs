@@ -57,6 +57,11 @@ namespace PlanningPoker.Hub.Client
             return _hubConnection.InvokeAsync(HubEndpointRoutes.Vote, serverId, playerPrivateId, vote);
         }
 
+        public Task<PlayerViewModel> ChangePlayerType(Guid serverId, PlayerType newType)
+        {
+            return _hubConnection.InvokeAsync<PlayerViewModel>(HubEndpointRoutes.ChangePlayerType, serverId, newType);
+        }
+
         public void OnSessionUpdated(Action<PokerServerViewModel> onSessionUpdatedHandler)
         {
             _hubConnection.On(BroadcastChannels.UPDATED, onSessionUpdatedHandler);

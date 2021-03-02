@@ -7,12 +7,13 @@
         <div class="row">
             <table class="table table-striped">
                 <thead>
-                <tr>
-                    <th></th>
-                    <th>Name</th>
-                    <th>Vote</th>
-                    <th></th>
-                </tr>
+                    <tr>
+                        <th></th>
+                        <th>Name</th>
+                        <th>Vote</th>
+                        <th></th>
+                        <th></th>
+                    </tr>
                 </thead>
                 <tbody>
                 @foreach (var player in Server?.Players?.Where(p => p.Type == PlayerType.Participant) ?? Enumerable.Empty<PlayerViewModel>())
@@ -33,6 +34,14 @@
                             @currentPlayerVote
                         </td>
                         <td>
+                            @if (CurrentPlayer.PublicId == player.PublicId)
+                            {
+                                <button class="changetype-btn btn float-right" @onclick="() => ChangeType(PlayerType.Observer)" disabled="@PlayerHasVoted()">
+                                    <span class="changetype-icon oi oi-loop"></span>
+                                </button>
+                            }
+                        </td>
+                        <td>
                             <button class="kick-btn btn float-right" @onclick="() => Kick(player.PublicId)">
                                 <span class="kick-icon oi oi-x"></span>
                             </button>
@@ -51,9 +60,11 @@
         <div class="row">
             <table class="table table-striped">
                 <thead>
-                <tr>
-                    <th>Name</th>
-                </tr>
+                    <tr>
+                        <th>Name</th>
+                        <th></th>
+                        <th></th>
+                    </tr>
                 </thead>
                 <tbody>
                 @foreach (var player in Server?.Players?.Where(p => p.Type == PlayerType.Observer) ?? Enumerable.Empty<PlayerViewModel>())
@@ -61,6 +72,19 @@
                     <tr>
                         <td>
                             @player.Name
+                        </td>
+                        <td>
+                            @if (CurrentPlayer.PublicId == player.PublicId)
+                            {
+                                <button class="changetype-btn btn float-right" @onclick="() => ChangeType(PlayerType.Participant)" disabled="@PlayerHasVoted()">
+                                    <span class="changetype-icon oi oi-loop"></span>
+                                </button>
+                            }
+                        </td>
+                        <td>
+                            <button class="kick-btn btn float-right" @onclick="() => Kick(player.PublicId)">
+                                <span class="kick-icon oi oi-x"></span>
+                            </button>
                         </td>
                     </tr>
                 }
@@ -100,4 +124,14 @@
         return HubClient.KickPlayer(Id, CurrentPlayer.Id, playerPublicId);
     }
 
+    async Task ChangeType(PlayerType newType)
+    {
+        var updatedPlayer = await HubClient.ChangePlayerType(Id, newType);
+        await CurrentPlayerChanged.InvokeAsync(updatedPlayer);
+    }
+
+    bool PlayerHasVoted()
+    {
+        return Server.CurrentSession.Votes.Any(v => v.Key == CurrentPlayer.PublicId.ToString());
+    }
 }

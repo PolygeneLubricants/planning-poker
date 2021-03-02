@@ -10,5 +10,6 @@
         public const string Show = "Show";
         public const string UnVote = "UnVote";
         public const string Vote = "Vote";
+        public const string ChangePlayerType = "ChangePlayerType";
     }
 }

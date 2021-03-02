@@ -65,5 +65,11 @@ namespace PlanningPoker.Engine.Core.Managers
             var player = server.Players[playerPrivateId];
             return player;
         }
+
+        public static Player ChangePlayerType(PokerServer server, Player player, PlayerType newType)
+        {
+            player.Type = newType;
+            return player;
+        }
     }
 }

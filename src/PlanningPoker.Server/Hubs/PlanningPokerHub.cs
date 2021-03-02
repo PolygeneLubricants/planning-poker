@@ -74,6 +74,12 @@ namespace PlanningPoker.Server.Hubs
             _pokerEngine.ShowVotes(serverId, GetPlayerPrivateId());
         }
 
+        public PlayerViewModel ChangePlayerType(Guid serverId, Engine.Core.Models.PlayerType newType)
+        {
+            var updatedPlayer = _pokerEngine.ChangePlayerType(serverId, GetPlayerPrivateId(), newType);
+            return updatedPlayer.Map(includePrivateId: true);
+        }
+
         private string GetPlayerPrivateId()
         {
             return Context.ConnectionId;

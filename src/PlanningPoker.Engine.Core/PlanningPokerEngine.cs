@@ -21,6 +21,7 @@ namespace PlanningPoker.Engine.Core
         void RedactVote(Guid serverId, string playerPrivateId);
         void ClearVotes(Guid serverId, string playerPrivateId);
         void ShowVotes(Guid serverId, string playerPrivateId);
+        Player ChangePlayerType(Guid serverId, string playerPrivateId, PlayerType newType);
     }
 
     public class PlanningPokerEngine : IPlanningPokerEngine
@@ -133,6 +134,21 @@ namespace PlanningPoker.Engine.Core
             var player = ServerManager.GetPlayer(server, playerPrivateId); 
             RaiseRoomUpdated(server.Id, server);
             RaiseLogUpdated(server.Id, player.Name, "Made all votes visible.");
+        }
+
+        public Player ChangePlayerType(Guid serverId, string playerPrivateId, PlayerType newType)
+        {
+            var server = _serverStore.Get(serverId);
+            var player = ServerManager.GetPlayer(server, playerPrivateId);
+            if (SessionManager.HasVoted(server.CurrentSession, player.PublicId))
+            {
+                throw new ChangePlayerTypeException($"Cannot change from playertype '{PlayerType.Participant}', when player has voted.");
+            }
+
+            ServerManager.ChangePlayerType(server, player, newType);
+            RaiseRoomUpdated(server.Id, server);
+            RaiseLogUpdated(server.Id, player.Name, $"Changed their player type to {newType}.");
+            return player;
         }
 
         private void RaiseRoomCleared(Guid serverId)

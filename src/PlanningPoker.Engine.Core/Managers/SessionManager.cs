@@ -1,5 +1,6 @@
 ﻿using System.Collections.Generic;
 using System.Linq;
+using PlanningPoker.Engine.Core.Models;
 using PlanningPoker.Engine.Core.Models.Poker;
 
 namespace PlanningPoker.Engine.Core.Managers
@@ -34,6 +35,11 @@ namespace PlanningPoker.Engine.Core.Managers
             {
                 session.IsShown = false;
             }
+        }
+
+        public static bool HasVoted(PokerSession session, int playerPublicId)
+        {
+            return session.Votes.ContainsKey(playerPublicId);
         }
     }
 }

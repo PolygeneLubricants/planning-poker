@@ -24,6 +24,8 @@ namespace PlanningPoker.Hub.Client.Abstractions
 
         Task Vote(Guid serverId, string playerPrivateId, string vote);
 
+        Task<PlayerViewModel> ChangePlayerType(Guid serverId, PlayerType newType);
+
         void OnSessionUpdated(Action<PokerServerViewModel> onSessionUpdatedHandler);
 
         void OnPlayerKicked(Action<PlayerViewModel> onPlayerKickedHandler);
