@@ -58,6 +58,14 @@
 
 /* END SCROLLABLE TABLE */
 
+/* SESSION CONTROL */
+
+.card-wrapper {
+    margin: 10px 0;
+}
+
+/* END SESSION CONTROL */
+
 /* SESSION RENDERING */
 .kick-btn {
     background: none;
@@ -74,6 +82,7 @@
     color: #bdb4b4;
 }
 
+/* END SESSION RENDERING */
 
 #blazor-error-ui {
     background: lightyellow;
