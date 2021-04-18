@@ -2,6 +2,17 @@
     margin-bottom: 10px;
 }
 
+img.navbar-icon {
+    height: 34px;
+    width: 34px;
+    margin-right: 8px;
+}
+
+.navbar-light .navbar-brand, .navbar-light .navbar-brand:hover, .navbar-light .navbar-brand:focus, .navbar-light .navbar-brand:visited {
+    color: #007BFF;
+    font-weight: bold;
+}
+
 .card {
     margin: 12px 0;
 }
