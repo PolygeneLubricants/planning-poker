@@ -1,7 +1,7 @@
 ﻿@using PlanningPoker.Client.Utilities
 @using PlanningPoker.Hub.Client.Abstractions
 @using PlanningPoker.Hub.Client.Abstractions.ViewModels
-@inject Blazored.Localisation.Services.IBrowserDateTimeProvider BrowserDateTimeProvider
+
 <div class="card log">
     <div class="card-body">
         <h5 class="card-title">Log</h5>
@@ -45,18 +45,9 @@
         });
     }
 
-    protected override async Task OnAfterRenderAsync(bool firstRender)
-    {
-        if (firstRender)
-        {
-            var browserDateTime = await BrowserDateTimeProvider.GetInstance();            
-            LocalTimeZoneInfo = browserDateTime.LocalTimeZoneInfo;
-        }
-    }
-
     public DateTime ToLocalTime(DateTime time)
     {
-        return LocalTimeZoneInfo != null ? TimeZoneInfo.ConvertTimeFromUtc(time, LocalTimeZoneInfo) : time;
+        return TimeZoneInfo.ConvertTimeFromUtc(time, TimeZoneInfo.Local);
     }
 
     public TimeZoneInfo LocalTimeZoneInfo { get; set; }
