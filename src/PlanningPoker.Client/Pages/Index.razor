@@ -85,6 +85,7 @@ else
         _cardSet = string.Join(",", Cards.DefaultCardSet);
         var connection = new HubConnectionBuilder()
             .WithUrl(NavigationManager.ToAbsoluteUri("/hubs/poker"))
+            .WithAutomaticReconnect()
             .Build();
         await connection.StartAsync();
         _hubClient = new PlanningPokerHubClient(connection);
