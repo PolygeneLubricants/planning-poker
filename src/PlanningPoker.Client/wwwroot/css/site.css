@@ -1,4 +1,47 @@
-﻿.navbar {
+﻿/* LOADING */
+
+.loading {
+    position: absolute;
+    top: 50%;
+    left: 50%;
+    -moz-transform: translateX(-50%) translateY(-50%);
+    -webkit-transform: translateX(-50%) translateY(-50%);
+    transform: translateX(-50%) translateY(-50%);
+    width: 25%;
+    height: 25%;
+}
+
+@keyframes spin {
+    from {
+        transform: rotate(0deg);
+    }
+
+    to {
+        transform: rotate(360deg);
+    }
+}
+
+.loading .spinning-logo {
+    max-width: 100%;
+    display: block;
+    margin: 0 auto;
+    animation-name: spin;
+    animation-duration: 3s;
+    animation-iteration-count: infinite;
+    animation-timing-function: linear;
+}
+
+.loading .loading-text {
+    text-align: center;
+    text-transform: uppercase;
+    font-size: 0.8em;
+    color: #007BFF;
+    font-weight: bold;
+}
+
+/* END LOADING*/
+
+.navbar {
     margin-bottom: 10px;
 }
 
