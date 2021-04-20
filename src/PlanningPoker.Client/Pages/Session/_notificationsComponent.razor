@@ -14,7 +14,7 @@
 @code {
     protected override async Task OnInitializedAsync()
     {
-        Notifications = new DropOutStack<Notification>(5);
+        Notifications = new DropOutStack<Notification>(1);
 
         HubClient.OnClosed(error =>
         {
@@ -34,7 +34,15 @@
 
         HubClient.OnReconnected(error =>
         {
-            var notification = new Notification(NotificationType.Reconnected);
+            var notification = new Notification(NotificationType.Connected);
+            Notifications.Push(notification);
+            StateHasChanged();
+            return Task.CompletedTask;
+        });
+
+        HubClient.OnConnected(() =>
+        {
+            var notification = new Notification(NotificationType.Connected);
             Notifications.Push(notification);
             StateHasChanged();
             return Task.CompletedTask;

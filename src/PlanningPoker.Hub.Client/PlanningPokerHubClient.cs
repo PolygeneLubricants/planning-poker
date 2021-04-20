@@ -9,6 +9,7 @@ namespace PlanningPoker.Hub.Client
     public class PlanningPokerHubClient : IPlanningPokerHubClient
     {
         private readonly HubConnection _hubConnection;
+        private event Func<Task> Connected;
 
         public PlanningPokerHubClient(HubConnection hubConnection)
         {
@@ -17,9 +18,10 @@ namespace PlanningPoker.Hub.Client
 
         public string? ConnectionId => _hubConnection.ConnectionId;
 
-        public Task Connect(Guid serverId)
+        public async Task Connect(Guid serverId)
         {
-            return _hubConnection.InvokeAsync(HubEndpointRoutes.Connect, serverId);
+            await _hubConnection.InvokeAsync(HubEndpointRoutes.Connect, serverId);
+            await Connected.Invoke();
         }
 
         public Task ClearVotes(Guid serverId)
@@ -95,6 +97,11 @@ namespace PlanningPoker.Hub.Client
         public void OnClosed(Func<Exception, Task> closedHandler)
         {
             _hubConnection.Closed += closedHandler;
+        }
+
+        public void OnConnected(Func<Task> connectedHandler)
+        {
+            Connected += connectedHandler;
         }
     }
 }

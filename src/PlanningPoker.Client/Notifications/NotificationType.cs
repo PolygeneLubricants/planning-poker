@@ -4,6 +4,6 @@
     {
         Closed = 200,
         Reconnecting = 300,
-        Reconnected = 400
+        Connected = 400
     }
 }

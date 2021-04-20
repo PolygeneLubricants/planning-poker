@@ -94,6 +94,7 @@
     {
         var connection = new HubConnectionBuilder()
             .WithUrl(NavigationManager.ToAbsoluteUri("/hubs/poker"))
+            .WithAutomaticReconnect()
             .Build();
 
         _hubClient = new PlanningPokerHubClient(connection);
@@ -110,6 +111,22 @@
             sessionManager.RemoveSession(Id);
             CurrentServer = null;
             _currentPlayer = null;
+            StateHasChanged();
+        });
+
+        _hubClient.OnClosed(async (error) =>
+        {
+            await ReconnectIfApplicable();
+        });
+
+        _hubClient.OnReconnected(async (newConnectionId) =>
+        {
+            if (_currentPlayer == null)
+            {
+                return;
+            }
+
+            await ReconnectIfApplicable();
             StateHasChanged();
         });
 

@@ -19,8 +19,8 @@ namespace PlanningPoker.Client.Notifications
                     Icon = "oi-ellipses";
                     AlertClass = "alert-warning";
                     break;
-                case NotificationType.Reconnected:
-                    Text = "Reconnected";
+                case NotificationType.Connected:
+                    Text = "Connected";
                     Icon = "oi-circle-check";
                     AlertClass = "alert-success";
                     break;

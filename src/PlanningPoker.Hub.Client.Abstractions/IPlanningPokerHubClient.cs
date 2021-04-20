@@ -39,5 +39,7 @@ namespace PlanningPoker.Hub.Client.Abstractions
         void OnReconnecting(Func<Exception, Task> reconnectingHandler);
 
         void OnClosed(Func<Exception, Task> closedHandler);
+
+        void OnConnected(Func<Task> connectedHandler);
     }
 }
