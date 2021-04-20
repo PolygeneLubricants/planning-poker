@@ -85,15 +85,7 @@
     {
         if (!firstRender) return;
 
-        // Try get session from session storage, to see if the user should simply reconnect.
-        var sessionExists = sessionManager.TryGetSession(Id, out var savedSession);
-        if (sessionExists)
-        {
-            _username = savedSession.Username;
-            _type = savedSession.Type;
-            await Join();
-            StateHasChanged();
-        }
+        await ReconnectIfApplicable();
     }
 
     protected override async Task OnInitializedAsync()
@@ -119,7 +111,39 @@
             StateHasChanged();
         });
 
+        _hubClient.OnReconnected(async (newConnectionId) =>
+        {
+            if (_currentPlayer == null)
+            {
+                return;
+            }
+
+            if (newConnectionId == _currentPlayer.Id)
+            {
+                await ReconnectIfApplicable();
+                StateHasChanged();
+            }
+            else
+            {
+                _currentPlayer = null;
+                StateHasChanged();
+            }
+        });
+
         await connection.StartAsync();
+    }
+
+    async Task ReconnectIfApplicable()
+    {
+        // Try get session from session storage, to see if the user should simply reconnect.
+        var sessionExists = sessionManager.TryGetSession(Id, out var savedSession);
+        if (sessionExists)
+        {
+            _username = savedSession.Username;
+            _type = savedSession.Type;
+            await Join();
+            StateHasChanged();
+        }
     }
 
     async Task Join()

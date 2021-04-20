@@ -81,5 +81,10 @@ namespace PlanningPoker.Hub.Client
         {
             _hubConnection.On(BroadcastChannels.CLEAR, onVotesClearedHandler);
         }
+
+        public void OnReconnected(Func<string, Task> reconnectedHandler)
+        {
+            _hubConnection.Reconnected += reconnectedHandler;
+        }
     }
 }

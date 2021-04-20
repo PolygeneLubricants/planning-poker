@@ -28,7 +28,7 @@ namespace PlanningPoker.Server.Hubs
         {
             _pokerEngine.Kick(id, initiatingPlayerPrivateId, playerPublicIdToRemove);
         }
-
+        
         public override async Task OnDisconnectedAsync(Exception exception)
         {
             _pokerEngine.RemovePlayerFromAllRooms(GetPlayerPrivateId());
