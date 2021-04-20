@@ -86,5 +86,15 @@ namespace PlanningPoker.Hub.Client
         {
             _hubConnection.Reconnected += reconnectedHandler;
         }
+
+        public void OnReconnecting(Func<Exception, Task> reconnectingHandler)
+        {
+            _hubConnection.Reconnecting += reconnectingHandler;
+        }
+
+        public void OnClosed(Func<Exception, Task> closedHandler)
+        {
+            _hubConnection.Closed += closedHandler;
+        }
     }
 }

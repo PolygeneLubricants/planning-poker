@@ -170,3 +170,30 @@ img.navbar-icon {
         margin-left: 0;
     }
 }
+
+/* NOTIFICATIONS */
+
+.notifications {
+    position: fixed;
+    right: 10px;
+    bottom: 10px;
+}
+
+.notification {
+    background: #FFF;
+    padding: 8px;
+    border: 1px solid #dcdcdc;
+    font-size: 0.7em;
+
+    -webkit-transition: opacity 5s ease-in-out;
+    -moz-transition: opacity 5s ease-in-out;
+    -ms-transition: opacity 5s ease-in-out;
+    -o-transition: opacity 5s ease-in-out;
+    opacity: 1;
+}
+
+.notification .notification-icon {
+    margin-right: 6px;
+}
+
+/* END NOTIFICATIONS */

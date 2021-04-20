@@ -1,0 +1,51 @@
+﻿@using PlanningPoker.Hub.Client.Abstractions
+@using PlanningPoker.Client.Utilities
+@using PlanningPoker.Client.Notifications
+<div class="notifications">
+    @foreach (var notification in Notifications)
+    {
+        <div class="notification @notification.AlertClass">
+            <span class="oi @notification.Icon notification-icon"></span>@notification.Text
+        </div>
+    }
+</div>
+
+
+@code {
+    protected override async Task OnInitializedAsync()
+    {
+        Notifications = new DropOutStack<Notification>(5);
+
+        HubClient.OnClosed(error =>
+        {
+            var notification = new Notification(NotificationType.Closed);
+            Notifications.Push(notification);
+            StateHasChanged();
+            return Task.CompletedTask;
+        });
+
+        HubClient.OnReconnecting(error =>
+        {
+            var notification = new Notification(NotificationType.Reconnecting);
+            Notifications.Push(notification);
+            StateHasChanged();
+            return Task.CompletedTask;
+        });
+
+        HubClient.OnReconnected(error =>
+        {
+            var notification = new Notification(NotificationType.Reconnected);
+            Notifications.Push(notification);
+            StateHasChanged();
+            return Task.CompletedTask;
+        });
+    }
+
+    public DropOutStack<Notification> Notifications { get; set; }
+
+    [Parameter]
+    public IPlanningPokerHubClient HubClient { get; set; }
+
+    [Parameter]
+    public EventCallback<IPlanningPokerHubClient> HubClientChanged { get; set; }
+}

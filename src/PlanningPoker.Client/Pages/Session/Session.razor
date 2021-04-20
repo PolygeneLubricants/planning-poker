@@ -55,6 +55,8 @@
     </div>
 }
 
+<_notificationsComponent  @bind-HubClient="_hubClient" />
+
 @code {
     private IPlanningPokerHubClient _hubClient;
 
@@ -109,25 +111,6 @@
             CurrentServer = null;
             _currentPlayer = null;
             StateHasChanged();
-        });
-
-        _hubClient.OnReconnected(async (newConnectionId) =>
-        {
-            if (_currentPlayer == null)
-            {
-                return;
-            }
-
-            if (newConnectionId == _currentPlayer.Id)
-            {
-                await ReconnectIfApplicable();
-                StateHasChanged();
-            }
-            else
-            {
-                _currentPlayer = null;
-                StateHasChanged();
-            }
         });
 
         await connection.StartAsync();
