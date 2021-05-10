@@ -5,6 +5,7 @@
 @using PlanningPoker.Hub.Client.Abstractions
 @using PlanningPoker.Hub.Client.Abstractions.ViewModels
 @inject NavigationManager NavigationManager
+@inject IJSRuntime JSRuntime
 
 @if (string.IsNullOrWhiteSpace(CreatedServerAddress))
 {
@@ -65,12 +66,17 @@ else
             <div class="row">
                 <div class="col-md-12">
                     <p>Below is the link to your room. Send this to your participants, and start planning!</p>
-                    <input class="form-control" value="@CreatedServerAddress" disabled="disabled"/>
+                    <div class="input-group mb-3">
+                        <input class="form-control" value="@CreatedServerAddress" disabled="disabled" />
+                        <div class="input-group-append">
+                            <button @onclick="CopyToClipboard" class="btn btn-outline-secondary" type="button" id="button-addon2">Copy</button>
+                        </div>
+                    </div>
                 </div>
             </div>
         </div>
     </div>
-    
+
 }
 
 @code {
@@ -103,6 +109,11 @@ else
         }
 
         StateHasChanged();
+    }
+
+    async Task CopyToClipboard()
+    {
+        await JSRuntime.InvokeVoidAsync("navigator.clipboard.writeText", CreatedServerAddress);
     }
 
     public string? CreatedServerAddress { get; set; }

@@ -70,7 +70,7 @@ namespace PlanningPoker.FunctionalTests.Tests.Hubs
             // Arrange
             var builder = CreateBuilder();
             builder.WithServer(out var serverId);
-            builder.WithPlayer(serverId, out var player1); 
+            builder.WithPlayer(serverId, out var player1);
             var player2Builder = CreateBuilder();
             player2Builder.WithPlayer(serverId, out var player2);
 
