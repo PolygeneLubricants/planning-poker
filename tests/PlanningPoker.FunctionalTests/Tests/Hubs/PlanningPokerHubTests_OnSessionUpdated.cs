@@ -29,7 +29,7 @@ namespace PlanningPoker.FunctionalTests.Tests.Hubs
 
             // Assert
             await awaitResponse.WaitAsync(TimeSpan.FromSeconds(5));
-            
+
             Assert.NotNull(updatedSession);
             Assert.Equal(serverId, updatedSession.Id);
 

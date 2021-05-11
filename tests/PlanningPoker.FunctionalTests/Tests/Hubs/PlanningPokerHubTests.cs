@@ -5,7 +5,7 @@ namespace PlanningPoker.FunctionalTests.Tests.Hubs
     public partial class PlanningPokerHubTests : IClassFixture<PlanningPokerWebApplicationFactory>
     {
         private readonly PlanningPokerWebApplicationFactory _factory;
-        
+
         public PlanningPokerHubTests(PlanningPokerWebApplicationFactory factory)
         {
             _factory = factory;

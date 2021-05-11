@@ -39,7 +39,7 @@ namespace PlanningPoker.FunctionalTests.Tests.Hubs
 
             await playerConnections[0].Vote(serverId, player1.Id, validVote);
             await playerConnections[1].Vote(serverId, player2.Id, validVote);
-            
+
             // Act
             var exceptionRecord = await Record.ExceptionAsync(() => playerConnections[2].ShowVotes(serverId));
 
