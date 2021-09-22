@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Threading.Tasks;
 using Microsoft.AspNetCore.Http.Connections;
 using Microsoft.AspNetCore.SignalR.Client;
 using PlanningPoker.Hub.Client;
@@ -16,6 +17,7 @@ namespace PlanningPoker.FunctionalTests.Tests.Hubs
             var hubConnection = CreateConnection(factory);
             hubConnection.StartAsync().GetAwaiter().GetResult();
             HubClient = new PlanningPokerHubClient(hubConnection);
+            HubClient.OnConnected(() => Task.CompletedTask);
         }
 
         public IPlanningPokerHubClient HubClient { get; }
