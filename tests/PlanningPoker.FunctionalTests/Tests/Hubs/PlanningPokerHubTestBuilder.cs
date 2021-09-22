@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Threading;
 using System.Threading.Tasks;
 using Microsoft.AspNetCore.Http.Connections;
 using Microsoft.AspNetCore.SignalR.Client;
@@ -61,39 +62,93 @@ namespace PlanningPoker.FunctionalTests.Tests.Hubs
 
         public PlanningPokerHubTestBuilder WithPlayerVoted(Guid serverId, string playerPrivateId, string vote)
         {
-            HubClient.Vote(serverId, playerPrivateId, vote).GetAwaiter().GetResult();
+            AwaitEventResult<PokerServerViewModel>(() =>
+                        HubClient.Vote(serverId, playerPrivateId, vote),
+                    HubClient.OnSessionUpdated)
+                .GetAwaiter().GetResult();
             return this;
         }
 
         public PlanningPokerHubTestBuilder WithPlayerUnVoted(Guid serverId, string playerPrivateId)
         {
-            HubClient.UnVote(serverId, playerPrivateId).GetAwaiter().GetResult();
+            AwaitEventResult<PokerServerViewModel>(() =>
+                        HubClient.UnVote(serverId, playerPrivateId),
+                    HubClient.OnSessionUpdated)
+                .GetAwaiter().GetResult();
             return this;
         }
 
         public PlanningPokerHubTestBuilder WithVotesShown(Guid serverId)
         {
-            HubClient.ShowVotes(serverId);
+            AwaitEventResult<PokerServerViewModel>(() =>
+                        HubClient.ShowVotes(serverId),
+                    HubClient.OnSessionUpdated)
+                .GetAwaiter().GetResult();
             return this;
         }
 
         public PlanningPokerHubTestBuilder WithVotesCleared(Guid serverId)
         {
-            HubClient.ClearVotes(serverId);
+            AwaitEventResult(() =>
+                        HubClient.ClearVotes(serverId),
+                    HubClient.OnVotesCleared)
+                .GetAwaiter().GetResult();
             return this;
         }
 
         public PlanningPokerHubTestBuilder WithPlayerKicked(Guid serverId, string initiatingPlayerPrivateId, int kickedPlayerPublicId)
         {
-            HubClient.KickPlayer(serverId, initiatingPlayerPrivateId, kickedPlayerPublicId);
+            AwaitEventResult<PlayerViewModel>(() => 
+                HubClient.KickPlayer(serverId, initiatingPlayerPrivateId, kickedPlayerPublicId), 
+                HubClient.OnPlayerKicked)
+                .GetAwaiter().GetResult();
             return this;
         }
 
         private PlanningPokerHubTestBuilder WithPlayer(Guid serverId, PlayerType playerType, string playerName, out PlayerViewModel player)
         {
             HubClient.Connect(serverId).GetAwaiter().GetResult();
-            player = HubClient.JoinServer(serverId, playerName, playerType).GetAwaiter().GetResult();
+            player = AwaitEventResult<PokerServerViewModel, PlayerViewModel>(
+                () => HubClient.JoinServer(serverId, playerName, playerType),
+                HubClient.OnSessionUpdated).GetAwaiter().GetResult();
             return this;
+        }
+
+        private async Task AwaitEventResult(Func<Task> taskToAwait, Action<Action> onEvent)
+        {
+            SemaphoreSlim awaitResponse = new SemaphoreSlim(0);
+            onEvent(() =>
+            {
+                awaitResponse.Release();
+            });
+
+            await taskToAwait();
+            await awaitResponse.WaitAsync(TimeSpan.FromSeconds(5));
+        }
+
+        private async Task AwaitEventResult<T>(Func<Task> taskToAwait, Action<Action<T>> onEvent)
+        {
+            SemaphoreSlim awaitResponse = new SemaphoreSlim(0);
+            onEvent(_ =>
+            {
+                awaitResponse.Release();
+            });
+
+            await taskToAwait();
+            await awaitResponse.WaitAsync(TimeSpan.FromSeconds(5));
+        }
+
+        private async Task<TResult> AwaitEventResult<T, TResult>(Func<Task<TResult>> taskToAwait, Action<Action<T>> onEvent)
+        {
+            SemaphoreSlim awaitResponse = new SemaphoreSlim(0);
+            onEvent(_ =>
+            {
+                awaitResponse.Release();
+            });
+
+            var taskResult = await taskToAwait();
+            await awaitResponse.WaitAsync(TimeSpan.FromSeconds(5));
+            return taskResult;
         }
     }
 }

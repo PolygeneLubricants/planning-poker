@@ -4,6 +4,7 @@ using Microsoft.AspNetCore.Hosting;
 using Microsoft.AspNetCore.Mvc.Testing;
 using Microsoft.AspNetCore.TestHost;
 using Microsoft.Extensions.DependencyInjection;
+using Microsoft.Extensions.Logging;
 using PlanningPoker.Server;
 using PlanningPoker.Server.Infrastructure.HostedServices;
 
@@ -17,6 +18,10 @@ namespace PlanningPoker.FunctionalTests
                 WebHost.CreateDefaultBuilder()
                     .UseEnvironment("LocalDevelopment")
                     .UseStartup<Startup>()
+                    .ConfigureLogging((context, logging) =>
+                    {
+                        logging.ClearProviders();
+                    })
                     .UseTestServer();
         }
 
