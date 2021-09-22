@@ -50,7 +50,7 @@
                             </tr>
                             <tr>
                                 <td>Mode value</td>
-                                <td>@GetVoteMode()</td>
+                                <td>@string.Join(", ", GetVoteMode())</td>
                             </tr>
                             </tbody>
                         </table>
@@ -97,15 +97,23 @@
         return HubClient.ShowVotes(Id);
     }
 
-    int? GetVoteMode()
+    IEnumerable<int?> GetVoteMode()
     {
-        return Session?.Votes?
+        var sortedVoteGroups = Session?.Votes?
             .Select(unparsedVote => IntParseOrNull(unparsedVote.Value))
             .Where(vote => vote != null)
             .GroupBy(parsedVote => parsedVote)
             .Where(group => group.Key.HasValue)
-            .OrderByDescending(group => group.Count())
-            .Select(group => group.Key).FirstOrDefault();
+            .OrderByDescending(group => group.Count());
+
+        var highestVoteCount = sortedVoteGroups
+            .Select(group => group.Count())
+            .FirstOrDefault();
+
+        return sortedVoteGroups
+            .TakeWhile(group => group.Count() >= highestVoteCount)
+            .Select(group => group.Key)
+            .OrderBy(vote => vote);
     }
 
     decimal? GetVoteAvg()
