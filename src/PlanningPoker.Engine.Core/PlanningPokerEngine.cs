@@ -78,9 +78,10 @@ namespace PlanningPoker.Engine.Core
             if (string.IsNullOrWhiteSpace(playerName)) throw new MissingPlayerNameException();
 
             var server = _serverStore.Get(id);
-            var newPlayer = ServerManager.AddOrUpdatePlayer(server, playerPrivateId, playerName, type);
+            var formattedPlayerName = playerName.Substring(0,20);
+            var newPlayer = ServerManager.AddOrUpdatePlayer(server, playerPrivateId, formattedPlayerName, type);
             RaiseRoomUpdated(id, server);
-            RaiseLogUpdated(id, playerName, "Joined the server.");
+            RaiseLogUpdated(id, newPlayer.Name, "Joined the server.");
             return newPlayer;
         }
 
