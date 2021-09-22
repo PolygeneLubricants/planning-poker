@@ -27,6 +27,7 @@ namespace PlanningPoker.Engine.Core
     public class PlanningPokerEngine : IPlanningPokerEngine
     {
         private readonly IServerStore _serverStore;
+        private const int MaxPlayerNameLength = 20;
 
         public PlanningPokerEngine(
             IServerStore serverStore)
@@ -78,7 +79,8 @@ namespace PlanningPoker.Engine.Core
             if (string.IsNullOrWhiteSpace(playerName)) throw new MissingPlayerNameException();
 
             var server = _serverStore.Get(id);
-            var formattedPlayerName = playerName.Substring(0,20);
+            
+            var formattedPlayerName = playerName.Length > MaxPlayerNameLength ? playerName.Substring(0, MaxPlayerNameLength) : playerName;
             var newPlayer = ServerManager.AddOrUpdatePlayer(server, playerPrivateId, formattedPlayerName, type);
             RaiseRoomUpdated(id, server);
             RaiseLogUpdated(id, newPlayer.Name, "Joined the server.");
