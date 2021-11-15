@@ -136,8 +136,11 @@ img.navbar-icon {
     color: #bdb4b4;
 }
 
-/* END SESSION RENDERING */
+.table .asleep {
+    opacity: 0.3;
+}
 
+/* END SESSION RENDERING */
 #blazor-error-ui {
     background: lightyellow;
     bottom: 0;
