@@ -9,5 +9,7 @@
         public string? Name { get; set; }
 
         public PlayerType Type { get; set; }
+
+        public PlayerMode Mode { get; set; }
     }
 }

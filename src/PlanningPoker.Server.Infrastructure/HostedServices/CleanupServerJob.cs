@@ -4,6 +4,7 @@ using System.Threading;
 using System.Threading.Tasks;
 using Microsoft.Extensions.Hosting;
 using PlanningPoker.Engine.Core;
+using PlanningPoker.Engine.Core.Models;
 
 namespace PlanningPoker.Server.Infrastructure.HostedServices
 {
@@ -31,8 +32,8 @@ namespace PlanningPoker.Server.Infrastructure.HostedServices
                 if (cancellationToken.IsCancellationRequested) break;
 
                 var isOld = createdThreshold > server.Created;
-                var isEmpty = !server.Players.Any();
-                if (isOld && isEmpty)
+                var isEmptyOrAsleep = server.Players.All(p => p.Value.Mode != PlayerMode.Awake);
+                if (isOld && isEmptyOrAsleep)
                 {
                     _serverStore.Remove(server);
                 }

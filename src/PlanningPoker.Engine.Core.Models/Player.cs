@@ -12,6 +12,7 @@
             PublicId = publicId;
             Name = name;
             Type = type;
+            Mode = PlayerMode.Awake;
         }
         
         public string Id { get; set; }
@@ -21,5 +22,7 @@
         public string Name { get; set; }
 
         public PlayerType Type { get; set; }
+
+        public PlayerMode Mode { get; set; }
     }
 }

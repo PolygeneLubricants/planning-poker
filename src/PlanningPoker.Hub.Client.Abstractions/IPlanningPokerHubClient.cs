@@ -10,6 +10,8 @@ namespace PlanningPoker.Hub.Client.Abstractions
 
         Task Connect(Guid serverId);
 
+        Task Disconnect();
+        
         Task ClearVotes(Guid serverId);
 
         Task<ServerCreationResult> CreateServer(string cardSet);

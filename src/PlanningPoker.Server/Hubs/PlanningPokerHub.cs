@@ -31,7 +31,7 @@ namespace PlanningPoker.Server.Hubs
         
         public override async Task OnDisconnectedAsync(Exception exception)
         {
-            _pokerEngine.RemovePlayerFromAllRooms(GetPlayerPrivateId());
+            _pokerEngine.SleepInAllRooms(GetPlayerPrivateId());
             await base.OnDisconnectedAsync(exception);
         }
 

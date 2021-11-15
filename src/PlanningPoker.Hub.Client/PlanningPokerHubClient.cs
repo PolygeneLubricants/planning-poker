@@ -24,6 +24,11 @@ namespace PlanningPoker.Hub.Client
             await Connected.Invoke();
         }
 
+        public async Task Disconnect()
+        {
+            await _hubConnection.StopAsync();
+        }
+        
         public Task ClearVotes(Guid serverId)
         {
             return _hubConnection.InvokeAsync(HubEndpointRoutes.Clear, serverId);

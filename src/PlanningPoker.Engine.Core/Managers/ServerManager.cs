@@ -9,8 +9,18 @@ namespace PlanningPoker.Engine.Core.Managers
         internal static Player AddOrUpdatePlayer(PokerServer server, string playerPrivateId, string playerName, PlayerType type)
         {
             var publicId = GeneratePublicId(server.Players);
-            var player = new Player(playerPrivateId, publicId, playerName, type);
-            server.Players[playerPrivateId] = player;
+
+            Player player;
+            if (server.Players.ContainsKey(playerPrivateId))
+            {
+                player = WakePlayer(server, playerPrivateId);
+            }
+            else
+            {
+                player = new Player(playerPrivateId, publicId, playerName, type);
+                server.Players[playerPrivateId] = player;
+            }
+
             return player;
         }
 
@@ -35,15 +45,32 @@ namespace PlanningPoker.Engine.Core.Managers
             SessionManager.RemovePlayer(server.CurrentSession, player.PublicId);
         }
 
-        internal static IList<PokerServer> RemovePlayerFromAllServers(IEnumerable<PokerServer> servers, string playerId)
+        internal static IList<PokerServer> SetPlayerToSleepOnAllServers(IEnumerable<PokerServer> servers, string playerPrivateId)
         {
-            var serversWithUser = servers.Where(s => s.Players.ContainsKey(playerId)).ToList();
+            var serversWithUser = servers.Where(s => s.Players.ContainsKey(playerPrivateId)).ToList();
             foreach (var server in serversWithUser)
             {
-                RemovePlayer(server, playerId);
+                SleepPlayer(server, playerPrivateId);
             }
 
             return serversWithUser;
+        }
+
+        internal static Player SleepPlayer(PokerServer server, string playerPrivateId)
+        {
+            return SetPlayerMode(server, playerPrivateId, PlayerMode.Asleep);
+        }
+
+        internal static Player WakePlayer(PokerServer server, string playerPrivateId)
+        {
+            return SetPlayerMode(server, playerPrivateId, PlayerMode.Awake);
+        }
+        
+        private static Player SetPlayerMode(PokerServer server, string playerPrivateId, PlayerMode mode)
+        {
+            var player = GetPlayer(server, playerPrivateId);
+            player.Mode = mode;
+            return player;
         }
 
         internal static bool TryRemovePlayer(PokerServer server, int playerPublicId, out Player? removedPlayer)

@@ -12,12 +12,13 @@ namespace PlanningPoker.FunctionalTests.Tests.Hubs
     public class PlanningPokerHubTestBuilder
     {
         private const string HubBaseAddress = "/hubs/poker";
+        private HubConnection _hubConnection;
 
         public PlanningPokerHubTestBuilder(PlanningPokerWebApplicationFactory factory)
         {
-            var hubConnection = CreateConnection(factory);
-            hubConnection.StartAsync().GetAwaiter().GetResult();
-            HubClient = new PlanningPokerHubClient(hubConnection);
+            _hubConnection = CreateConnection(factory);
+            _hubConnection.StartAsync().GetAwaiter().GetResult();
+            HubClient = new PlanningPokerHubClient(_hubConnection);
             HubClient.OnConnected(() => Task.CompletedTask);
         }
 
