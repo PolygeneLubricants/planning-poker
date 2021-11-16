@@ -16,7 +16,7 @@ namespace PlanningPoker.Engine.Core
         void Kick(Guid id, string initiatingPlayerPrivateId, int playerPublicIdToRemove);
         void SleepInAllRooms(string playerPrivateId);
         (bool wasCreated, Guid? serverId, string? validationMessages) CreateRoom(string desiredCardSet);
-        Player JoinRoom(Guid id, string playerName, string playerPrivateId, PlayerType type);
+        Player JoinRoom(Guid id, Guid recoveryId, string playerName, string playerPrivateId, PlayerType type);
         void Vote(Guid serverId, string playerPrivateId, string vote);
         void RedactVote(Guid serverId, string playerPrivateId);
         void ClearVotes(Guid serverId, string playerPrivateId);
@@ -74,14 +74,14 @@ namespace PlanningPoker.Engine.Core
             return (true, server.Id, validationMessage);
         }
 
-        public Player JoinRoom(Guid id, string playerName, string playerPrivateId, PlayerType type)
+        public Player JoinRoom(Guid id, Guid recoveryId, string playerName, string playerPrivateId, PlayerType type)
         {
             if (string.IsNullOrWhiteSpace(playerName)) throw new MissingPlayerNameException();
 
             var server = _serverStore.Get(id);
             
             var formattedPlayerName = playerName.Length > MaxPlayerNameLength ? playerName.Substring(0, MaxPlayerNameLength) : playerName;
-            var newPlayer = ServerManager.AddOrUpdatePlayer(server, playerPrivateId, formattedPlayerName, type);
+            var newPlayer = ServerManager.AddOrUpdatePlayer(server, recoveryId, playerPrivateId, formattedPlayerName, type);
             RaiseRoomUpdated(id, server);
             RaiseLogUpdated(id, newPlayer.Name, "Joined the server.");
             return newPlayer;

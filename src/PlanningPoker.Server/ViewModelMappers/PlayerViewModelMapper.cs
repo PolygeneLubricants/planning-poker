@@ -1,4 +1,5 @@
-﻿using PlanningPoker.Engine.Core.Models;
+﻿using System;
+using PlanningPoker.Engine.Core.Models;
 using PlanningPoker.Hub.Client.Abstractions.ViewModels;
 
 namespace PlanningPoker.Server.ViewModelMappers
@@ -10,6 +11,7 @@ namespace PlanningPoker.Server.ViewModelMappers
             var viewModel = new PlayerViewModel
             {
                 Id = includePrivateId ? player.Id : null,
+                RecoveryId = includePrivateId ? (Guid?)player.RecoveryId : null,
                 PublicId = player.PublicId,
                 Name = player.Name,
                 Type = player.Type.Map(),

@@ -53,12 +53,12 @@ namespace PlanningPoker.FunctionalTests.Tests.Hubs
 
         public PlanningPokerHubTestBuilder WithPlayer(Guid serverId, out PlayerViewModel player)
         {
-            return WithPlayer(serverId, PlayerType.Participant, Guid.NewGuid().ToString(), out player);
+            return WithPlayer(serverId, Guid.NewGuid(), PlayerType.Participant, Guid.NewGuid().ToString(), out player);
         }
 
         public PlanningPokerHubTestBuilder WithObserver(Guid serverId, out PlayerViewModel player)
         {
-            return WithPlayer(serverId, PlayerType.Observer, Guid.NewGuid().ToString(), out player);
+            return WithPlayer(serverId, Guid.NewGuid(), PlayerType.Observer, Guid.NewGuid().ToString(), out player);
         }
 
         public PlanningPokerHubTestBuilder WithPlayerVoted(Guid serverId, string playerPrivateId, string vote)
@@ -106,11 +106,11 @@ namespace PlanningPoker.FunctionalTests.Tests.Hubs
             return this;
         }
 
-        private PlanningPokerHubTestBuilder WithPlayer(Guid serverId, PlayerType playerType, string playerName, out PlayerViewModel player)
+        private PlanningPokerHubTestBuilder WithPlayer(Guid serverId, Guid recoveryId, PlayerType playerType, string playerName, out PlayerViewModel player)
         {
             HubClient.Connect(serverId).GetAwaiter().GetResult();
             player = AwaitEventResult<PokerServerViewModel, PlayerViewModel>(
-                () => HubClient.JoinServer(serverId, playerName, playerType),
+                () => HubClient.JoinServer(serverId, recoveryId, playerName, playerType),
                 HubClient.OnSessionUpdated).GetAwaiter().GetResult();
             return this;
         }

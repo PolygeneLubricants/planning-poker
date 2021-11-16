@@ -7,6 +7,7 @@ namespace PlanningPoker.Client.Storage
     {
         public Guid ServerId { get; set; }
         public string? Username { get; set; }
+        public Guid RecoveryId { get; set; }
         public PlayerType Type { get; set; }
     }
 }

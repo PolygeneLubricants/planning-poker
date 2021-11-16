@@ -16,14 +16,14 @@
                     </tr>
                 </thead>
                 <tbody>
-                @foreach (var player in Server?.Players?.Where(p => p.Type == PlayerType.Participant) ?? Enumerable.Empty<PlayerViewModel>())
+                @foreach (var player in Server?.Players?.Where(p => p.Type == PlayerType.Participant).OrderBy(p => p.PublicId) ?? Enumerable.Empty<PlayerViewModel>())
                 {
                     var hasVoted = Server?.CurrentSession?.Votes?.ContainsKey(player.PublicId.ToString()) ?? false;
                     var isAsleep = player.Mode == PlayerMode.Asleep;
                     var currentPlayerVote = hasVoted ? Server.CurrentSession.Votes[player.PublicId.ToString()] : string.Empty;
                     <tr class="@(hasVoted ? "table-success" : "") @(isAsleep ? "asleep" : "")">
                         <td>
-                            @if (hasVoted)
+                            @if (hasVoted && !isAsleep)
                             {
                                 <span class="oi oi-check"></span>
                             }
@@ -72,9 +72,10 @@
                     </tr>
                 </thead>
                 <tbody>
-                @foreach (var player in Server?.Players?.Where(p => p.Type == PlayerType.Observer) ?? Enumerable.Empty<PlayerViewModel>())
+                @foreach (var player in Server?.Players?.Where(p => p.Type == PlayerType.Observer).OrderBy(p => p.PublicId) ?? Enumerable.Empty<PlayerViewModel>())
                 {
-                    <tr>
+                    var isAsleep = player.Mode == PlayerMode.Asleep;
+                    <tr class="@(isAsleep ? "asleep" : "")">
                         <td>
                             @player.Name
                         </td>

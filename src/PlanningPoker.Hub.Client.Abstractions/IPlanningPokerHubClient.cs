@@ -16,7 +16,7 @@ namespace PlanningPoker.Hub.Client.Abstractions
 
         Task<ServerCreationResult> CreateServer(string cardSet);
 
-        Task<PlayerViewModel> JoinServer(Guid serverId, string playerName, PlayerType playerType);
+        Task<PlayerViewModel> JoinServer(Guid serverId, Guid recoveryId, string playerName, PlayerType playerType);
 
         Task KickPlayer(Guid serverId, string initiatingPlayerPrivateId, int kickedPlayerPublicId);
 

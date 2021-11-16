@@ -1,4 +1,5 @@
-﻿using System.Collections.Generic;
+﻿using System;
+using System.Collections.Generic;
 using System.Linq;
 using PlanningPoker.Engine.Core.Models;
 
@@ -6,22 +7,38 @@ namespace PlanningPoker.Engine.Core.Managers
 {
     internal static class ServerManager
     {
-        internal static Player AddOrUpdatePlayer(PokerServer server, string playerPrivateId, string playerName, PlayerType type)
+        internal static Player AddOrUpdatePlayer(PokerServer server, Guid recoveryId, string playerPrivateId, string playerName, PlayerType type)
         {
-            var publicId = GeneratePublicId(server.Players);
-
             Player player;
-            if (server.Players.ContainsKey(playerPrivateId))
+            
+            if (server.Players.Any(p => p.Value.RecoveryId == recoveryId))
             {
+                // When a player disconnects and reconnects, the connection id / private ID can change.
+                // Therefore, the caller sends along a recovery ID to recover / change the id to the new connection id.
+                RecoverPlayer(server, recoveryId, playerPrivateId);
                 player = WakePlayer(server, playerPrivateId);
             }
             else
             {
-                player = new Player(playerPrivateId, publicId, playerName, type);
+                var publicId = GeneratePublicId(server.Players);
+                player = new Player(playerPrivateId, recoveryId, publicId, playerName, type);
                 server.Players[playerPrivateId] = player;
             }
 
             return player;
+        }
+
+        private static void RecoverPlayer(PokerServer server, Guid recoveryId, string newPlayerPrivateId)
+        {
+            var playerWithRecoveryId = server.Players.FirstOrDefault(p => p.Value?.RecoveryId == recoveryId).Value;
+            if (playerWithRecoveryId == null)
+            {
+                return;
+            }
+
+            server.Players.Remove(playerWithRecoveryId.Id);
+            playerWithRecoveryId.Id = newPlayerPrivateId;
+            server.Players.Add(playerWithRecoveryId.Id, playerWithRecoveryId);
         }
 
         private static int GeneratePublicId(IDictionary<string, Player> serverPlayers)
