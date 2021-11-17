@@ -63,6 +63,8 @@
 
     private string? _username;
 
+    private Guid _recoveryId = Guid.NewGuid();
+
     private PlayerType _type = PlayerType.Participant;
 
     private PlayerViewModel? _currentPlayer;
@@ -87,7 +89,7 @@
     protected override async Task OnAfterRenderAsync(bool firstRender)
     {
         if (!firstRender) return;
-
+        
         await ReconnectIfApplicable();
     }
 
@@ -142,6 +144,7 @@
         {
             _username = savedSession.Username;
             _type = savedSession.Type;
+            _recoveryId = savedSession.RecoveryId;
             await Join();
             StateHasChanged();
         }
@@ -150,11 +153,12 @@
     async Task Join()
     {
         await _hubClient.Connect(_parsedId);
-        _currentPlayer = await _hubClient.JoinServer(_parsedId, _username, _type);
+        _currentPlayer = await _hubClient.JoinServer(_parsedId, _recoveryId, _username, _type);
         var serverSession = new ServerSession
         {
             ServerId = _parsedId,
             Username = _username,
+            RecoveryId = _recoveryId,
             Type = _type
         };
 

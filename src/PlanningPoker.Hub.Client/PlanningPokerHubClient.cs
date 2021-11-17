@@ -24,6 +24,11 @@ namespace PlanningPoker.Hub.Client
             await Connected.Invoke();
         }
 
+        public async Task Disconnect()
+        {
+            await _hubConnection.StopAsync();
+        }
+        
         public Task ClearVotes(Guid serverId)
         {
             return _hubConnection.InvokeAsync(HubEndpointRoutes.Clear, serverId);
@@ -34,9 +39,9 @@ namespace PlanningPoker.Hub.Client
             return _hubConnection.InvokeAsync<ServerCreationResult>(HubEndpointRoutes.Create, cardSet);
         }
 
-        public Task<PlayerViewModel> JoinServer(Guid serverId, string playerName, PlayerType playerType)
+        public Task<PlayerViewModel> JoinServer(Guid serverId, Guid recoveryId, string playerName, PlayerType playerType)
         {
-            return _hubConnection.InvokeAsync<PlayerViewModel>(HubEndpointRoutes.Join, serverId, playerName, playerType);
+            return _hubConnection.InvokeAsync<PlayerViewModel>(HubEndpointRoutes.Join, serverId, recoveryId, playerName, playerType);
         }
 
         public Task KickPlayer(Guid serverId, string initiatingPlayerPublicId, int kickedPlayerPublicId)

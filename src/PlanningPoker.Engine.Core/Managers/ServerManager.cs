@@ -1,4 +1,5 @@
-﻿using System.Collections.Generic;
+﻿using System;
+using System.Collections.Generic;
 using System.Linq;
 using PlanningPoker.Engine.Core.Models;
 
@@ -6,12 +7,38 @@ namespace PlanningPoker.Engine.Core.Managers
 {
     internal static class ServerManager
     {
-        internal static Player AddOrUpdatePlayer(PokerServer server, string playerPrivateId, string playerName, PlayerType type)
+        internal static Player AddOrUpdatePlayer(PokerServer server, Guid recoveryId, string playerPrivateId, string playerName, PlayerType type)
         {
-            var publicId = GeneratePublicId(server.Players);
-            var player = new Player(playerPrivateId, publicId, playerName, type);
-            server.Players[playerPrivateId] = player;
+            Player player;
+            
+            if (server.Players.Any(p => p.Value.RecoveryId == recoveryId))
+            {
+                // When a player disconnects and reconnects, the connection id / private ID can change.
+                // Therefore, the caller sends along a recovery ID to recover / change the id to the new connection id.
+                RecoverPlayer(server, recoveryId, playerPrivateId);
+                player = WakePlayer(server, playerPrivateId);
+            }
+            else
+            {
+                var publicId = GeneratePublicId(server.Players);
+                player = new Player(playerPrivateId, recoveryId, publicId, playerName, type);
+                server.Players[playerPrivateId] = player;
+            }
+
             return player;
+        }
+
+        private static void RecoverPlayer(PokerServer server, Guid recoveryId, string newPlayerPrivateId)
+        {
+            var playerWithRecoveryId = server.Players.FirstOrDefault(p => p.Value?.RecoveryId == recoveryId).Value;
+            if (playerWithRecoveryId == null)
+            {
+                return;
+            }
+
+            server.Players.Remove(playerWithRecoveryId.Id);
+            playerWithRecoveryId.Id = newPlayerPrivateId;
+            server.Players.Add(playerWithRecoveryId.Id, playerWithRecoveryId);
         }
 
         private static int GeneratePublicId(IDictionary<string, Player> serverPlayers)
@@ -35,15 +62,32 @@ namespace PlanningPoker.Engine.Core.Managers
             SessionManager.RemovePlayer(server.CurrentSession, player.PublicId);
         }
 
-        internal static IList<PokerServer> RemovePlayerFromAllServers(IEnumerable<PokerServer> servers, string playerId)
+        internal static IList<PokerServer> SetPlayerToSleepOnAllServers(IEnumerable<PokerServer> servers, string playerPrivateId)
         {
-            var serversWithUser = servers.Where(s => s.Players.ContainsKey(playerId)).ToList();
+            var serversWithUser = servers.Where(s => s.Players.ContainsKey(playerPrivateId)).ToList();
             foreach (var server in serversWithUser)
             {
-                RemovePlayer(server, playerId);
+                SleepPlayer(server, playerPrivateId);
             }
 
             return serversWithUser;
+        }
+
+        internal static Player SleepPlayer(PokerServer server, string playerPrivateId)
+        {
+            return SetPlayerMode(server, playerPrivateId, PlayerMode.Asleep);
+        }
+
+        internal static Player WakePlayer(PokerServer server, string playerPrivateId)
+        {
+            return SetPlayerMode(server, playerPrivateId, PlayerMode.Awake);
+        }
+        
+        private static Player SetPlayerMode(PokerServer server, string playerPrivateId, PlayerMode mode)
+        {
+            var player = GetPlayer(server, playerPrivateId);
+            player.Mode = mode;
+            return player;
         }
 
         internal static bool TryRemovePlayer(PokerServer server, int playerPublicId, out Player? removedPlayer)

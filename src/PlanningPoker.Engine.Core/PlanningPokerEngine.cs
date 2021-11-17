@@ -14,9 +14,9 @@ namespace PlanningPoker.Engine.Core
         event EventHandler<RoomClearedEventArgs> RoomCleared;
 
         void Kick(Guid id, string initiatingPlayerPrivateId, int playerPublicIdToRemove);
-        void RemovePlayerFromAllRooms(string playerPrivateId);
+        void SleepInAllRooms(string playerPrivateId);
         (bool wasCreated, Guid? serverId, string? validationMessages) CreateRoom(string desiredCardSet);
-        Player JoinRoom(Guid id, string playerName, string playerPrivateId, PlayerType type);
+        Player JoinRoom(Guid id, Guid recoveryId, string playerName, string playerPrivateId, PlayerType type);
         void Vote(Guid serverId, string playerPrivateId, string vote);
         void RedactVote(Guid serverId, string playerPrivateId);
         void ClearVotes(Guid serverId, string playerPrivateId);
@@ -53,9 +53,9 @@ namespace PlanningPoker.Engine.Core
             }
         }
 
-        public void RemovePlayerFromAllRooms(string playerPrivateId)
+        public void SleepInAllRooms(string playerPrivateId)
         {
-            var serversWithPlayer = ServerManager.RemovePlayerFromAllServers(_serverStore.All(), playerPrivateId);
+            var serversWithPlayer = ServerManager.SetPlayerToSleepOnAllServers(_serverStore.All(), playerPrivateId);
             foreach (var server in serversWithPlayer)
             {
                 RaiseRoomUpdated(server.Id, server);
@@ -74,14 +74,14 @@ namespace PlanningPoker.Engine.Core
             return (true, server.Id, validationMessage);
         }
 
-        public Player JoinRoom(Guid id, string playerName, string playerPrivateId, PlayerType type)
+        public Player JoinRoom(Guid id, Guid recoveryId, string playerName, string playerPrivateId, PlayerType type)
         {
             if (string.IsNullOrWhiteSpace(playerName)) throw new MissingPlayerNameException();
 
             var server = _serverStore.Get(id);
             
             var formattedPlayerName = playerName.Length > MaxPlayerNameLength ? playerName.Substring(0, MaxPlayerNameLength) : playerName;
-            var newPlayer = ServerManager.AddOrUpdatePlayer(server, playerPrivateId, formattedPlayerName, type);
+            var newPlayer = ServerManager.AddOrUpdatePlayer(server, recoveryId, playerPrivateId, formattedPlayerName, type);
             RaiseRoomUpdated(id, server);
             RaiseLogUpdated(id, newPlayer.Name, "Joined the server.");
             return newPlayer;
@@ -96,6 +96,7 @@ namespace PlanningPoker.Engine.Core
 
             var player = ServerManager.GetPlayer(server, playerPrivateId);
             if (player.Type == PlayerType.Observer) throw new VoteException($"Player is of type '{player.Type}' and cannot vote.");
+            if (player.Mode == PlayerMode.Asleep) throw new VoteException($"Player is in mode '{player.Mode}', and cannot vote.");
 
             SessionManager.SetVote(server.CurrentSession, player.PublicId, vote);
             RaiseRoomUpdated(server.Id, server);
@@ -110,6 +111,7 @@ namespace PlanningPoker.Engine.Core
 
             var player = ServerManager.GetPlayer(server, playerPrivateId);
             if (player.Type == PlayerType.Observer) throw new VoteException($"Player is of type '{player.Type}' and cannot vote.");
+            if (player.Mode == PlayerMode.Asleep) throw new VoteException($"Player is in mode '{player.Mode}', and cannot vote.");
 
             SessionManager.RemoveVote(server.CurrentSession, player.PublicId);
             RaiseRoomUpdated(server.Id, server);

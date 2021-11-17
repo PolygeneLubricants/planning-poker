@@ -1,16 +1,16 @@
 ﻿using System;
-using PlayerType = PlanningPoker.Engine.Core.Models.PlayerType;
+using PlanningPoker.Hub.Client.Abstractions.ViewModels;
 
 namespace PlanningPoker.Server.ViewModelMappers
 {
     public static class PlayerTypeViewModelMapper
     {
-        public static Hub.Client.Abstractions.ViewModels.PlayerType Map(this PlayerType playerType)
+        public static PlayerType Map(this Engine.Core.Models.PlayerType playerType)
         {
             return playerType switch
             {
-                PlayerType.Participant => Hub.Client.Abstractions.ViewModels.PlayerType.Participant,
-                PlayerType.Observer => Hub.Client.Abstractions.ViewModels.PlayerType.Observer,
+                Engine.Core.Models.PlayerType.Participant => PlayerType.Participant,
+                Engine.Core.Models.PlayerType.Observer => PlayerType.Observer,
                 _ => throw new ArgumentOutOfRangeException(nameof(playerType), playerType, null)
             };
         }
