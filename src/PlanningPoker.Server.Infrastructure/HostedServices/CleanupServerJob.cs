@@ -11,6 +11,7 @@ namespace PlanningPoker.Server.Infrastructure.HostedServices
     public class CleanupServerJob : IHostedService, IDisposable
     {
         private Timer? _timer;
+        private static readonly TimeSpan RunFrequency = TimeSpan.FromMinutes(20);
         private readonly IServerStore _serverStore;
 
         public CleanupServerJob(IServerStore serverStore)
@@ -20,7 +21,7 @@ namespace PlanningPoker.Server.Infrastructure.HostedServices
 
         public Task StartAsync(CancellationToken cancellationToken)
         {
-            _timer = new Timer(_ => RunJob(cancellationToken), null, TimeSpan.Zero, TimeSpan.FromMinutes(20));
+            _timer = new Timer(_ => RunJob(cancellationToken), null, TimeSpan.Zero, RunFrequency);
             return Task.CompletedTask;
         }
 
