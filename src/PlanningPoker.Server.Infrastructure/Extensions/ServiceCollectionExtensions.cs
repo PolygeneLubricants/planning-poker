@@ -12,6 +12,7 @@ namespace PlanningPoker.Server.Infrastructure.Extensions
             services.AddSingleton<IPlanningPokerEngine, PlanningPokerEngine>();
             services.AddSingleton<IDateTimeProvider, DateTimeProvider>();
             services.AddHostedService<CleanupServerJob>();
+            services.AddHostedService<ReportTelemetryJob>();
 
             return services;
         }

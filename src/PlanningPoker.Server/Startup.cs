@@ -13,6 +13,8 @@ namespace PlanningPoker.Server
     {
         public void ConfigureServices(IServiceCollection services)
         {
+            services.AddApplicationInsightsTelemetry();
+
             services.RegisterDependencies();
             services.AddSingleton<IPlanningPokerEventBroadcaster, PlanningPokerEventBroadcaster>();
             services.AddSignalR(options =>
