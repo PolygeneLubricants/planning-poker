@@ -15,6 +15,7 @@ namespace PlanningPoker.Server
         {
             return WebHost.CreateDefaultBuilder(args)
                 .UseConfiguration(new ConfigurationBuilder()
+                    .AddJsonFile("appsettings.json")
                     .AddCommandLine(args)
                     .Build())
                 .UseStartup<Startup>()
