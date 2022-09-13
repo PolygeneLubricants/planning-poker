@@ -100,7 +100,7 @@
     IEnumerable<int?> GetVoteMode()
     {
         var sortedVoteGroups = Session?.Votes?
-            .Select(unparsedVote => IntParseOrNull(unparsedVote.Value))
+            .Select(unparsedVote => DecimalParseOrNull(unparsedVote.Value))
             .Where(vote => vote != null)
             .GroupBy(parsedVote => parsedVote)
             .Where(group => group.Key.HasValue)
