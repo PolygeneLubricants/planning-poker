@@ -136,7 +136,7 @@
         }
 
         var totalValidVotes = Session.Votes
-            .Select(unparsedVote => IntParseOrNull(unparsedVote.Value))
+            .Select(unparsedVote => DecimalParseOrNull(unparsedVote.Value))
             .Count(vote => vote != null);
         if (totalValidVotes == 0)
         {
