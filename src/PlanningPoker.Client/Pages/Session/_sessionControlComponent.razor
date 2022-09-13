@@ -157,12 +157,6 @@
         return parsed ? (decimal?)parsedResult : null;
     }
 
-    int? IntParseOrNull(string val)
-    {
-        var parsed = int.TryParse(val, out var parsedResult);
-        return parsed ? (int?)parsedResult : null;
-    }
-
     [Parameter]
     public Guid Id { get; set; }
 
