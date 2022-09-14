@@ -97,10 +97,10 @@
         return HubClient.ShowVotes(Id);
     }
 
-    IEnumerable<int?> GetVoteMode()
+    IEnumerable<decimal?> GetVoteMode()
     {
         var sortedVoteGroups = Session?.Votes?
-            .Select(unparsedVote => IntParseOrNull(unparsedVote.Value))
+            .Select(unparsedVote => DecimalParseOrNull(unparsedVote.Value))
             .Where(vote => vote != null)
             .GroupBy(parsedVote => parsedVote)
             .Where(group => group.Key.HasValue)
@@ -136,7 +136,7 @@
         }
 
         var totalValidVotes = Session.Votes
-            .Select(unparsedVote => IntParseOrNull(unparsedVote.Value))
+            .Select(unparsedVote => DecimalParseOrNull(unparsedVote.Value))
             .Count(vote => vote != null);
         if (totalValidVotes == 0)
         {
@@ -155,12 +155,6 @@
     {
         var parsed = decimal.TryParse(val, out var parsedResult);
         return parsed ? (decimal?)parsedResult : null;
-    }
-
-    int? IntParseOrNull(string val)
-    {
-        var parsed = int.TryParse(val, out var parsedResult);
-        return parsed ? (int?)parsedResult : null;
     }
 
     [Parameter]
