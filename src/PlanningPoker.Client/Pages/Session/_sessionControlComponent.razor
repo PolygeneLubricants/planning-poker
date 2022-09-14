@@ -97,7 +97,7 @@
         return HubClient.ShowVotes(Id);
     }
 
-    IEnumerable<int?> GetVoteMode()
+    IEnumerable<decimal?> GetVoteMode()
     {
         var sortedVoteGroups = Session?.Votes?
             .Select(unparsedVote => DecimalParseOrNull(unparsedVote.Value))
