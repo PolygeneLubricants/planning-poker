@@ -97,13 +97,12 @@
         return HubClient.ShowVotes(Id);
     }
 
-    IEnumerable<decimal?> GetVoteMode()
+    IEnumerable<string?> GetVoteMode()
     {
         var sortedVoteGroups = Session?.Votes?
-            .Select(unparsedVote => DecimalParseOrNull(unparsedVote.Value))
+            .Select(unparsedVote => unparsedVote.Value)
             .Where(vote => vote != null)
             .GroupBy(parsedVote => parsedVote)
-            .Where(group => group.Key.HasValue)
             .OrderByDescending(group => group.Count());
 
         var highestVoteCount = sortedVoteGroups
