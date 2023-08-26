@@ -4,7 +4,19 @@
     </Found>
     <NotFound>
         <LayoutView Layout="@typeof(MainLayout)">
-            <p>Sorry, there's nothing at this address.</p>
+            <div class="card">
+                <div class="card-body">
+                    <div class="row">
+                        <div class="col">
+                            <h2>404 - Nothing at this URL</h2>
+                            <p>
+                                The URL you have entered is not routed in JustPlanningPoker. 
+                                If you believe this is a mistake, feel free to raise an issue in the Github project, linked in the footer of this page.
+                            </p>
+                        </div>
+                    </div>
+                </div>
+            </div>
         </LayoutView>
     </NotFound>
 </Router>

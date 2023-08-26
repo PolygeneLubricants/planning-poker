@@ -1,0 +1,26 @@
+﻿<div class="card">
+    <div class="card-body">
+        <div class="row">
+            <div class="col">
+                <h2>404 - Room does not exist</h2>
+                <p>
+                    The planning room you are trying to enter, with id, <i>@Id</i>, does not exist.
+                </p>
+                <p>
+                    Rooms are temporary, and will be cleaned up when the room has been empty for an hour.
+                    Please check the server id, and ensure you did not copy-paste an old room, from a previous planning session.
+                    If you did, feel free to create a new session from the front page.
+                </p>
+            </div>
+        </div>
+    </div>
+</div>
+
+@code
+{
+    [Parameter]
+    public string Id { get; set; }
+
+    [Parameter]
+    public EventCallback<string> IdChanged { get; set; }
+}
