@@ -7,8 +7,13 @@ using Xunit;
 
 namespace PlanningPoker.FunctionalTests.Tests.Hubs
 {
-    public partial class PlanningPokerHubTests
+    [Collection("PlanningPokerHubTests")]
+    public class PlanningPokerHubTests_ChangePlayer : PlanningPokerHubTestFixture
     {
+        public PlanningPokerHubTests_ChangePlayer(PlanningPokerWebApplicationFactory factory) : base(factory)
+        {
+        }
+
         [Fact]
         public async Task ChangePlayerType_WhenServerDoesNotExist_ReturnsError()
         {

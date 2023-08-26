@@ -5,8 +5,13 @@ using Xunit;
 
 namespace PlanningPoker.FunctionalTests.Tests.Hubs
 {
-    public partial class PlanningPokerHubTests
+    [Collection("PlanningPokerHubTests")]
+    public class PlanningPokerHubTests_UnVote : PlanningPokerHubTestFixture
     {
+        public PlanningPokerHubTests_UnVote(PlanningPokerWebApplicationFactory factory) : base(factory)
+        {
+        }
+
         [Fact]
         public async Task UnVote_WhenServerDoesNotExist_ReturnsError()
         {

@@ -6,8 +6,13 @@ using Xunit;
 
 namespace PlanningPoker.FunctionalTests.Tests.Hubs
 {
-    public partial class PlanningPokerHubTests
+    [Collection("PlanningPokerHubTests")]
+    public class PlanningPokerHubTests_OnLogMessageReceived : PlanningPokerHubTestFixture
     {
+        public PlanningPokerHubTests_OnLogMessageReceived(PlanningPokerWebApplicationFactory factory) : base(factory)
+        {
+        }
+
         [Fact]
         public async Task OnLogMessageReceived_WhenVotesAreCleared_LogMessageSent()
         {

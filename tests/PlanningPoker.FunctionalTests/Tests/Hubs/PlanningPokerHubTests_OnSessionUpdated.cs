@@ -6,8 +6,13 @@ using Xunit;
 
 namespace PlanningPoker.FunctionalTests.Tests.Hubs
 {
-    public partial class PlanningPokerHubTests
+    [Collection("PlanningPokerHubTests")]
+    public class PlanningPokerHubTests_OnSessionUpdated : PlanningPokerHubTestFixture
     {
+        public PlanningPokerHubTests_OnSessionUpdated(PlanningPokerWebApplicationFactory factory) : base(factory)
+        {
+        }
+
         [Fact]
         public async Task OnSessionUpdated_StateOncePlayerJoins_StateUpdatedCorrectly()
         {

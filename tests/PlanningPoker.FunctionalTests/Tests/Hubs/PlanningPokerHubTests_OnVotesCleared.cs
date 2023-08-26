@@ -5,8 +5,13 @@ using Xunit;
 
 namespace PlanningPoker.FunctionalTests.Tests.Hubs
 {
-    public partial class PlanningPokerHubTests
+    [Collection("PlanningPokerHubTests")]
+    public class PlanningPokerHubTests_OnVotesCleared : PlanningPokerHubTestFixture
     {
+        public PlanningPokerHubTests_OnVotesCleared(PlanningPokerWebApplicationFactory factory) : base(factory)
+        {
+        }
+
         [Fact]
         public async Task OnVotesCleared_WhenPlayerClearVotes_VotesClearedSent()
         {

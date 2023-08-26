@@ -6,8 +6,13 @@ using Xunit;
 
 namespace PlanningPoker.FunctionalTests.Tests.Hubs
 {
-    public partial class PlanningPokerHubTests
+    [Collection("PlanningPokerHubTests")]
+    public class PlanningPokerHubTests_OnPlayerKicked : PlanningPokerHubTestFixture
     {
+        public PlanningPokerHubTests_OnPlayerKicked(PlanningPokerWebApplicationFactory factory) : base(factory)
+        {
+        }
+
         [Fact]
         public async Task OnPlayerKicked_WhenPlayerKicked_PlayerKickedSent()
         {

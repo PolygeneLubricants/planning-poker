@@ -5,8 +5,13 @@ using Xunit;
 
 namespace PlanningPoker.FunctionalTests.Tests.Hubs
 {
-    public partial class PlanningPokerHubTests
+    [Collection("PlanningPokerHubTests")]
+    public class PlanningPokerHubTests_Create : PlanningPokerHubTestFixture
     {
+        public PlanningPokerHubTests_Create(PlanningPokerWebApplicationFactory factory) : base(factory)
+        {
+        }
+
         [Fact]
         public async Task Create_WhenCardSetIsValid_ServerIsCreated()
         {
