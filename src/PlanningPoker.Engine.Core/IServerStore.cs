@@ -8,6 +8,8 @@ namespace PlanningPoker.Engine.Core
     {
         PokerServer Create(IList<string> cardSet);
 
+        bool Exists(Guid id);
+
         PokerServer Get(Guid id);
         
         ICollection<PokerServer> All();

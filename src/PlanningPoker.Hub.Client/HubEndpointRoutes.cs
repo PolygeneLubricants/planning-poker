@@ -5,6 +5,7 @@
         public const string Clear = "Clear";
         public const string Connect = "Connect";
         public const string Create = "Create";
+        public const string Exists = "Exists";
         public const string Join = "Join";
         public const string Kick = "Kick";
         public const string Show = "Show";

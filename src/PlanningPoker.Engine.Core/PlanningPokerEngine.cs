@@ -16,6 +16,7 @@ namespace PlanningPoker.Engine.Core
         void Kick(Guid id, string initiatingPlayerPrivateId, int playerPublicIdToRemove);
         void SleepInAllRooms(string playerPrivateId);
         (bool wasCreated, Guid? serverId, string? validationMessages) CreateRoom(string desiredCardSet);
+        bool RoomExists(Guid roomId);
         Player JoinRoom(Guid id, Guid recoveryId, string playerName, string playerPrivateId, PlayerType type);
         void Vote(Guid serverId, string playerPrivateId, string vote);
         void RedactVote(Guid serverId, string playerPrivateId);
@@ -72,6 +73,11 @@ namespace PlanningPoker.Engine.Core
 
             var server = _serverStore.Create(cardSet);
             return (true, server.Id, validationMessage);
+        }
+
+        public bool RoomExists(Guid roomId)
+        {
+            return _serverStore.Exists(roomId);
         }
 
         public Player JoinRoom(Guid id, Guid recoveryId, string playerName, string playerPrivateId, PlayerType type)

@@ -23,6 +23,11 @@ namespace PlanningPoker.Server.Infrastructure
             return newServer;
         }
 
+        public bool Exists(Guid id)
+        {
+            return _servers.ContainsKey(id);
+        }
+
         public PokerServer Get(Guid id)
         {
             return _servers[id];
