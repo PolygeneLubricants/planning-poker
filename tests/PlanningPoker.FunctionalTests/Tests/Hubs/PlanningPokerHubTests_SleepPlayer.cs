@@ -1,14 +1,17 @@
 ﻿using System;
-using System.Linq;
 using System.Threading;
 using System.Threading.Tasks;
-using PlanningPoker.Hub.Client.Abstractions.ViewModels;
 using Xunit;
 
 namespace PlanningPoker.FunctionalTests.Tests.Hubs
 {
-    public partial class PlanningPokerHubTests
+    [Collection("PlanningPokerHubTests")]
+    public class PlanningPokerHubTests_SleepPlayer : PlanningPokerHubTestFixture
     {
+        public PlanningPokerHubTests_SleepPlayer(PlanningPokerWebApplicationFactory factory) : base(factory)
+        {
+        }
+
         [Fact]
         public async Task Sleep_WhenServerDoesNotExist_Ok()
         {

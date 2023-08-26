@@ -6,8 +6,13 @@ using Xunit;
 
 namespace PlanningPoker.FunctionalTests.Tests.Hubs
 {
-    public partial class PlanningPokerHubTests
+    [Collection("PlanningPokerHubTests")]
+    public  class PlanningPokerHubTests_Kick : PlanningPokerHubTestFixture
     {
+        public PlanningPokerHubTests_Kick(PlanningPokerWebApplicationFactory factory) : base(factory)
+        {
+        }
+
         [Fact]
         public async Task Kick_WhenServerIsMissing_ReturnsError()
         {

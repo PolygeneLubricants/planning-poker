@@ -4,8 +4,13 @@ using Xunit;
 
 namespace PlanningPoker.FunctionalTests.Tests.Hubs
 {
-    public partial class PlanningPokerHubTests
+    [Collection("PlanningPokerHubTests")]
+    public class PlanningPokerHubTests_Exists : PlanningPokerHubTestFixture
     {
+        public PlanningPokerHubTests_Exists(PlanningPokerWebApplicationFactory factory) : base(factory)
+        {
+        }
+
         [Fact]
         public async Task Exists_WhenServerExists_ReturnsTrue()
         {
@@ -24,7 +29,7 @@ namespace PlanningPoker.FunctionalTests.Tests.Hubs
         public async Task Exists_WhenServerDoesNotExists_ReturnsFalse()
         {
             // Arrange
-            var wrongServerId = new Guid("859D0069-6F21-4A7D-8D87-987861240142");
+            var wrongServerId = Guid.NewGuid();
 
             var builder = CreateBuilder();
             builder.WithServer(out _);
@@ -40,7 +45,7 @@ namespace PlanningPoker.FunctionalTests.Tests.Hubs
         public async Task Exists_WhenServerNoServersExist_ReturnsFalse()
         {
             // Arrange
-            var wrongServerId = new Guid("859D0069-6F21-4A7D-8D87-987861240142");
+            var wrongServerId = Guid.NewGuid();
 
             var builder = CreateBuilder();
 

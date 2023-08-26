@@ -8,8 +8,13 @@ using Xunit;
 
 namespace PlanningPoker.FunctionalTests.Tests.Hubs
 {
-    public partial class PlanningPokerHubTests
+    [Collection("PlanningPokerHubTests")]
+    public class PlanningPokerHubTests_Show : PlanningPokerHubTestFixture
     {
+        public PlanningPokerHubTests_Show(PlanningPokerWebApplicationFactory factory) : base(factory)
+        {
+        }
+
         [Fact]
         public async Task Show_WhenServerDoesNotExist_ReturnsError()
         {

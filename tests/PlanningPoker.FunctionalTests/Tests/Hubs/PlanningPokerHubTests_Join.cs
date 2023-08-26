@@ -7,8 +7,13 @@ using Xunit;
 
 namespace PlanningPoker.FunctionalTests.Tests.Hubs
 {
-    public partial class PlanningPokerHubTests
+    [Collection("PlanningPokerHubTests")]
+    public class PlanningPokerHubTests_Join : PlanningPokerHubTestFixture
     {
+        public PlanningPokerHubTests_Join(PlanningPokerWebApplicationFactory factory) : base(factory)
+        {
+        }
+
         [Fact]
         public async Task Join_WhenServerIsMissing_ReturnsError()
         {
