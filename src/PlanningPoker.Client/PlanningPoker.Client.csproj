@@ -1,15 +1,15 @@
 ﻿<Project Sdk="Microsoft.NET.Sdk.BlazorWebAssembly">
 
   <PropertyGroup>
-    <TargetFramework>net6.0</TargetFramework>
+    <TargetFramework>net7.0</TargetFramework>
     <Nullable>enable</Nullable>
     <LangVersion>8.0</LangVersion>
   </PropertyGroup>
 
   <ItemGroup>
-    <PackageReference Include="Blazored.SessionStorage" Version="2.2.0" />
-    <PackageReference Include="Microsoft.AspNetCore.Components.WebAssembly" Version="6.0.8" />
-    <PackageReference Include="Microsoft.AspNetCore.SignalR.Client" Version="6.0.8" />
+    <PackageReference Include="Blazored.SessionStorage" Version="2.4.0" />
+    <PackageReference Include="Microsoft.AspNetCore.Components.WebAssembly" Version="7.0.10" />
+    <PackageReference Include="Microsoft.AspNetCore.SignalR.Client" Version="7.0.10" />
   </ItemGroup>
 
   <ItemGroup>
