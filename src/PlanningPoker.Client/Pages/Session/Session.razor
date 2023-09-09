@@ -4,6 +4,7 @@
 @using PlanningPoker.Hub.Client
 @using PlanningPoker.Hub.Client.Abstractions
 @using PlanningPoker.Hub.Client.Abstractions.ViewModels
+@using System.Threading
 @inject NavigationManager NavigationManager
 @inject IServerSessionManager sessionManager
 
@@ -100,6 +101,22 @@
     private Guid _parsedId;
 
     private bool _serverExists = true;
+    private Lazy<Task<bool>> _serverExistsTask;
+    private readonly SemaphoreSlim _serverExistIsCalled = new SemaphoreSlim(1, 1);
+
+    private async Task<bool> FetchServerExistAsync()
+    {
+        await _serverExistIsCalled.WaitAsync();
+
+        try
+        {
+            return await _hubClient.Exists(_parsedId);
+        }
+        finally
+        {
+            _serverExistIsCalled.Release();
+        }
+    }
 
     protected override async Task OnAfterRenderAsync(bool firstRender)
     {
@@ -110,6 +127,7 @@
 
     protected override async Task OnInitializedAsync()
     {
+        _serverExistsTask = new Lazy<Task<bool>>(FetchServerExistAsync);
         var connection = new HubConnectionBuilder()
             .WithUrl(NavigationManager.ToAbsoluteUri("/hubs/poker"))
             .WithAutomaticReconnect()
@@ -150,16 +168,16 @@
         });
 
         await connection.StartAsync();
-        await VerifyServerExists();
-    }
-
-    async Task VerifyServerExists()
-    {
-        _serverExists = await _hubClient.Exists(_parsedId);
+        _serverExists = await _serverExistsTask.Value;
     }
 
     async Task ReconnectIfApplicable()
     {
+        if (!(await _serverExistsTask.Value))
+        {
+            return;
+        }
+
         // Try get session from session storage, to see if the user should simply reconnect.
         var sessionExists = sessionManager.TryGetSession(Id, out var savedSession);
         if (sessionExists)
