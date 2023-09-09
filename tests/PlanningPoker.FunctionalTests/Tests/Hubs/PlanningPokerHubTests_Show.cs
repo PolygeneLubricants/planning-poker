@@ -37,14 +37,11 @@ namespace PlanningPoker.FunctionalTests.Tests.Hubs
             var validVote = "1";
             var playerConnections = new List<IPlanningPokerHubClient>
             {
-                CreateBuilder().WithPlayer(serverId, out var player1).HubClient,
-                CreateBuilder().WithPlayer(serverId, out var player2).HubClient,
+                CreateBuilder().WithPlayer(serverId, out var player1).WithPlayerVoted(serverId, player1.Id, validVote).HubClient,
+                CreateBuilder().WithPlayer(serverId, out var player2).WithPlayerVoted(serverId, player2.Id, validVote).HubClient,
                 CreateBuilder().WithPlayer(serverId, out var player3).HubClient
             };
-
-            await playerConnections[0].Vote(serverId, player1.Id, validVote);
-            await playerConnections[1].Vote(serverId, player2.Id, validVote);
-
+            
             // Act
             var exceptionRecord = await Record.ExceptionAsync(() => playerConnections[2].ShowVotes(serverId));
 
@@ -63,13 +60,10 @@ namespace PlanningPoker.FunctionalTests.Tests.Hubs
             var actualVotes = new List<string>();
             var playerConnections = new List<IPlanningPokerHubClient>
             {
-                CreateBuilder().WithPlayer(serverId, out var player1).HubClient,
-                CreateBuilder().WithPlayer(serverId, out var player2).HubClient
+                CreateBuilder().WithPlayer(serverId, out var player1).WithPlayerVoted(serverId, player1.Id, validVote).HubClient,
+                CreateBuilder().WithPlayer(serverId, out var player2).WithPlayerVoted(serverId, player2.Id, validVote).HubClient
             };
-
-            await playerConnections[0].Vote(serverId, player1.Id, validVote);
-            await playerConnections[1].Vote(serverId, player2.Id, validVote);
-
+            
             SemaphoreSlim awaitResponse = new SemaphoreSlim(0);
             playerConnections[1].OnSessionUpdated(viewModel =>
             {
@@ -82,7 +76,7 @@ namespace PlanningPoker.FunctionalTests.Tests.Hubs
             await playerConnections[1].ShowVotes(serverId);
 
             // Assert
-            await awaitResponse.WaitAsync(TimeSpan.FromSeconds(5));
+            await awaitResponse.WaitAsync(TimeoutProvider.GetDefaultTimeout());
             Assert.Equal(validVote, actualVotes[0]);
             Assert.Equal(validVote, actualVotes[1]);
             Assert.True(isShown);

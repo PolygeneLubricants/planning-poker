@@ -33,7 +33,7 @@ namespace PlanningPoker.FunctionalTests.Tests.Hubs
             builder.WithPlayer(serverId, out var player);
 
             // Assert
-            await awaitResponse.WaitAsync(TimeSpan.FromSeconds(5));
+            await awaitResponse.WaitAsync(TimeoutProvider.GetDefaultTimeout());
 
             Assert.NotNull(updatedSession);
             Assert.Equal(serverId, updatedSession.Id);
@@ -88,7 +88,7 @@ namespace PlanningPoker.FunctionalTests.Tests.Hubs
             builder.WithVotesShown(serverId);
 
             // Assert
-            await awaitResponse.WaitAsync(TimeSpan.FromSeconds(5));
+            await awaitResponse.WaitAsync(TimeoutProvider.GetDefaultTimeout());
 
             Assert.NotNull(updatedSession);
             Assert.Equal(serverId, updatedSession.Id);
@@ -146,7 +146,7 @@ namespace PlanningPoker.FunctionalTests.Tests.Hubs
             builder.WithVotesCleared(serverId);
 
             // Assert
-            await awaitResponse.WaitAsync(TimeSpan.FromSeconds(5));
+            await awaitResponse.WaitAsync(TimeoutProvider.GetDefaultTimeout());
 
             Assert.NotNull(updatedSession);
             Assert.Equal(serverId, updatedSession.Id);

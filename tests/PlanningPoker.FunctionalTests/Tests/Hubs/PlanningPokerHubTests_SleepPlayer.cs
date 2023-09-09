@@ -62,7 +62,7 @@ namespace PlanningPoker.FunctionalTests.Tests.Hubs
             await disconnectingBuilder.HubClient.Disconnect();
 
             // Assert
-            await awaitResponse.WaitAsync(TimeSpan.FromSeconds(5));
+            await awaitResponse.WaitAsync(TimeoutProvider.GetDefaultTimeout());
             Assert.True(hasVoted);
         }
 
@@ -89,7 +89,7 @@ namespace PlanningPoker.FunctionalTests.Tests.Hubs
             await disconnectingBuilder.HubClient.Disconnect();
 
             // Assert
-            await awaitResponse.WaitAsync(TimeSpan.FromSeconds(5));
+            await awaitResponse.WaitAsync(TimeoutProvider.GetDefaultTimeout());
             Assert.True(canShow);
         }
 
@@ -115,7 +115,7 @@ namespace PlanningPoker.FunctionalTests.Tests.Hubs
             await disconnectingBuilder.HubClient.Disconnect();
 
             // Assert
-            await awaitResponse.WaitAsync(TimeSpan.FromSeconds(5));
+            await awaitResponse.WaitAsync(TimeoutProvider.GetDefaultTimeout());
             Assert.False(canClear);
         }
     }

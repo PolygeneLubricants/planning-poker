@@ -60,7 +60,7 @@ namespace PlanningPoker.FunctionalTests.Tests.Hubs
             await builder.HubClient.UnVote(serverId, player.Id);
 
             // Assert
-            await awaitResponse.WaitAsync(TimeSpan.FromSeconds(5));
+            await awaitResponse.WaitAsync(TimeoutProvider.GetDefaultTimeout());
             Assert.False(voteExists);
         }
 
@@ -85,7 +85,7 @@ namespace PlanningPoker.FunctionalTests.Tests.Hubs
             await builder.HubClient.UnVote(serverId, player.Id);
 
             // Assert
-            await awaitResponse.WaitAsync(TimeSpan.FromSeconds(5));
+            await awaitResponse.WaitAsync(TimeoutProvider.GetDefaultTimeout());
             Assert.False(voteExists);
         }
     }

@@ -34,6 +34,9 @@ namespace PlanningPoker.FunctionalTests
                 // that could be dependent on the outcome of these.
                 services.Remove(services.Single(s => s.ImplementationType == typeof(CleanupServerJob)));
                 services.AddSingleton<CleanupServerJob>();
+
+                services.Remove(services.Single(s => s.ImplementationType == typeof(ReportTelemetryJob)));
+                services.AddSingleton<ReportTelemetryJob>();
             });
         }
     }
