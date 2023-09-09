@@ -50,6 +50,9 @@ namespace PlanningPoker.Server
                 endpoints.MapHub<PlanningPokerHub>("/hubs/poker");
                 endpoints.MapFallbackToFile("index.html");
             });
+
+            // Wake up event broadcaster
+            _ = app.ApplicationServices.GetRequiredService<IPlanningPokerEventBroadcaster>();
         }
     }
 }
