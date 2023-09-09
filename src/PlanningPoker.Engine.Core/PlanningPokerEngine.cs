@@ -1,6 +1,7 @@
 ﻿using System;
+using System.Collections.Generic;
+using System.Linq;
 using PlanningPoker.Engine.Core.Exceptions;
-using PlanningPoker.Engine.Core.Managers;
 using PlanningPoker.Engine.Core.Models;
 using PlanningPoker.Engine.Core.Models.Events;
 
@@ -44,8 +45,8 @@ namespace PlanningPoker.Engine.Core
         public void Kick(Guid id, string initiatingPlayerPrivateId, int playerPublicIdToRemove)
         {
             var server = _serverStore.Get(id);
-            var player = ServerManager.GetPlayer(server, initiatingPlayerPrivateId);
-            var wasRemoved = ServerManager.TryRemovePlayer(server, playerPublicIdToRemove, out var kickedPlayer);
+            var player = server.GetPlayer(initiatingPlayerPrivateId);
+            var wasRemoved = server.TryRemovePlayer(playerPublicIdToRemove, out var kickedPlayer);
             if (wasRemoved && kickedPlayer != null)
             {
                 RaisePlayerKicked(id, kickedPlayer);
@@ -56,7 +57,7 @@ namespace PlanningPoker.Engine.Core
 
         public void SleepInAllRooms(string playerPrivateId)
         {
-            var serversWithPlayer = ServerManager.SetPlayerToSleepOnAllServers(_serverStore.All(), playerPrivateId);
+            var serversWithPlayer = SetPlayerToSleepOnAllServers(_serverStore.All(), playerPrivateId);
             foreach (var server in serversWithPlayer)
             {
                 RaiseRoomUpdated(server.Id, server);
@@ -87,7 +88,7 @@ namespace PlanningPoker.Engine.Core
             var server = _serverStore.Get(id);
             
             var formattedPlayerName = playerName.Length > MaxPlayerNameLength ? playerName.Substring(0, MaxPlayerNameLength) : playerName;
-            var newPlayer = ServerManager.AddOrUpdatePlayer(server, recoveryId, playerPrivateId, formattedPlayerName, type);
+            var newPlayer = server.AddOrUpdatePlayer(recoveryId, playerPrivateId, formattedPlayerName, type);
             RaiseRoomUpdated(id, server);
             RaiseLogUpdated(id, newPlayer.Name, "Joined the server.");
             return newPlayer;
@@ -100,11 +101,11 @@ namespace PlanningPoker.Engine.Core
             if (!server.CurrentSession.CanVote) throw new VoteException($"Session not in state where players can vote.");
             if (!server.Players.ContainsKey(playerPrivateId)) throw new VoteException($"Player is not part of session.");
 
-            var player = ServerManager.GetPlayer(server, playerPrivateId);
+            var player = server.GetPlayer(playerPrivateId);
             if (player.Type == PlayerType.Observer) throw new VoteException($"Player is of type '{player.Type}' and cannot vote.");
             if (player.Mode == PlayerMode.Asleep) throw new VoteException($"Player is in mode '{player.Mode}', and cannot vote.");
 
-            SessionManager.SetVote(server.CurrentSession, player.PublicId, vote);
+            server.CurrentSession.SetVote(player.PublicId, vote);
             RaiseRoomUpdated(server.Id, server);
             RaiseLogUpdated(server.Id, player.Name, "Voted.");
         }
@@ -115,11 +116,11 @@ namespace PlanningPoker.Engine.Core
             if (!server.CurrentSession.CanVote) throw new VoteException($"Session not in state where players can unvote.");
             if (!server.Players.ContainsKey(playerPrivateId)) throw new VoteException($"Player is not part of session.");
 
-            var player = ServerManager.GetPlayer(server, playerPrivateId);
+            var player = server.GetPlayer(playerPrivateId);
             if (player.Type == PlayerType.Observer) throw new VoteException($"Player is of type '{player.Type}' and cannot vote.");
             if (player.Mode == PlayerMode.Asleep) throw new VoteException($"Player is in mode '{player.Mode}', and cannot vote.");
 
-            SessionManager.RemoveVote(server.CurrentSession, player.PublicId);
+            server.CurrentSession.RemoveVote(player.PublicId);
             RaiseRoomUpdated(server.Id, server);
             RaiseLogUpdated(server.Id, player.Name, "Redacted their vote.");
         }
@@ -129,8 +130,8 @@ namespace PlanningPoker.Engine.Core
             var server = _serverStore.Get(serverId);
             if (!server.CurrentSession.CanClear) throw new VoteException($"Session not in state where votes can be cleared.");
 
-            SessionManager.Clear(server.CurrentSession);
-            var player = ServerManager.GetPlayer(server, playerPrivateId);
+            server.CurrentSession.ClearVotes();
+            var player = server.GetPlayer(playerPrivateId);
             RaiseRoomUpdated(server.Id, server);
             RaiseRoomCleared(server.Id);
             RaiseLogUpdated(server.Id, player.Name, "Cleared all votes.");
@@ -141,8 +142,8 @@ namespace PlanningPoker.Engine.Core
             var server = _serverStore.Get(serverId);
             if (!server.CurrentSession.CanShow(server.Players)) throw new VoteException($"Session not in state where votes can be shown.");
 
-            SessionManager.Show(server.CurrentSession);
-            var player = ServerManager.GetPlayer(server, playerPrivateId); 
+            server.CurrentSession.ShowVotes();
+            var player = server.GetPlayer(playerPrivateId); 
             RaiseRoomUpdated(server.Id, server);
             RaiseLogUpdated(server.Id, player.Name, "Made all votes visible.");
         }
@@ -150,16 +151,27 @@ namespace PlanningPoker.Engine.Core
         public Player ChangePlayerType(Guid serverId, string playerPrivateId, PlayerType newType)
         {
             var server = _serverStore.Get(serverId);
-            var player = ServerManager.GetPlayer(server, playerPrivateId);
-            if (SessionManager.HasVoted(server.CurrentSession, player.PublicId))
+            var player = server.GetPlayer(playerPrivateId);
+            if (server.CurrentSession.HasVoted(player.PublicId))
             {
                 throw new ChangePlayerTypeException($"Cannot change from playertype '{PlayerType.Participant}', when player has voted.");
             }
 
-            ServerManager.ChangePlayerType(server, player, newType);
+            server.ChangePlayerType(player, newType);
             RaiseRoomUpdated(server.Id, server);
             RaiseLogUpdated(server.Id, player.Name, $"Changed their player type to {newType}.");
             return player;
+        }
+
+        private IList<PokerServer> SetPlayerToSleepOnAllServers(IEnumerable<PokerServer> servers, string playerPrivateId)
+        {
+            var serversWithUser = servers.Where(s => s.Players.ContainsKey(playerPrivateId)).ToList();
+            foreach (var server in serversWithUser)
+            {
+                server.SleepPlayer(playerPrivateId);
+            }
+
+            return serversWithUser;
         }
 
         private void RaiseRoomCleared(Guid serverId)

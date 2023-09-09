@@ -36,5 +36,40 @@ namespace PlanningPoker.Engine.Core.Models.Poker
         public IDictionary<int, string> Votes { get; set; }
 
         public IList<string> CardSet { get; set; }
+
+        public void SetVote(int playerPublicId, string vote)
+        {
+            Votes[playerPublicId] = vote;
+        }
+
+        public void RemoveVote(int playerPublicId)
+        {
+            Votes.Remove(playerPublicId);
+        }
+
+        public void ClearVotes()
+        {
+            Votes.Clear();
+            IsShown = false;
+        }
+
+        public void ShowVotes()
+        {
+            IsShown = true;
+        }
+
+        public void RemovePlayer(int playerPublicId)
+        {
+            Votes.Remove(playerPublicId);
+            if (!Votes.Any())
+            {
+                IsShown = false;
+            }
+        }
+
+        public bool HasVoted(int playerPublicId)
+        {
+            return Votes.ContainsKey(playerPublicId);
+        }
     }
 }
