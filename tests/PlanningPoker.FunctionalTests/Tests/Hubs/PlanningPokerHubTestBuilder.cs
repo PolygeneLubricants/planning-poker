@@ -124,7 +124,7 @@ namespace PlanningPoker.FunctionalTests.Tests.Hubs
             });
 
             await taskToAwait();
-            await awaitResponse.WaitAsync(TimeSpan.FromSeconds(5));
+            await awaitResponse.WaitAsync(TimeoutProvider.GetDefaultTimeout());
         }
 
         private async Task AwaitEventResult<T>(Func<Task> taskToAwait, Action<Action<T>> onEvent)
@@ -136,7 +136,7 @@ namespace PlanningPoker.FunctionalTests.Tests.Hubs
             });
 
             await taskToAwait();
-            await awaitResponse.WaitAsync(TimeSpan.FromSeconds(5));
+            await awaitResponse.WaitAsync(TimeoutProvider.GetDefaultTimeout());
         }
 
         private async Task<TResult> AwaitEventResult<T, TResult>(Func<Task<TResult>> taskToAwait, Action<Action<T>> onEvent)
@@ -148,7 +148,7 @@ namespace PlanningPoker.FunctionalTests.Tests.Hubs
             });
 
             var taskResult = await taskToAwait();
-            await awaitResponse.WaitAsync(TimeSpan.FromSeconds(5));
+            await awaitResponse.WaitAsync(TimeoutProvider.GetDefaultTimeout());
             return taskResult;
         }
     }

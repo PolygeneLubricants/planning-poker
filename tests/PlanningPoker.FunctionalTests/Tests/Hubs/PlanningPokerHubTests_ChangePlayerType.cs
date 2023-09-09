@@ -63,7 +63,7 @@ namespace PlanningPoker.FunctionalTests.Tests.Hubs
             await builder.HubClient.ChangePlayerType(serverId, desiredNewPlayerType);
 
             // Assert
-            await awaitResponse.WaitAsync(TimeSpan.FromSeconds(5));
+            await awaitResponse.WaitAsync(TimeoutProvider.GetDefaultTimeout());
             Assert.NotNull(updatedPlayer);
             Assert.Equal(desiredNewPlayerType, updatedPlayer.Type);
         }
@@ -106,7 +106,7 @@ namespace PlanningPoker.FunctionalTests.Tests.Hubs
             await builder.HubClient.ChangePlayerType(serverId, desiredNewPlayerType);
 
             // Assert
-            await awaitResponse.WaitAsync(TimeSpan.FromSeconds(5));
+            await awaitResponse.WaitAsync(TimeoutProvider.GetDefaultTimeout());
             Assert.NotNull(updatedPlayer);
             Assert.Equal(desiredNewPlayerType, updatedPlayer.Type);
         }

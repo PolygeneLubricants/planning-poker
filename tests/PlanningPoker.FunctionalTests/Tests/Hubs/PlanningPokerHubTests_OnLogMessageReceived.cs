@@ -35,7 +35,7 @@ namespace PlanningPoker.FunctionalTests.Tests.Hubs
             builder.WithVotesCleared(serverId);
 
             // Assert
-            await awaitResponse.WaitAsync(TimeSpan.FromSeconds(5));
+            await awaitResponse.WaitAsync(TimeoutProvider.GetDefaultTimeout());
             Assert.NotNull(logMessageReceived);
             Assert.Equal(player.Name, logMessageReceived.User);
             Assert.NotNull(logMessageReceived.Message);
@@ -62,7 +62,7 @@ namespace PlanningPoker.FunctionalTests.Tests.Hubs
             builder.WithPlayer(serverId, out var player);
 
             // Assert
-            await awaitResponse.WaitAsync(TimeSpan.FromSeconds(5));
+            await awaitResponse.WaitAsync(TimeoutProvider.GetDefaultTimeout());
             Assert.NotNull(logMessageReceived);
             Assert.Equal(player.Name, logMessageReceived.User);
             Assert.NotNull(logMessageReceived.Message);
@@ -92,7 +92,7 @@ namespace PlanningPoker.FunctionalTests.Tests.Hubs
             builder.WithPlayerKicked(serverId, player1.Id, player2.PublicId);
 
             // Assert
-            await awaitResponse.WaitAsync(TimeSpan.FromSeconds(5));
+            await awaitResponse.WaitAsync(TimeoutProvider.GetDefaultTimeout());
             Assert.NotNull(logMessageReceived);
             Assert.Equal(player1.Name, logMessageReceived.User);
             Assert.NotNull(logMessageReceived.Message);
@@ -122,7 +122,7 @@ namespace PlanningPoker.FunctionalTests.Tests.Hubs
             builder.WithVotesShown(serverId);
 
             // Assert
-            await awaitResponse.WaitAsync(TimeSpan.FromSeconds(5));
+            await awaitResponse.WaitAsync(TimeoutProvider.GetDefaultTimeout());
             Assert.NotNull(logMessageReceived);
             Assert.Equal(player.Name, logMessageReceived.User);
             Assert.NotNull(logMessageReceived.Message);
@@ -152,7 +152,7 @@ namespace PlanningPoker.FunctionalTests.Tests.Hubs
             builder.WithPlayerUnVoted(serverId, player.Id);
 
             // Assert
-            await awaitResponse.WaitAsync(TimeSpan.FromSeconds(5));
+            await awaitResponse.WaitAsync(TimeoutProvider.GetDefaultTimeout());
             Assert.NotNull(logMessageReceived);
             Assert.Equal(player.Name, logMessageReceived.User);
             Assert.NotNull(logMessageReceived.Message);
@@ -181,7 +181,7 @@ namespace PlanningPoker.FunctionalTests.Tests.Hubs
             builder.WithPlayerVoted(serverId, player.Id, validVote);
 
             // Assert
-            await awaitResponse.WaitAsync(TimeSpan.FromSeconds(5));
+            await awaitResponse.WaitAsync(TimeoutProvider.GetDefaultTimeout());
             Assert.NotNull(logMessageReceived);
             Assert.Equal(player.Name, logMessageReceived.User);
             Assert.NotNull(logMessageReceived.Message);

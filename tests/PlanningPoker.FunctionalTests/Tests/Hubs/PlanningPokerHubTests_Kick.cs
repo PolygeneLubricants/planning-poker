@@ -73,8 +73,8 @@ namespace PlanningPoker.FunctionalTests.Tests.Hubs
             await player1Builder.HubClient.KickPlayer(serverId, player1.Id, player2.PublicId);
 
             // Assert
-            await awaitUpdateResponse.WaitAsync(TimeSpan.FromSeconds(5));
-            await awaitKickResponse.WaitAsync(TimeSpan.FromSeconds(5));
+            await awaitUpdateResponse.WaitAsync(TimeoutProvider.GetDefaultTimeout());
+            await awaitKickResponse.WaitAsync(TimeoutProvider.GetDefaultTimeout());
             Assert.Equal(1, playerCount);
             Assert.True(kickCommandInvoked);
             Assert.Equal(player2.PublicId, kickedPlayer.PublicId);

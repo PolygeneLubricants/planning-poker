@@ -62,7 +62,7 @@ namespace PlanningPoker.FunctionalTests.Tests.Hubs
             await builder.HubClient.Vote(serverId, player.Id, validVote);
 
             // Assert
-            await awaitResponse.WaitAsync(TimeSpan.FromSeconds(5));
+            await awaitResponse.WaitAsync(TimeoutProvider.GetDefaultTimeout());
             Assert.Equal("?", actualVote);
         }
 
@@ -76,7 +76,7 @@ namespace PlanningPoker.FunctionalTests.Tests.Hubs
             var firstVote = "1";
             var secondVote = "21";
             string actualVote = null;
-            await builder.HubClient.Vote(serverId, player.Id, firstVote);
+            builder.WithPlayerVoted(serverId, player.Id, firstVote);
             SemaphoreSlim awaitResponse = new SemaphoreSlim(0);
             builder.HubClient.OnSessionUpdated(viewModel =>
             {
@@ -88,7 +88,7 @@ namespace PlanningPoker.FunctionalTests.Tests.Hubs
             await builder.HubClient.Vote(serverId, player.Id, secondVote);
 
             // Assert
-            await awaitResponse.WaitAsync(TimeSpan.FromSeconds(5));
+            await awaitResponse.WaitAsync(TimeoutProvider.GetDefaultTimeout());
             Assert.Equal("?", actualVote);
         }
 
