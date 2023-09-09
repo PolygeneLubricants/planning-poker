@@ -31,15 +31,7 @@ namespace PlanningPoker.FunctionalTests.Tests.Hubs
             var connection = new HubConnectionBuilder()
                 .WithUrl(hubUri, o =>
                 {
-                    o.SkipNegotiation = false;
-                    o.Transports = HttpTransportType.WebSockets;
-                    o.WebSocketFactory = (context, cancellationToken) =>
-                    {
-                        var webSocketClient = factory.Server.CreateWebSocketClient();
-                        var webSocket = webSocketClient.ConnectAsync(context.Uri, cancellationToken).GetAwaiter().GetResult();
-                        return ValueTask.FromResult(webSocket);
-                    };
-
+                    o.Transports = HttpTransportType.LongPolling;
                     o.HttpMessageHandlerFactory = _ => factory.Server.CreateHandler();
                 })
                 .Build();
