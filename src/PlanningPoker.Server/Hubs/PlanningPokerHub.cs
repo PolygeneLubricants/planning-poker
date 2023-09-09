@@ -9,14 +9,10 @@ namespace PlanningPoker.Server.Hubs
     public class PlanningPokerHub : Microsoft.AspNetCore.SignalR.Hub
     {
         private readonly IPlanningPokerEngine _pokerEngine;
-        private readonly IPlanningPokerEventBroadcaster _eventBroadcaster;
 
-        public PlanningPokerHub(
-            IPlanningPokerEngine pokerEngine, 
-            IPlanningPokerEventBroadcaster eventBroadcaster)
+        public PlanningPokerHub(IPlanningPokerEngine pokerEngine)
         {
             _pokerEngine = pokerEngine;
-            _eventBroadcaster = eventBroadcaster;
         }
 
         public async Task Connect(Guid id)

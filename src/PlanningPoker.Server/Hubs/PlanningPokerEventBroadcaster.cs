@@ -11,12 +11,7 @@ namespace PlanningPoker.Server.Hubs
     public interface IPlanningPokerEventBroadcaster
     {
     }
-
-    // TODO: Fix this component, which is awkward.
-    // 1. The broadcaster sits in PlanningPoker.Server, as it needs the HubContext as a dependency,
-    //    however, it belongs in Infrastructure.
-    // 2. The logic of EventBroadcaster works by injecting it into the hub, and then everything happens magically.
-    //    It's not intuitive that it works this way.
+    
     public class PlanningPokerEventBroadcaster : IPlanningPokerEventBroadcaster
     {
         private readonly IDateTimeProvider _dateTimeProvider;
