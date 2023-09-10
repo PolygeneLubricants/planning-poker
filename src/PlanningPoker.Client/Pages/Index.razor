@@ -1,11 +1,14 @@
 ﻿@page "/"
 @using Microsoft.AspNetCore.SignalR.Client
+@using Microsoft.Extensions.Options
+@using PlanningPoker.Client.Configuration
 @using PlanningPoker.Client.Utilities
 @using PlanningPoker.Hub.Client
 @using PlanningPoker.Hub.Client.Abstractions
 @using PlanningPoker.Hub.Client.Abstractions.ViewModels
 @inject NavigationManager NavigationManager
 @inject IJSRuntime JSRuntime
+@inject IOptions<NextEnvironmentConfiguration> NextEnvironmentConfiguration
 
 @if (string.IsNullOrWhiteSpace(CreatedServerAddress))
 {
@@ -13,7 +16,7 @@
         <div class="card-body">
             <div class="row">
                 <div class="col-md-12">
-                    <h2>Welcome to Just Planning Poker!</h2>
+                    <h2>Welcome to Just Planning Poker!</h2> 
                     <p>This is just a planning poker tool. No sign-up, no gathered user data, no fees.</p>
                     <p>The planning room has a default set of cards, but you can modify this set in the input below. Separate card values with ',' (comma).</p>
                     <div class="form-group">
@@ -48,6 +51,18 @@
             </div>
         </div>
     </div>
+    @if (NextEnvironmentConfiguration?.Value != null && !string.IsNullOrWhiteSpace(NextEnvironmentConfiguration.Value.RichText))
+    {
+        <div class="card">
+            <div class="card-body">
+                <div class="row">
+                    <div class="col">
+                        <p>@((MarkupString)NextEnvironmentConfiguration.Value.RichText)</p>
+                    </div>
+                </div>
+            </div>
+        </div>
+    }
 }
 else
 {
