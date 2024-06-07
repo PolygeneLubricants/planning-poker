@@ -1,4 +1,69 @@
-﻿/* LOADING */
+﻿/* DARK MODE PALETTE */
+:root {
+    --dark-background-color: #222831;
+    --dark-text-color: #76ABAE;
+    --dark-background-color-alternative: #31363F;
+    --dark-background-color-second-alternative: #EEEEEE
+}
+
+@media (prefers-color-scheme: dark) {
+    body {
+        background-color: var(--dark-background-color);
+        color: var(--dark-text-color);
+    }
+
+    .card {
+        background-color: var(--dark-background-color);
+    }
+
+    .form-control {
+        background-color: var(--dark-background-color) !important;
+        color: var(--dark-text-color);
+
+        &:focus {
+            color: var(--dark-text-color);
+        }
+    }
+
+    .custom-select {
+        background: var(--dark-background-color) url("data:image/svg+xml;charset=utf8,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 4 5'%3E%3Cpath fill='%23343a40' d='M2 0L0 2h4zm0 5L0 3h4z'/%3E%3C/svg%3E") no-repeat right .75rem center;
+        background-size: 8px 10px;
+        color: var(--dark-text-color);
+    }
+
+    .btn {
+        &.poker_card {
+            background-color: var(--dark-background-color);
+            color: var(--dark-text-color);
+            border: 1px solid var(--dark-text-color);
+
+            &.btn-success {
+                background-color: #1E7E34;
+                color: white;
+            }
+        }
+
+        &.clear {
+            background-color: var(--dark-background-color-second-alternative);
+            color: black;
+
+            &:disabled {
+                color: var(--dark-text-color);
+            }
+        }
+    }
+
+    .table-success > td {
+        background-color: var(--dark-background-color-alternative);
+    }
+
+    .notifications > .notification {
+        background: var(--dark-background-color);
+        border: 1px solid var(--dark-text-color);
+    }
+}
+
+/* LOADING */
 
 .loading {
     position: absolute;
