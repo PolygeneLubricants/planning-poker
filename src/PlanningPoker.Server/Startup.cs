@@ -1,6 +1,9 @@
-﻿using System.Linq;
+﻿using System;
+using System.Linq;
+using System.Text.Json;
 using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Hosting;
+using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.ResponseCompression;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Hosting;
@@ -48,6 +51,13 @@ namespace PlanningPoker.Server
             app.UseEndpoints(endpoints =>
             {
                 endpoints.MapHub<PlanningPokerHub>("/hubs/poker");
+                endpoints.MapGet("/health", async context =>
+                {
+                    var response = new { status = "healthy", timestamp = DateTime.UtcNow };
+                    var json = JsonSerializer.Serialize(response);
+                    context.Response.ContentType = "application/json";
+                    await context.Response.WriteAsync(json);
+                });
                 endpoints.MapFallbackToFile("index.html");
             });
 
