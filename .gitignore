@@ -358,3 +358,4 @@ MigrationBackup/
 
 # JetBrains
 .idea/
+/*.code-workspace
