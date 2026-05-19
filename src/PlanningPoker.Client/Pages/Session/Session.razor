@@ -7,6 +7,7 @@
 @using System.Threading
 @inject NavigationManager NavigationManager
 @inject IServerSessionManager sessionManager
+@inject IUserPreferencesManager userPreferencesManager
 
 @if (CurrentServer != null && _currentPlayer != null)
 {
@@ -123,6 +124,16 @@
         if (!firstRender) return;
         
         await ReconnectIfApplicable();
+
+        if (_currentPlayer == null)
+        {
+            var lastUsername = userPreferencesManager.GetLastUsername();
+            if (!string.IsNullOrWhiteSpace(lastUsername))
+            {
+                _username = lastUsername;
+                StateHasChanged();
+            }
+        }
     }
 
     protected override async Task OnInitializedAsync()
@@ -203,6 +214,7 @@
         };
 
         sessionManager.SetSession(serverSession);
+        userPreferencesManager.SetLastUsername(_username);
     }
 
     public bool HasJoined = false;
