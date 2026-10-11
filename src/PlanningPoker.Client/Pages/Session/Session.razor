@@ -11,8 +11,8 @@
 
 @if (CurrentServer != null && _currentPlayer != null)
 {
-    <_sessionControlComponent @bind-Id="_parsedId" @bind-Session="CurrentServer.CurrentSession" @bind-CurrentPlayer="_currentPlayer" @bind-HubClient="_hubClient" />
-    <_sessionRenderingComponent @bind-Id="_parsedId" @bind-Server="CurrentServer" @bind-CurrentPlayer="_currentPlayer" @bind-HubClient="_hubClient" />
+    <_sessionControlComponent @bind-Id="_parsedId" @bind-Session="CurrentServer.CurrentSession" @bind-CurrentPlayer="_currentPlayer" @bind-HubClient="_hubClient" CanControl="CanControl()" />
+    <_sessionRenderingComponent @bind-Id="_parsedId" @bind-Server="CurrentServer" @bind-CurrentPlayer="_currentPlayer" @bind-HubClient="_hubClient" CanControl="CanControl()" />
     <_sessionLogComponent @bind-HubClient="_hubClient" />
 }
 
@@ -218,4 +218,12 @@
     }
 
     public bool HasJoined = false;
+
+    // Mirrors the server-side rule: a room without awake admins can be controlled by anyone.
+    bool CanControl()
+    {
+        var players = CurrentServer?.Players ?? new List<PlayerViewModel>();
+        var isAdmin = players.Any(p => p.PublicId == _currentPlayer?.PublicId && p.IsAdmin);
+        return isAdmin || !players.Any(p => p.IsAdmin && p.Mode == PlayerMode.Awake);
+    }
 }

@@ -261,6 +261,17 @@ img.navbar-icon {
     color: #bdb4b4;
 }
 
+.admin-btn {
+    background: none;
+    color: #bdb4b4;
+}
+
+.admin-btn.is-admin,
+.admin-btn.is-admin[disabled] {
+    color: #F7C600;
+    opacity: 1;
+}
+
 .table .asleep {
     opacity: 0.3;
 }
