@@ -85,7 +85,7 @@ namespace PlanningPoker.Server.Infrastructure.HostedServices
                 MetricName = name,
                 Value = value,
                 Unit = StandardUnit.Count,
-                TimestampUtc = timestamp
+                Timestamp = timestamp
             };
         }
 
