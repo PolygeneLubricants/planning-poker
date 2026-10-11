@@ -12,5 +12,6 @@
         public const string UnVote = "UnVote";
         public const string Vote = "Vote";
         public const string ChangePlayerType = "ChangePlayerType";
+        public const string SetAutoShow = "SetAutoShow";
     }
 }

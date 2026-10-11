@@ -6,6 +6,8 @@ namespace PlanningPoker.Hub.Client.Abstractions.ViewModels.Poker
     {
         public bool IsShown { get; set; }
 
+        public bool AutoShow { get; set; }
+
         public bool CanShow { get; set; }
 
         public bool CanClear { get; set; }

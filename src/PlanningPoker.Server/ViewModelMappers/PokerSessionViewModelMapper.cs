@@ -15,6 +15,7 @@ namespace PlanningPoker.Server.ViewModelMappers
             {
                 Votes = votes,
                 IsShown = session.IsShown,
+                AutoShow = session.AutoShow,
                 CanClear = session.CanClear,
                 CanShow = session.CanShow(participants),
                 CanVote = session.CanVote,
