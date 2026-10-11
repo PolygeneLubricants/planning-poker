@@ -46,6 +46,12 @@
     <a href="" class="reload">Reload</a>
     <a class="dismiss">🗙</a>
 </div>
-<script src="_framework/blazor.webassembly.js?v=7.0"></script>
+<!-- Since .NET 10, the client environment is fixed at build time unless passed to Blazor.start,
+     so the server's environment (e.g. Nightly) is provided at runtime by /environment.js. -->
+<script src="environment.js"></script>
+<script src="_framework/blazor.webassembly.js?v=7.0" autostart="false"></script>
+<script>
+    Blazor.start({ environment: window.jppEnvironment });
+</script>
 </body>
 </html>
