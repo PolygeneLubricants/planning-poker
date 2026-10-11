@@ -1,0 +1,507 @@
+/*
+ * Fresh design.
+ * Every rule is scoped to html.design-fresh, so the classic design (site.css) stays untouched
+ * when a user opts out. Opting in/out is handled by window.jppDesign in index.html.
+ */
+
+html.design-fresh {
+    --bg: #f6f7f9;
+    --surface: #ffffff;
+    --surface-muted: #f1f3f5;
+    --border: #e3e6ea;
+    --border-strong: #cfd4da;
+    --text: #1c2024;
+    --text-muted: #646b73;
+    --accent: #2f6fed;
+    --accent-hover: #2459c7;
+    --accent-soft: #e8f0fe;
+    --accent-contrast: #ffffff;
+    --success: #1a7f4b;
+    --success-soft: #e6f4ec;
+    --danger: #c4372b;
+    --warning: #b7791f;
+    --radius: 10px;
+    --radius-sm: 6px;
+    --font: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, "Helvetica Neue", Arial, sans-serif;
+    --mono: ui-monospace, SFMono-Regular, "SF Mono", Menlo, Consolas, "Liberation Mono", monospace;
+    color-scheme: light;
+}
+
+@media (prefers-color-scheme: dark) {
+    html.design-fresh {
+        --bg: #111316;
+        --surface: #181b1f;
+        --surface-muted: #1f2328;
+        --border: #2a2f36;
+        --border-strong: #3a414a;
+        --text: #e6e8eb;
+        --text-muted: #9aa2ad;
+        --accent: #5b8def;
+        --accent-hover: #7aa3f3;
+        --accent-soft: #1d2a44;
+        --accent-contrast: #0b0d10;
+        --success: #4cc38a;
+        --success-soft: #16291f;
+        --danger: #f07167;
+        --warning: #e3b341;
+        color-scheme: dark;
+    }
+}
+
+/* BASE */
+
+html.design-fresh body {
+    background: var(--bg);
+    color: var(--text);
+    font-family: var(--font);
+    font-size: 15px;
+    -webkit-font-smoothing: antialiased;
+}
+
+html.design-fresh a {
+    color: var(--accent);
+}
+
+html.design-fresh a:hover {
+    color: var(--accent-hover);
+}
+
+html.design-fresh h2 {
+    font-size: 1.6rem;
+    font-weight: 650;
+    letter-spacing: -0.02em;
+    margin-bottom: 0.5rem;
+}
+
+html.design-fresh .container {
+    max-width: 960px;
+}
+
+html.design-fresh .text-muted {
+    color: var(--text-muted) !important;
+}
+
+/* NAVBAR */
+
+html.design-fresh .navbar {
+    max-width: 960px;
+    margin: 0 auto 8px;
+    padding: 20px 15px 12px;
+}
+
+html.design-fresh .navbar .navbar-brand,
+html.design-fresh .navbar .navbar-brand:hover,
+html.design-fresh .navbar .navbar-brand:focus,
+html.design-fresh .navbar .navbar-brand:visited {
+    color: var(--text);
+    font-weight: 650;
+    font-size: 1.05rem;
+    letter-spacing: -0.01em;
+    display: flex;
+    align-items: center;
+}
+
+html.design-fresh img.navbar-icon {
+    height: 26px;
+    width: 26px;
+    margin-right: 10px;
+}
+
+/* CARDS (PANELS) */
+
+html.design-fresh .card {
+    background: var(--surface);
+    border: 1px solid var(--border);
+    border-radius: var(--radius);
+    margin: 12px 0;
+    box-shadow: none;
+}
+
+html.design-fresh .card-body {
+    padding: 22px 24px;
+}
+
+html.design-fresh .card-title {
+    font-size: 0.78rem;
+    font-weight: 650;
+    text-transform: uppercase;
+    letter-spacing: 0.06em;
+    color: var(--text-muted);
+    margin-bottom: 4px;
+}
+
+html.design-fresh .card-body > .row {
+    margin-left: 0;
+    margin-right: 0;
+}
+
+html.design-fresh .card-body > .row > .table td:first-child,
+html.design-fresh .card-body > .row > .table th:first-child {
+    padding-left: 0;
+}
+
+html.design-fresh .card-subtitle {
+    font-size: 0.9rem;
+    margin-top: 0 !important;
+}
+
+html.design-fresh .row.juxtaposed .left .card {
+    margin-right: 6px;
+}
+
+html.design-fresh .row.juxtaposed .right .card {
+    margin-left: 6px;
+}
+
+@media (max-width: 767.98px) {
+    html.design-fresh .row.juxtaposed .col {
+        flex-basis: 100%;
+        max-width: 100%;
+    }
+
+    html.design-fresh .row.juxtaposed .left .card,
+    html.design-fresh .row.juxtaposed .right .card {
+        margin-left: 0;
+        margin-right: 0;
+    }
+}
+
+/* FORMS */
+
+html.design-fresh .form-group > label {
+    display: block;
+}
+
+html.design-fresh label {
+    font-size: 0.85rem;
+    font-weight: 600;
+    color: var(--text);
+}
+
+html.design-fresh .form-control,
+html.design-fresh .custom-select {
+    background-color: var(--surface) !important;
+    color: var(--text);
+    border: 1px solid var(--border-strong);
+    border-radius: var(--radius-sm);
+    font-size: 0.95rem;
+    transition: border-color 0.15s ease, box-shadow 0.15s ease;
+}
+
+html.design-fresh .form-control:focus,
+html.design-fresh .custom-select:focus,
+html.design-fresh .card-set-input:focus-within {
+    color: var(--text);
+    border-color: var(--accent);
+    box-shadow: 0 0 0 3px var(--accent-soft);
+    outline: none;
+}
+
+html.design-fresh .custom-select {
+    background: var(--surface) url("data:image/svg+xml;charset=utf8,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 10 6'%3E%3Cpath fill='none' stroke='%23889' stroke-width='1.5' d='M1 1l4 4 4-4'/%3E%3C/svg%3E") no-repeat right .75rem center !important;
+    background-size: 10px 6px !important;
+    padding-right: 2rem;
+}
+
+html.design-fresh .custom-control-label {
+    font-weight: 500;
+    cursor: pointer;
+}
+
+html.design-fresh .custom-control-label::before {
+    background-color: var(--surface);
+    border: 1px solid var(--border-strong);
+}
+
+html.design-fresh .custom-control-input:checked ~ .custom-control-label::before {
+    background-color: var(--accent);
+    border-color: var(--accent);
+}
+
+html.design-fresh .custom-control-input:disabled ~ .custom-control-label {
+    color: var(--text-muted);
+    cursor: default;
+}
+
+/* CARD SET INPUT */
+
+html.design-fresh .card-set-input .card-chip {
+    background: var(--surface-muted);
+    border: 1px solid var(--border);
+    color: var(--text);
+    font-family: var(--mono);
+    font-size: 0.85rem;
+}
+
+html.design-fresh .card-set-input .card-chip-remove {
+    background: var(--border-strong);
+    color: var(--surface);
+}
+
+html.design-fresh .card-set-input .card-chip-remove:hover {
+    background: var(--text-muted);
+}
+
+html.design-fresh .card-set-input .card-input {
+    color: var(--text);
+}
+
+/* BUTTONS */
+
+html.design-fresh .btn {
+    border-radius: var(--radius-sm);
+    font-weight: 600;
+    font-size: 0.92rem;
+    padding: 0.45rem 1rem;
+    transition: background-color 0.15s ease, border-color 0.15s ease, color 0.15s ease, transform 0.1s ease;
+}
+
+html.design-fresh .btn:focus {
+    box-shadow: 0 0 0 3px var(--accent-soft);
+}
+
+html.design-fresh .btn-primary {
+    background: var(--accent);
+    border-color: var(--accent);
+    color: var(--accent-contrast);
+}
+
+html.design-fresh .btn-primary:hover:not(:disabled) {
+    background: var(--accent-hover);
+    border-color: var(--accent-hover);
+}
+
+html.design-fresh .btn-primary:disabled {
+    background: var(--accent);
+    border-color: var(--accent);
+    opacity: 0.4;
+}
+
+html.design-fresh .btn-default,
+html.design-fresh .btn-outline-secondary,
+html.design-fresh .btn.clear {
+    background: var(--surface);
+    border: 1px solid var(--border-strong);
+    color: var(--text);
+}
+
+html.design-fresh .btn-default:hover:not(:disabled),
+html.design-fresh .btn-outline-secondary:hover:not(:disabled),
+html.design-fresh .btn.clear:hover:not(:disabled) {
+    background: var(--surface-muted);
+}
+
+html.design-fresh .btn:disabled {
+    opacity: 0.45;
+    cursor: default;
+}
+
+/* POKER CARDS */
+
+html.design-fresh .poker_cards .row {
+    margin: 8px 0 0;
+    display: flex;
+    flex-wrap: wrap;
+    gap: 10px;
+}
+
+html.design-fresh .poker_cards .card-wrapper {
+    flex: 0 0 auto;
+    width: auto;
+    max-width: none;
+    padding: 0;
+    margin: 0;
+}
+
+html.design-fresh .btn.poker_card {
+    width: 64px;
+    height: 92px;
+    padding: 0;
+    border-radius: 8px;
+    background: var(--surface);
+    border: 1px solid var(--border-strong);
+    color: var(--text);
+    font-family: var(--mono);
+    font-size: 1.35rem;
+    font-weight: 600;
+    box-shadow: 0 1px 0 var(--border);
+}
+
+html.design-fresh .btn.poker_card:hover:not(:disabled) {
+    border-color: var(--accent);
+    color: var(--accent);
+    transform: translateY(-3px);
+}
+
+html.design-fresh .btn.poker_card.btn-success,
+html.design-fresh .btn.poker_card.btn-success:hover:not(:disabled) {
+    background: var(--accent);
+    border-color: var(--accent);
+    color: var(--accent-contrast);
+    transform: translateY(-6px);
+    box-shadow: 0 6px 16px -6px var(--accent);
+}
+
+html.design-fresh .btn.poker_card:disabled {
+    opacity: 0.5;
+}
+
+/* Keep your own vote clearly visible after votes are shown. */
+html.design-fresh .btn.poker_card.btn-success:disabled {
+    opacity: 1;
+}
+
+/* TABLES */
+
+html.design-fresh .table {
+    color: var(--text);
+    margin-bottom: 0;
+}
+
+html.design-fresh .table th {
+    border-top: none;
+    border-bottom: 1px solid var(--border) !important;
+    font-size: 0.75rem;
+    font-weight: 650;
+    text-transform: uppercase;
+    letter-spacing: 0.05em;
+    color: var(--text-muted);
+}
+
+html.design-fresh .table td {
+    border-top: 1px solid var(--border);
+    vertical-align: middle;
+}
+
+html.design-fresh .table-striped tbody tr:nth-of-type(odd) {
+    background: transparent;
+}
+
+html.design-fresh .table tbody tr.table-success,
+html.design-fresh .table tbody tr.table-success > td {
+    background: var(--success-soft);
+}
+
+html.design-fresh .table .oi-check {
+    color: var(--success);
+}
+
+html.design-fresh .table .oi-moon {
+    color: var(--text-muted);
+}
+
+html.design-fresh .table .asleep {
+    opacity: 0.45;
+}
+
+html.design-fresh .kick-btn,
+html.design-fresh .changetype-btn,
+html.design-fresh .admin-btn {
+    padding: 2px 6px;
+    color: var(--text-muted);
+    opacity: 0.7;
+}
+
+html.design-fresh .kick-btn:hover {
+    color: var(--danger);
+    opacity: 1;
+}
+
+html.design-fresh .changetype-btn:hover:not(:disabled),
+html.design-fresh .admin-btn:hover:not(:disabled) {
+    color: var(--accent);
+    opacity: 1;
+}
+
+html.design-fresh .admin-btn.is-admin,
+html.design-fresh .admin-btn.is-admin[disabled] {
+    color: var(--warning);
+    opacity: 1;
+}
+
+/* RESULTS */
+
+html.design-fresh .session-results td:last-child {
+    font-family: var(--mono);
+    font-size: 1.25rem;
+    font-weight: 600;
+    text-align: right;
+}
+
+/* LOG */
+
+html.design-fresh .log .table td {
+    font-size: 0.85rem;
+}
+
+html.design-fresh .log .table td:first-child {
+    font-family: var(--mono);
+    color: var(--text-muted);
+}
+
+/* NOTIFICATIONS */
+
+html.design-fresh .notification {
+    background: var(--surface);
+    color: var(--text);
+    border: 1px solid var(--border);
+    border-radius: var(--radius-sm);
+    padding: 8px 12px;
+    font-size: 0.8rem;
+    box-shadow: 0 4px 16px -8px rgba(0, 0, 0, 0.25);
+}
+
+/* FOOTER */
+
+html.design-fresh .page-footer {
+    color: var(--text-muted);
+    padding-bottom: 12px;
+}
+
+html.design-fresh .page-footer small {
+    font-size: 0.78rem;
+}
+
+/* LOADING */
+
+html.design-fresh .loading .loading-text {
+    color: var(--text-muted);
+    font-weight: 600;
+    letter-spacing: 0.08em;
+}
+
+/* DESIGN SWITCH (shown in both designs) */
+
+.design-switch {
+    display: block;
+    margin-top: 6px;
+}
+
+.design-switch a {
+    cursor: pointer;
+    color: inherit;
+    opacity: 0.75;
+    text-decoration: underline;
+    text-decoration-style: dotted;
+}
+
+.design-switch a:hover {
+    opacity: 1;
+}
+
+/* SESSION CONTROL LAYOUT */
+
+html.design-fresh .session-controls .card-body > .row {
+    flex-wrap: nowrap;
+    gap: 10px;
+}
+
+html.design-fresh .session-controls .card-body > .row > div {
+    flex: 1 1 0;
+    max-width: none;
+    padding: 0;
+}
+
+html.design-fresh .session-results .table tr:first-child td {
+    border-top: none;
+}
