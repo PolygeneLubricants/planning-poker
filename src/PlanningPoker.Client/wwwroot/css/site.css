@@ -177,6 +177,66 @@ img.navbar-icon {
 
 /* END SCROLLABLE TABLE */
 
+/* CARD SET INPUT */
+.card-set-input {
+    display: flex;
+    flex-wrap: wrap;
+    align-items: center;
+    gap: 6px;
+    height: auto;
+    min-height: calc(2.25rem + 2px);
+    padding: 4px 6px;
+    cursor: text;
+}
+
+.card-set-input .card-chip {
+    display: inline-flex;
+    align-items: center;
+    gap: 6px;
+    padding: 3px 6px 3px 12px;
+    border-radius: 999px;
+    background: #ececec;
+    border: 1px solid #dcdcdc;
+    color: #333;
+    font-size: 0.9rem;
+    line-height: 1.4;
+}
+
+.card-set-input .card-chip-remove {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    width: 16px;
+    height: 16px;
+    padding: 0;
+    border: none;
+    border-radius: 50%;
+    background: #b5b5b5;
+    color: #fff;
+    font-size: 12px;
+    line-height: 1;
+    cursor: pointer;
+}
+
+.card-set-input .card-chip-remove:hover {
+    background: #888;
+}
+
+.card-set-input .card-input {
+    flex: 1;
+    min-width: 8rem;
+    border: none;
+    outline: none;
+    background: transparent;
+    box-shadow: none;
+    padding: 2px 0;
+}
+
+.card-preset {
+    max-width: 20rem;
+}
+/* END CARD SET INPUT */
+
 /* SESSION CONTROL */
 
 .card-wrapper {
