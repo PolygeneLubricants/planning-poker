@@ -29,12 +29,15 @@ namespace PlanningPoker.Engine.Core
     public class PlanningPokerEngine : IPlanningPokerEngine
     {
         private readonly IServerStore _serverStore;
+        private readonly IUsageCounters _usageCounters;
         private const int MaxPlayerNameLength = 20;
 
         public PlanningPokerEngine(
-            IServerStore serverStore)
+            IServerStore serverStore,
+            IUsageCounters usageCounters)
         {
             _serverStore = serverStore;
+            _usageCounters = usageCounters;
         }
 
         public event EventHandler<PlayerKickedEventArgs> PlayerKicked;
@@ -73,6 +76,7 @@ namespace PlanningPoker.Engine.Core
             }
 
             var server = _serverStore.Create(cardSet);
+            _usageCounters.RoomCreated();
             return (true, server.Id, validationMessage);
         }
 
@@ -89,6 +93,7 @@ namespace PlanningPoker.Engine.Core
             
             var formattedPlayerName = playerName.Length > MaxPlayerNameLength ? playerName.Substring(0, MaxPlayerNameLength) : playerName;
             var newPlayer = server.AddOrUpdatePlayer(recoveryId, playerPrivateId, formattedPlayerName, type);
+            _usageCounters.PlayerJoined();
             RaiseRoomUpdated(id, server);
             RaiseLogUpdated(id, newPlayer.Name, "Joined the server.");
             return newPlayer;
@@ -143,6 +148,7 @@ namespace PlanningPoker.Engine.Core
             if (!server.CurrentSession.CanShow(server.Players)) throw new VoteException($"Session not in state where votes can be shown.");
 
             server.CurrentSession.ShowVotes();
+            _usageCounters.RoundPlayed();
             var player = server.GetPlayer(playerPrivateId); 
             RaiseRoomUpdated(server.Id, server);
             RaiseLogUpdated(server.Id, player.Name, "Made all votes visible.");
