@@ -185,29 +185,51 @@ img.navbar-icon {
     gap: 6px;
     height: auto;
     min-height: calc(2.25rem + 2px);
+    padding: 4px 6px;
     cursor: text;
 }
 
-.card-chip {
-    font-size: 0.95rem;
-    padding: 0.35em 0.5em;
+.card-set-input .card-chip {
+    display: inline-flex;
+    align-items: center;
+    gap: 6px;
+    padding: 3px 6px 3px 12px;
+    border-radius: 999px;
+    background: #ececec;
+    border: 1px solid #dcdcdc;
+    color: #333;
+    font-size: 0.9rem;
+    line-height: 1.4;
 }
 
-.card-chip-remove {
-    background: none;
+.card-set-input .card-chip-remove {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    width: 16px;
+    height: 16px;
+    padding: 0;
     border: none;
-    color: inherit;
-    padding: 0 0 0 4px;
+    border-radius: 50%;
+    background: #b5b5b5;
+    color: #fff;
+    font-size: 12px;
     line-height: 1;
     cursor: pointer;
 }
 
-.card-input {
+.card-set-input .card-chip-remove:hover {
+    background: #888;
+}
+
+.card-set-input .card-input {
     flex: 1;
     min-width: 8rem;
     border: none;
     outline: none;
-    padding: 0;
+    background: transparent;
+    box-shadow: none;
+    padding: 2px 0;
 }
 
 .card-preset {

@@ -35,7 +35,7 @@
                         <div class="form-control card-set-input" @onclick="FocusCardInput">
                             @foreach (var card in _cards)
                             {
-                                <span class="badge badge-secondary card-chip">
+                                <span class="card-chip">
                                     @card
                                     <button type="button" class="card-chip-remove" title="Remove @card" @onclick="() => RemoveCard(card)" @onclick:stopPropagation="true">&times;</button>
                                 </span>
