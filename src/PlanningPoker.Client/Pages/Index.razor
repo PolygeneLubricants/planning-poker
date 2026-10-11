@@ -9,6 +9,7 @@
 @inject NavigationManager NavigationManager
 @inject IJSRuntime JSRuntime
 @inject IOptions<NextEnvironmentConfiguration> NextEnvironmentConfiguration
+@inject PlanningPoker.Client.Storage.IUserPreferencesManager UserPreferencesManager
 
 @if (string.IsNullOrWhiteSpace(CreatedServerAddress))
 {
@@ -18,15 +19,40 @@
                 <div class="col-md-12">
                     <h2>Welcome to Just Planning Poker!</h2> 
                     <p>This is just a planning poker tool. No sign-up, no gathered user data, no fees.</p>
-                    <p>The planning room has a default set of cards, but you can modify this set in the input below. Separate card values with ',' (comma).</p>
+                    <p>Pick a card set below, or make your own. Type a card and press space, comma or enter to add it.</p>
                     <div class="form-group">
-                        <label>
-                            Card set
-                            <input @bind-value="_cardSet"
+                        <label for="cardPreset">Preset</label>
+                        <select id="cardPreset" class="custom-select card-preset" value="@SelectedPreset()" @onchange="SelectPreset">
+                            @foreach (var preset in Cards.Presets.Keys)
+                            {
+                                <option value="@preset">@preset</option>
+                            }
+                            <option value="" disabled>Custom</option>
+                        </select>
+                    </div>
+                    <div class="form-group">
+                        <label for="cardInput">Card set</label>
+                        <div class="form-control card-set-input" @onclick="FocusCardInput">
+                            @foreach (var card in _cards)
+                            {
+                                <span class="badge badge-secondary card-chip">
+                                    @card
+                                    <button type="button" class="card-chip-remove" title="Remove @card" @onclick="() => RemoveCard(card)" @onclick:stopPropagation="true">&times;</button>
+                                </span>
+                            }
+                            <input id="cardInput"
+                                   @ref="_cardInput"
+                                   @bind-value:get="_newCard"
+                                   @bind-value:set="OnCardInput"
                                    @bind-value:event="oninput"
-                                   size="200"
-                                   class="form-control" />
-                        </label>
+                                   @onkeydown="OnCardKeyDown"
+                                   placeholder="@(_cards.Any() ? "" : "Add a card...")"
+                                   class="card-input" />
+                        </div>
+                        @if (!string.IsNullOrWhiteSpace(_cardValidationMessage))
+                        {
+                            <small class="text-danger">@_cardValidationMessage</small>
+                        }
                         @if (_creationResult != null && !string.IsNullOrWhiteSpace(_creationResult.ValidationMessage))
                         {
                             <small class="text-danger">
@@ -45,7 +71,7 @@
             <div class="row">
                 <div class="col-md-12">
                     <div class="form-group">
-                        <button @onclick="Create" disabled="@(HasCreated)" class="btn btn-primary">Create room</button>
+                        <button @onclick="Create" disabled="@(HasCreated || (!_cards.Any() && string.IsNullOrWhiteSpace(_newCard)))" class="btn btn-primary">Create room</button>
                     </div>
                 </div>
             </div>
@@ -97,13 +123,24 @@ else
 @code {
     private IPlanningPokerHubClient _hubClient;
 
-    private string _cardSet;
+    private List<string> _cards = new List<string>();
+
+    private string _newCard = string.Empty;
+
+    private string? _cardValidationMessage;
+
+    private ElementReference _cardInput;
+
+    private static readonly char[] CardSeparators = { ',', ' ', ';' };
 
     private ServerCreationResult _creationResult;
 
     protected override async Task OnInitializedAsync()
     {
-        _cardSet = string.Join(",", Cards.DefaultCardSet);
+        var lastCardSet = UserPreferencesManager.GetLastCardSet();
+        _cards = string.IsNullOrWhiteSpace(lastCardSet)
+            ? Cards.DefaultCardSet.ToList()
+            : lastCardSet.Split(',').Where(c => !string.IsNullOrWhiteSpace(c)).ToList();
         var connection = new HubConnectionBuilder()
             .WithUrl(NavigationManager.ToAbsoluteUri("/hubs/poker"))
             .WithAutomaticReconnect()
@@ -112,12 +149,89 @@ else
         _hubClient = new PlanningPokerHubClient(connection);
     }
 
+    string SelectedPreset()
+    {
+        return Cards.Presets.FirstOrDefault(preset => preset.Value.SequenceEqual(_cards)).Key ?? string.Empty;
+    }
+
+    void SelectPreset(ChangeEventArgs e)
+    {
+        if (e.Value is string preset && Cards.Presets.TryGetValue(preset, out var cards))
+        {
+            _cards = cards.ToList();
+            _cardValidationMessage = null;
+        }
+    }
+
+    async Task FocusCardInput()
+    {
+        await _cardInput.FocusAsync();
+    }
+
+    void OnCardInput(string? value)
+    {
+        value ??= string.Empty;
+        if (value.IndexOfAny(CardSeparators) < 0)
+        {
+            _newCard = value;
+            return;
+        }
+
+        var parts = value.Split(CardSeparators);
+        foreach (var part in parts.Take(parts.Length - 1))
+        {
+            AddCard(part);
+        }
+
+        _newCard = parts.Last();
+    }
+
+    void OnCardKeyDown(KeyboardEventArgs e)
+    {
+        if (e.Key == "Enter")
+        {
+            AddCard(_newCard);
+            _newCard = string.Empty;
+        }
+        else if (e.Key == "Backspace" && string.IsNullOrEmpty(_newCard) && _cards.Any())
+        {
+            _cards.RemoveAt(_cards.Count - 1);
+        }
+    }
+
+    void AddCard(string card)
+    {
+        card = card.Trim();
+        if (card.Length == 0) return;
+
+        if (!Cards.IsValidCard(card))
+        {
+            _cardValidationMessage = $"'{card}' is not a valid card. Cards must be whole numbers, or at most 3 characters.";
+            return;
+        }
+
+        _cardValidationMessage = null;
+        if (!_cards.Contains(card))
+        {
+            _cards.Add(card);
+        }
+    }
+
+    void RemoveCard(string card)
+    {
+        _cards.Remove(card);
+    }
+
     async Task Create()
     {
-        var creationResult = await _hubClient.CreateServer(_cardSet);
+        AddCard(_newCard);
+        _newCard = string.Empty;
+        var cardSet = string.Join(",", _cards);
+        var creationResult = await _hubClient.CreateServer(cardSet);
         _creationResult = creationResult;
         if (_creationResult.Created)
         {
+            UserPreferencesManager.SetLastCardSet(cardSet);
             var uri = NavigationManager.ToAbsoluteUri($"/server/{_creationResult.ServerId}");
             CreatedServerAddress = uri.AbsoluteUri;
             HasCreated = true;
