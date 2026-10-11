@@ -1,4 +1,4 @@
-using Amazon.CloudWatch;
+﻿using Amazon.CloudWatch;
 using Amazon.CloudWatch.Model;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.Hosting;
@@ -44,7 +44,17 @@ namespace PlanningPoker.Server.Infrastructure.HostedServices
         {
             if (!_enabled) return Task.CompletedTask;
 
-            _cloudWatch = new AmazonCloudWatchClient();
+            try
+            {
+                _cloudWatch = new AmazonCloudWatchClient();
+            }
+            catch (Exception e)
+            {
+                // Metrics must never prevent the app from starting, e.g. when no AWS region is configured.
+                _logger.LogWarning(e, "Usage metrics are disabled, as the CloudWatch client could not be created.");
+                return Task.CompletedTask;
+            }
+
             _timer = new Timer(_ => _ = RunJob(), null, RunFrequency, RunFrequency);
             return Task.CompletedTask;
         }
@@ -85,7 +95,7 @@ namespace PlanningPoker.Server.Infrastructure.HostedServices
                 MetricName = name,
                 Value = value,
                 Unit = StandardUnit.Count,
-                TimestampUtc = timestamp
+                Timestamp = timestamp
             };
         }
 

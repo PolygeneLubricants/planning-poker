@@ -31,6 +31,20 @@ namespace PlanningPoker.Server
             });
         }
 
+        // Make browsers check for updated pages and stylesheets on each load (cheap, thanks to ETags),
+        // so a deploy never shows new markup with stale styling.
+        private static readonly StaticFileOptions RevalidatedStaticFiles = new StaticFileOptions
+        {
+            OnPrepareResponse = context =>
+            {
+                var path = context.File.Name;
+                if (path.EndsWith(".html") || path.EndsWith(".css"))
+                {
+                    context.Context.Response.Headers["Cache-Control"] = "no-cache";
+                }
+            }
+        };
+
         public void Configure(IApplicationBuilder app, IWebHostEnvironment env)
         {
             app.UseResponseCompression();
@@ -42,13 +56,20 @@ namespace PlanningPoker.Server
             }
 
             app.UseBlazorFrameworkFiles();
-            app.UseStaticFiles();
+            app.UseStaticFiles(RevalidatedStaticFiles);
 
             app.UseRouting();
 
             app.UseEndpoints(endpoints =>
             {
                 endpoints.MapHub<PlanningPokerHub>("/hubs/poker");
+                endpoints.MapGet("/environment.js", async context =>
+                {
+                    var environmentName = JsonSerializer.Serialize(env.EnvironmentName);
+                    context.Response.ContentType = "text/javascript";
+                    context.Response.Headers["Cache-Control"] = "no-cache";
+                    await context.Response.WriteAsync($"window.jppEnvironment = {environmentName};");
+                });
                 endpoints.MapGet("/health", async context =>
                 {
                     var response = new { status = "healthy", timestamp = DateTime.UtcNow };
@@ -56,7 +77,7 @@ namespace PlanningPoker.Server
                     context.Response.ContentType = "application/json";
                     await context.Response.WriteAsync(json);
                 });
-                endpoints.MapFallbackToFile("index.html");
+                endpoints.MapFallbackToFile("index.html", RevalidatedStaticFiles);
             });
 
             // Wake up event broadcaster

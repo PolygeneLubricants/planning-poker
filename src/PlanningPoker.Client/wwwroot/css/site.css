@@ -7,59 +7,62 @@
 }
 
 @media (prefers-color-scheme: dark) {
-    body {
-        background-color: var(--dark-background-color);
-        color: var(--dark-text-color);
-    }
-
-    .card {
-        background-color: var(--dark-background-color);
-    }
-
-    .form-control {
-        background-color: var(--dark-background-color) !important;
-        color: var(--dark-text-color);
-
-        &:focus {
-            color: var(--dark-text-color);
-        }
-    }
-
-    .custom-select {
-        background: var(--dark-background-color) url("data:image/svg+xml;charset=utf8,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 4 5'%3E%3Cpath fill='%23343a40' d='M2 0L0 2h4zm0 5L0 3h4z'/%3E%3C/svg%3E") no-repeat right .75rem center;
-        background-size: 8px 10px;
-        color: var(--dark-text-color);
-    }
-
-    .btn {
-        &.poker_card {
+    /* Classic design only; the fresh design has its own palette in fresh.css. */
+    html:not(.design-fresh) {
+        body {
             background-color: var(--dark-background-color);
             color: var(--dark-text-color);
-            border: 1px solid var(--dark-text-color);
-
-            &.btn-success {
-                background-color: #1E7E34;
-                color: white;
-            }
         }
 
-        &.clear {
-            background-color: var(--dark-background-color-second-alternative);
-            color: black;
+        .card {
+            background-color: var(--dark-background-color);
+        }
 
-            &:disabled {
+        .form-control {
+            background-color: var(--dark-background-color) !important;
+            color: var(--dark-text-color);
+
+            &:focus {
                 color: var(--dark-text-color);
             }
         }
-    }
 
-    .table-success > td {
-        background-color: var(--dark-background-color-alternative);
-    }
+        .custom-select {
+            background: var(--dark-background-color) url("data:image/svg+xml;charset=utf8,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 4 5'%3E%3Cpath fill='%23343a40' d='M2 0L0 2h4zm0 5L0 3h4z'/%3E%3C/svg%3E") no-repeat right .75rem center;
+            background-size: 8px 10px;
+            color: var(--dark-text-color);
+        }
 
-    .notifications > .notification {
-        background: var(--dark-background-color);
-        border: 1px solid var(--dark-text-color);
+        .btn {
+            &.poker_card {
+                background-color: var(--dark-background-color);
+                color: var(--dark-text-color);
+                border: 1px solid var(--dark-text-color);
+
+                &.btn-success {
+                    background-color: #1E7E34;
+                    color: white;
+                }
+            }
+
+            &.clear {
+                background-color: var(--dark-background-color-second-alternative);
+                color: black;
+
+                &:disabled {
+                    color: var(--dark-text-color);
+                }
+            }
+        }
+
+        .table-success > td {
+            background-color: var(--dark-background-color-alternative);
+        }
+
+        .notifications > .notification {
+            background: var(--dark-background-color);
+            border: 1px solid var(--dark-text-color);
+        }
     }
 }
 
@@ -177,6 +180,66 @@ img.navbar-icon {
 
 /* END SCROLLABLE TABLE */
 
+/* CARD SET INPUT */
+.card-set-input {
+    display: flex;
+    flex-wrap: wrap;
+    align-items: center;
+    gap: 6px;
+    height: auto;
+    min-height: calc(2.25rem + 2px);
+    padding: 4px 6px;
+    cursor: text;
+}
+
+.card-set-input .card-chip {
+    display: inline-flex;
+    align-items: center;
+    gap: 6px;
+    padding: 3px 6px 3px 12px;
+    border-radius: 999px;
+    background: #ececec;
+    border: 1px solid #dcdcdc;
+    color: #333;
+    font-size: 0.9rem;
+    line-height: 1.4;
+}
+
+.card-set-input .card-chip-remove {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    width: 16px;
+    height: 16px;
+    padding: 0;
+    border: none;
+    border-radius: 50%;
+    background: #b5b5b5;
+    color: #fff;
+    font-size: 12px;
+    line-height: 1;
+    cursor: pointer;
+}
+
+.card-set-input .card-chip-remove:hover {
+    background: #888;
+}
+
+.card-set-input .card-input {
+    flex: 1;
+    min-width: 8rem;
+    border: none;
+    outline: none;
+    background: transparent;
+    box-shadow: none;
+    padding: 2px 0;
+}
+
+.card-preset {
+    max-width: 20rem;
+}
+/* END CARD SET INPUT */
+
 /* SESSION CONTROL */
 
 .card-wrapper {
@@ -199,6 +262,17 @@ img.navbar-icon {
 .changetype-btn[disabled] {
     background: none;
     color: #bdb4b4;
+}
+
+.admin-btn {
+    background: none;
+    color: #bdb4b4;
+}
+
+.admin-btn.is-admin,
+.admin-btn.is-admin[disabled] {
+    color: #F7C600;
+    opacity: 1;
 }
 
 .table .asleep {

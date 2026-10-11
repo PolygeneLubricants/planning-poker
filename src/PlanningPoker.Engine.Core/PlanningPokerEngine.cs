@@ -24,6 +24,8 @@ namespace PlanningPoker.Engine.Core
         void ClearVotes(Guid serverId, string playerPrivateId);
         void ShowVotes(Guid serverId, string playerPrivateId);
         Player ChangePlayerType(Guid serverId, string playerPrivateId, PlayerType newType);
+        void SetAutoShow(Guid serverId, string playerPrivateId, bool enabled);
+        void SetAdmin(Guid serverId, string initiatingPlayerPrivateId, int playerPublicId, bool isAdmin);
     }
 
     public class PlanningPokerEngine : IPlanningPokerEngine
@@ -49,12 +51,15 @@ namespace PlanningPoker.Engine.Core
         {
             var server = _serverStore.Get(id);
             var player = server.GetPlayer(initiatingPlayerPrivateId);
+            EnsureCanControl(server, player);
             var wasRemoved = server.TryRemovePlayer(playerPublicIdToRemove, out var kickedPlayer);
             if (wasRemoved && kickedPlayer != null)
             {
+                var autoShown = TryAutoShow(server);
                 RaisePlayerKicked(id, kickedPlayer);
                 RaiseRoomUpdated(id, server);
                 RaiseLogUpdated(id, player.Name, $"Kicked {kickedPlayer.Name}.");
+                RaiseAutoShownLogIfApplicable(server, autoShown);
             }
         }
 
@@ -63,7 +68,9 @@ namespace PlanningPoker.Engine.Core
             var serversWithPlayer = SetPlayerToSleepOnAllServers(_serverStore.All(), playerPrivateId);
             foreach (var server in serversWithPlayer)
             {
+                var autoShown = TryAutoShow(server);
                 RaiseRoomUpdated(server.Id, server);
+                RaiseAutoShownLogIfApplicable(server, autoShown);
             }
         }
 
@@ -111,8 +118,10 @@ namespace PlanningPoker.Engine.Core
             if (player.Mode == PlayerMode.Asleep) throw new VoteException($"Player is in mode '{player.Mode}', and cannot vote.");
 
             server.CurrentSession.SetVote(player.PublicId, vote);
+            var autoShown = TryAutoShow(server);
             RaiseRoomUpdated(server.Id, server);
             RaiseLogUpdated(server.Id, player.Name, "Voted.");
+            RaiseAutoShownLogIfApplicable(server, autoShown);
         }
 
         public void RedactVote(Guid serverId, string playerPrivateId)
@@ -133,10 +142,11 @@ namespace PlanningPoker.Engine.Core
         public void ClearVotes(Guid serverId, string playerPrivateId)
         {
             var server = _serverStore.Get(serverId);
+            var player = server.GetPlayer(playerPrivateId);
+            EnsureCanControl(server, player);
             if (!server.CurrentSession.CanClear) throw new VoteException($"Session not in state where votes can be cleared.");
 
             server.CurrentSession.ClearVotes();
-            var player = server.GetPlayer(playerPrivateId);
             RaiseRoomUpdated(server.Id, server);
             RaiseRoomCleared(server.Id);
             RaiseLogUpdated(server.Id, player.Name, "Cleared all votes.");
@@ -145,11 +155,12 @@ namespace PlanningPoker.Engine.Core
         public void ShowVotes(Guid serverId, string playerPrivateId)
         {
             var server = _serverStore.Get(serverId);
+            var player = server.GetPlayer(playerPrivateId);
+            EnsureCanControl(server, player);
             if (!server.CurrentSession.CanShow(server.Players)) throw new VoteException($"Session not in state where votes can be shown.");
 
             server.CurrentSession.ShowVotes();
             _usageCounters.RoundPlayed();
-            var player = server.GetPlayer(playerPrivateId); 
             RaiseRoomUpdated(server.Id, server);
             RaiseLogUpdated(server.Id, player.Name, "Made all votes visible.");
         }
@@ -164,9 +175,61 @@ namespace PlanningPoker.Engine.Core
             }
 
             server.ChangePlayerType(player, newType);
+            var autoShown = TryAutoShow(server);
             RaiseRoomUpdated(server.Id, server);
             RaiseLogUpdated(server.Id, player.Name, $"Changed their player type to {newType}.");
+            RaiseAutoShownLogIfApplicable(server, autoShown);
             return player;
+        }
+
+        public void SetAutoShow(Guid serverId, string playerPrivateId, bool enabled)
+        {
+            var server = _serverStore.Get(serverId);
+            var player = server.GetPlayer(playerPrivateId);
+            EnsureCanControl(server, player);
+
+            server.CurrentSession.AutoShow = enabled;
+            var autoShown = TryAutoShow(server);
+            RaiseRoomUpdated(server.Id, server);
+            RaiseLogUpdated(server.Id, player.Name, enabled ? "Enabled showing votes when everyone has voted." : "Disabled showing votes when everyone has voted.");
+            RaiseAutoShownLogIfApplicable(server, autoShown);
+        }
+
+        private static bool TryAutoShow(PokerServer server)
+        {
+            var session = server.CurrentSession;
+            if (!session.AutoShow || !session.CanShow(server.Players)) return false;
+
+            session.ShowVotes();
+            return true;
+        }
+
+        private void RaiseAutoShownLogIfApplicable(PokerServer server, bool autoShown)
+        {
+            if (autoShown)
+            {
+                RaiseLogUpdated(server.Id, "Room", "Everyone has voted. Votes are now visible.");
+            }
+        }
+
+        public void SetAdmin(Guid serverId, string initiatingPlayerPrivateId, int playerPublicId, bool isAdmin)
+        {
+            var server = _serverStore.Get(serverId);
+            var initiatingPlayer = server.GetPlayer(initiatingPlayerPrivateId);
+            EnsureCanControl(server, initiatingPlayer);
+
+            var targetPlayer = server.Players.Values.FirstOrDefault(p => p.PublicId == playerPublicId);
+            if (targetPlayer == null) throw new PermissionException("Player is not part of session.");
+            if (targetPlayer.IsAdmin == isAdmin) return;
+
+            targetPlayer.IsAdmin = isAdmin;
+            RaiseRoomUpdated(server.Id, server);
+            RaiseLogUpdated(server.Id, initiatingPlayer.Name, isAdmin ? $"Made {targetPlayer.Name} admin." : $"Removed {targetPlayer.Name} as admin.");
+        }
+
+        private static void EnsureCanControl(PokerServer server, Player player)
+        {
+            if (!server.CanControl(player)) throw new PermissionException("Only admins can control this room.");
         }
 
         private IList<PokerServer> SetPlayerToSleepOnAllServers(IEnumerable<PokerServer> servers, string playerPrivateId)

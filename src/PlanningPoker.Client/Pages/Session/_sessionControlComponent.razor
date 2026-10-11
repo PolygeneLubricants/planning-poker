@@ -24,14 +24,22 @@
             <div class="card-body">
                 <h5 class="card-title">Session Controls</h5>
                 <h6 class="card-subtitle mb-2 text-muted">Clear all current votes, or show once everyone has voted</h6>
+                <div class="custom-control custom-checkbox mb-2">
+                    <input type="checkbox" class="custom-control-input" id="autoShowSwitch" checked="@Session.AutoShow" @onchange="ToggleAutoShow" disabled="@(!CanControl)" />
+                    <label class="custom-control-label" for="autoShowSwitch">Automatically show, when everyone has voted</label>
+                </div>
                 <div class="row">
                     <div class="col-md-6 col-sm-6 col-xs-6">
-                        <button class="btn btn-default btn-block clear" @onclick="Clear" disabled="@(!Session.CanClear)">Clear</button>
+                        <button class="btn btn-default btn-block clear" @onclick="Clear" disabled="@(!CanControl || !Session.CanClear)">Clear</button>
                     </div>
                     <div class="col-md-6 col-sm-6 col-xs-6">
-                        <button class="btn btn-primary btn-block show" @onclick="Show" disabled="@(!Session.CanShow)">Show</button>
+                        <button class="btn btn-primary btn-block show" @onclick="Show" disabled="@(!CanControl || !Session.CanShow)">Show</button>
                     </div>
                 </div>
+                @if (!CanControl)
+                {
+                    <small class="text-muted">Only admins can control the votes in this room.</small>
+                }
             </div>
         </div>
     </div>
@@ -95,6 +103,11 @@
     Task Show()
     {
         return HubClient.ShowVotes(Id);
+    }
+
+    Task ToggleAutoShow(ChangeEventArgs e)
+    {
+        return HubClient.SetAutoShow(Id, e.Value is bool enabled && enabled);
     }
 
     IEnumerable<string?> GetVoteMode()
@@ -173,6 +186,9 @@
 
     [Parameter]
     public EventCallback<PlayerViewModel> CurrentPlayerChanged { get; set; }
+
+    [Parameter]
+    public bool CanControl { get; set; }
 
     [Parameter]
     public IPlanningPokerHubClient HubClient { get; set; }

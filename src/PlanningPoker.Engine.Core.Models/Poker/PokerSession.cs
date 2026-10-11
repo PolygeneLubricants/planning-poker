@@ -15,6 +15,11 @@ namespace PlanningPoker.Engine.Core.Models.Poker
 
         public bool IsShown { get; set; }
 
+        /// <summary>
+        /// When enabled, votes are shown automatically as soon as all awake participants have voted.
+        /// </summary>
+        public bool AutoShow { get; set; }
+
         public bool CanShow(IDictionary<string, Player> participants)
         {
             return 
