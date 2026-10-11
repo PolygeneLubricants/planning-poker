@@ -15,7 +15,8 @@ namespace PlanningPoker.Server.ViewModelMappers
                 PublicId = player.PublicId,
                 Name = player.Name,
                 Type = player.Type.Map(),
-                Mode = player.Mode.Map()
+                Mode = player.Mode.Map(),
+                IsAdmin = player.IsAdmin
             };
 
             return viewModel;

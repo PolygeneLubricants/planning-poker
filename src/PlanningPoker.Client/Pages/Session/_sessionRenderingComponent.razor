@@ -13,6 +13,7 @@
                         <th>Vote</th>
                         <th></th>
                         <th></th>
+                        <th></th>
                     </tr>
                 </thead>
                 <tbody>
@@ -47,9 +48,17 @@
                             }
                         </td>
                         <td>
-                            <button class="kick-btn btn float-right" @onclick="() => Kick(player.PublicId)">
-                                <span class="kick-icon oi oi-x"></span>
+                            <button class="admin-btn btn float-right @(player.IsAdmin ? "is-admin" : "")" @onclick="() => ToggleAdmin(player)" disabled="@(!CanControl)" title="@(player.IsAdmin ? "Admin" : "Make admin")">
+                                <span class="oi oi-star"></span>
                             </button>
+                        </td>
+                        <td>
+                            @if (CanControl)
+                            {
+                                <button class="kick-btn btn float-right" @onclick="() => Kick(player.PublicId)">
+                                    <span class="kick-icon oi oi-x"></span>
+                                </button>
+                            }
                         </td>
                     </tr>
                 }
@@ -67,6 +76,7 @@
                 <thead>
                     <tr>
                         <th>Name</th>
+                        <th></th>
                         <th></th>
                         <th></th>
                     </tr>
@@ -88,9 +98,17 @@
                             }
                         </td>
                         <td>
-                            <button class="kick-btn btn float-right" @onclick="() => Kick(player.PublicId)">
-                                <span class="kick-icon oi oi-x"></span>
+                            <button class="admin-btn btn float-right @(player.IsAdmin ? "is-admin" : "")" @onclick="() => ToggleAdmin(player)" disabled="@(!CanControl)" title="@(player.IsAdmin ? "Admin" : "Make admin")">
+                                <span class="oi oi-star"></span>
                             </button>
+                        </td>
+                        <td>
+                            @if (CanControl)
+                            {
+                                <button class="kick-btn btn float-right" @onclick="() => Kick(player.PublicId)">
+                                    <span class="kick-icon oi oi-x"></span>
+                                </button>
+                            }
                         </td>
                     </tr>
                 }
@@ -124,6 +142,14 @@
 
     [Parameter]
     public EventCallback<PokerServerViewModel> ServerChanged { get; set; }
+
+    [Parameter]
+    public bool CanControl { get; set; }
+
+    Task ToggleAdmin(PlayerViewModel player)
+    {
+        return HubClient.SetAdmin(Id, player.PublicId, !player.IsAdmin);
+    }
 
     Task Kick(int playerPublicId)
     {

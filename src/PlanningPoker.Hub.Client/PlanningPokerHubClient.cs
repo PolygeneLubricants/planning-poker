@@ -79,6 +79,11 @@ namespace PlanningPoker.Hub.Client
             return _hubConnection.InvokeAsync(HubEndpointRoutes.SetAutoShow, serverId, enabled);
         }
 
+        public Task SetAdmin(Guid serverId, int playerPublicId, bool isAdmin)
+        {
+            return _hubConnection.InvokeAsync(HubEndpointRoutes.SetAdmin, serverId, playerPublicId, isAdmin);
+        }
+
         public void OnSessionUpdated(Action<PokerServerViewModel> onSessionUpdatedHandler)
         {
             _hubConnection.On(BroadcastChannels.UPDATED, onSessionUpdatedHandler);

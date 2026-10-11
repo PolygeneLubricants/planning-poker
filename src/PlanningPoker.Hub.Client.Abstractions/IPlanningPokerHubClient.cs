@@ -31,6 +31,7 @@ namespace PlanningPoker.Hub.Client.Abstractions
         Task<PlayerViewModel> ChangePlayerType(Guid serverId, PlayerType newType);
 
         Task SetAutoShow(Guid serverId, bool enabled);
+        Task SetAdmin(Guid serverId, int playerPublicId, bool isAdmin);
 
         void OnSessionUpdated(Action<PokerServerViewModel> onSessionUpdatedHandler);
 

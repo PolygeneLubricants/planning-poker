@@ -45,6 +45,15 @@ namespace PlanningPoker.Engine.Core.Models
             return player;
         }
 
+        /// <summary>
+        /// A room without any awake admins is open, and anyone can control it.
+        /// Once an awake admin is present, only admins can control the room.
+        /// </summary>
+        public bool CanControl(Player player)
+        {
+            return player.IsAdmin || !Players.Values.Any(p => p.IsAdmin && p.Mode == PlayerMode.Awake);
+        }
+
         public Player GetPlayer(string playerPrivateId)
         {
             var player = Players[playerPrivateId];

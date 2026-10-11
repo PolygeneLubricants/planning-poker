@@ -106,6 +106,15 @@ namespace PlanningPoker.FunctionalTests.Tests.Hubs
             return this;
         }
 
+        public PlanningPokerHubTestBuilder WithAdmin(Guid serverId, int playerPublicId)
+        {
+            AwaitEventResult<PokerServerViewModel>(() =>
+                        HubClient.SetAdmin(serverId, playerPublicId, true),
+                    HubClient.OnSessionUpdated)
+                .GetAwaiter().GetResult();
+            return this;
+        }
+
         private PlanningPokerHubTestBuilder WithPlayer(Guid serverId, Guid recoveryId, PlayerType playerType, string playerName, out PlayerViewModel player)
         {
             HubClient.Connect(serverId).GetAwaiter().GetResult();

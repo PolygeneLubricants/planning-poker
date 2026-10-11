@@ -30,5 +30,7 @@ namespace PlanningPoker.Engine.Core.Models
         public PlayerType Type { get; set; }
 
         public PlayerMode Mode { get; set; }
+
+        public bool IsAdmin { get; set; }
     }
 }
