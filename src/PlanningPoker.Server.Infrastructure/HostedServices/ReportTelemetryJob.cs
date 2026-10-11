@@ -1,53 +1,93 @@
-﻿using Microsoft.Extensions.Hosting;
+using Amazon.CloudWatch;
+using Amazon.CloudWatch.Model;
+using Microsoft.Extensions.Configuration;
+using Microsoft.Extensions.Hosting;
+using Microsoft.Extensions.Logging;
 using PlanningPoker.Engine.Core;
 using System;
+using System.Collections.Generic;
 using System.Linq;
 using System.Threading;
 using System.Threading.Tasks;
-using Microsoft.ApplicationInsights;
 
 namespace PlanningPoker.Server.Infrastructure.HostedServices
 {
+    /// <summary>
+    /// Periodically reports anonymous, aggregated usage counts to CloudWatch.
+    /// Disabled unless "Metrics:Enabled" is true. Credentials and region are
+    /// resolved by the AWS SDK (on EC2: the instance's IAM role).
+    /// </summary>
     public class ReportTelemetryJob : IHostedService, IDisposable
     {
         private Timer? _timer;
-        private static readonly TimeSpan RunFrequency = TimeSpan.FromMinutes(10);
+        private static readonly TimeSpan RunFrequency = TimeSpan.FromMinutes(5);
+        private const string Namespace = "PlanningPoker";
         private readonly IServerStore _serverStore;
-        private readonly TelemetryClient _telemetryClient;
-        private const string ReportPlayersMetricName  = "players";
-        private const string ReportSessionsMetricName = "sessions";
+        private readonly IUsageCounters _usageCounters;
+        private readonly ILogger<ReportTelemetryJob> _logger;
+        private readonly bool _enabled;
+        private IAmazonCloudWatch? _cloudWatch;
 
-        public ReportTelemetryJob(IServerStore serverStore, TelemetryClient telemetryClient)
+        public ReportTelemetryJob(
+            IServerStore serverStore,
+            IUsageCounters usageCounters,
+            IConfiguration configuration,
+            ILogger<ReportTelemetryJob> logger)
         {
             _serverStore = serverStore;
-            _telemetryClient = telemetryClient;
+            _usageCounters = usageCounters;
+            _logger = logger;
+            _enabled = configuration.GetValue<bool>("Metrics:Enabled");
         }
 
         public Task StartAsync(CancellationToken cancellationToken)
         {
-            _timer = new Timer(_ => RunJob(), null, TimeSpan.Zero, RunFrequency);
+            if (!_enabled) return Task.CompletedTask;
+
+            _cloudWatch = new AmazonCloudWatchClient();
+            _timer = new Timer(_ => _ = RunJob(), null, RunFrequency, RunFrequency);
             return Task.CompletedTask;
         }
 
-        private void RunJob()
+        private async Task RunJob()
         {
-            ReportSessions();
-            ReportPlayers();
+            var usage = _usageCounters.ReadAndReset();
+            var servers = _serverStore.All();
+            var now = DateTime.UtcNow;
+
+            var data = new List<MetricDatum>
+            {
+                Datum("RoomsCreated", usage.RoomsCreated, now),
+                Datum("PlayersJoined", usage.PlayersJoined, now),
+                Datum("RoundsPlayed", usage.RoundsPlayed, now),
+                Datum("ActiveRooms", servers.Count, now),
+                Datum("ActivePlayers", servers.Sum(server => server.Players.Count), now),
+            };
+
+            try
+            {
+                await _cloudWatch!.PutMetricDataAsync(new PutMetricDataRequest
+                {
+                    Namespace = Namespace,
+                    MetricData = data
+                });
+            }
+            catch (Exception e)
+            {
+                _logger.LogWarning(e, "Failed to report usage metrics to CloudWatch.");
+            }
         }
 
-        private void ReportSessions()
+        private static MetricDatum Datum(string name, double value, DateTime timestamp)
         {
-            var allPlayers = _serverStore.All().Count;
-            _telemetryClient.TrackMetric(ReportSessionsMetricName, allPlayers);
+            return new MetricDatum
+            {
+                MetricName = name,
+                Value = value,
+                Unit = StandardUnit.Count,
+                TimestampUtc = timestamp
+            };
         }
-
-        private void ReportPlayers()
-        {
-            var allPlayers = _serverStore.All().Sum(server => server.Players.Count);
-            _telemetryClient.TrackMetric(ReportPlayersMetricName, allPlayers);
-        }
-
-        
 
         public Task StopAsync(CancellationToken cancellationToken)
         {
@@ -66,6 +106,7 @@ namespace PlanningPoker.Server.Infrastructure.HostedServices
             if (disposing)
             {
                 _timer?.Dispose();
+                _cloudWatch?.Dispose();
             }
         }
     }

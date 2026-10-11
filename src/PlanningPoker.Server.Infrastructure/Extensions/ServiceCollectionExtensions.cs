@@ -9,6 +9,7 @@ namespace PlanningPoker.Server.Infrastructure.Extensions
         public static IServiceCollection RegisterDependencies(this IServiceCollection services)
         {
             services.AddSingleton<IServerStore, ServerStore>();
+            services.AddSingleton<IUsageCounters, UsageCounters>();
             services.AddSingleton<IPlanningPokerEngine, PlanningPokerEngine>();
             services.AddSingleton<IDateTimeProvider, DateTimeProvider>();
             services.AddHostedService<CleanupServerJob>();
