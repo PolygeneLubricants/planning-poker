@@ -63,6 +63,13 @@ namespace PlanningPoker.Server
             app.UseEndpoints(endpoints =>
             {
                 endpoints.MapHub<PlanningPokerHub>("/hubs/poker");
+                endpoints.MapGet("/environment.js", async context =>
+                {
+                    var environmentName = JsonSerializer.Serialize(env.EnvironmentName);
+                    context.Response.ContentType = "text/javascript";
+                    context.Response.Headers["Cache-Control"] = "no-cache";
+                    await context.Response.WriteAsync($"window.jppEnvironment = {environmentName};");
+                });
                 endpoints.MapGet("/health", async context =>
                 {
                     var response = new { status = "healthy", timestamp = DateTime.UtcNow };
