@@ -1,6 +1,39 @@
-﻿<footer class="page-footer">
+@inject IJSRuntime JSRuntime
+
+<footer class="page-footer">
     <div class="footer-copyright text-center py-3">
         <small>This is an open source project by Andreas R. L. Christiansen, under MIT license.</small>
         <small><a href="https://github.com/PolygeneLubricants/planning-poker">Source at Github</a></small>
+        <small class="design-switch">
+            @if (_design == FreshDesign)
+            {
+                <span>Prefer the old look? <a @onclick="() => SetDesign(ClassicDesign)">Switch to the classic design</a>.</span>
+            }
+            else if (_design == ClassicDesign)
+            {
+                <a @onclick="() => SetDesign(FreshDesign)">Try the new design</a>
+            }
+        </small>
     </div>
 </footer>
+
+@code {
+    private const string FreshDesign = "fresh";
+    private const string ClassicDesign = "classic";
+
+    private string? _design;
+
+    protected override async Task OnAfterRenderAsync(bool firstRender)
+    {
+        if (!firstRender) return;
+
+        _design = await JSRuntime.InvokeAsync<string>("jppDesign.get");
+        StateHasChanged();
+    }
+
+    async Task SetDesign(string design)
+    {
+        await JSRuntime.InvokeVoidAsync("jppDesign.set", design);
+        _design = design;
+    }
+}

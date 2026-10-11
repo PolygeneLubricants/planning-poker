@@ -9,7 +9,27 @@
     <link rel="icon" type="image/x-icon" href="favicon.ico">
     <link href="css/open-iconic/font/css/open-iconic-bootstrap.min.css" rel="stylesheet" />
     <link href="css/bootstrap/bootstrap.min.css" rel="stylesheet" />
-    <link href="css/site.css?v=2" rel="stylesheet" />
+    <link href="css/site.css?v=3" rel="stylesheet" />
+    <link href="css/fresh.css?v=4" rel="stylesheet" />
+    <script>
+        // Applies the chosen design before first paint. The fresh design is the default;
+        // users can opt out to the classic design from the footer.
+        window.jppDesign = {
+            get: function () {
+                try { return localStorage.getItem("Design") === "classic" ? "classic" : "fresh"; } catch (e) { return "fresh"; }
+            },
+            set: function (design) {
+                try { localStorage.setItem("Design", design); } catch (e) { }
+                window.jppDesign.apply(design);
+            },
+            apply: function (design) {
+                var root = document.documentElement;
+                root.classList.toggle("design-fresh", design === "fresh");
+                root.classList.toggle("design-classic", design !== "fresh");
+            }
+        };
+        window.jppDesign.apply(window.jppDesign.get());
+    </script>
     <meta name="Description" content="This is a simple planning poker tool, designed for Scrum refinement sessions. No sign-up, no gathered user data, no fees. Simply press 'create room' and share the link!" />
 </head>
 
