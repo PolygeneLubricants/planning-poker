@@ -85,6 +85,11 @@ namespace PlanningPoker.Server.Hubs
             _pokerEngine.SetAdmin(serverId, GetPlayerPrivateId(), playerPublicId, isAdmin);
         }
 
+        public void SetSleep(Guid serverId, int playerPublicId, bool asleep)
+        {
+            _pokerEngine.SetSleep(serverId, GetPlayerPrivateId(), playerPublicId, asleep);
+        }
+
         public PlayerViewModel ChangePlayerType(Guid serverId, Engine.Core.Models.PlayerType newType)
         {
             var updatedPlayer = _pokerEngine.ChangePlayerType(serverId, GetPlayerPrivateId(), newType);

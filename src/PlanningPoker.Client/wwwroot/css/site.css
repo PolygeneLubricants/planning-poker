@@ -279,6 +279,25 @@ img.navbar-icon {
     opacity: 0.3;
 }
 
+.sleep-btn {
+    background: none;
+    color: #6c757d;
+    padding: 2px 6px;
+}
+
+/* Icon-only cells shrink to their button, so the table fits on phones. */
+.table td.action-cell {
+    width: 1%;
+    white-space: nowrap;
+    padding-left: 2px;
+    padding-right: 2px;
+}
+
+.table tbody tr.has-question,
+.table tbody tr.has-question > td {
+    background-color: #fff3cd;
+}
+
 /* END SESSION RENDERING */
 #blazor-error-ui {
     background: lightyellow;

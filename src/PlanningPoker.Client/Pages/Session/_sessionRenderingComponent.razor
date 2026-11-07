@@ -14,6 +14,7 @@
                         <th></th>
                         <th></th>
                         <th></th>
+                        <th></th>
                     </tr>
                 </thead>
                 <tbody>
@@ -22,9 +23,14 @@
                     var hasVoted = Server?.CurrentSession?.Votes?.ContainsKey(player.PublicId.ToString()) ?? false;
                     var isAsleep = player.Mode == PlayerMode.Asleep;
                     var currentPlayerVote = hasVoted ? Server.CurrentSession.Votes[player.PublicId.ToString()] : string.Empty;
-                    <tr class="@(hasVoted ? "table-success" : "") @(isAsleep ? "asleep" : "")">
+                    var hasQuestion = HasQuestion(currentPlayerVote);
+                    <tr class="@(hasQuestion ? "has-question" : hasVoted ? "table-success" : "") @(isAsleep ? "asleep" : "")">
                         <td>
-                            @if (hasVoted && !isAsleep)
+                            @if (hasQuestion)
+                            {
+                                <span class="oi oi-question-mark" title="Has questions"></span>
+                            }
+                            else if (hasVoted && !isAsleep)
                             {
                                 <span class="oi oi-check"></span>
                             }
@@ -39,7 +45,10 @@
                         <td>
                             @currentPlayerVote
                         </td>
-                        <td>
+                        <td class="action-cell">
+                            @SleepButton(player)
+                        </td>
+                        <td class="action-cell">
                             @if (CurrentPlayer.PublicId == player.PublicId)
                             {
                                 <button class="changetype-btn btn float-right" @onclick="() => ChangeType(PlayerType.Observer)" disabled="@PlayerHasVoted()">
@@ -47,12 +56,12 @@
                                 </button>
                             }
                         </td>
-                        <td>
+                        <td class="action-cell">
                             <button class="admin-btn btn float-right @(player.IsAdmin ? "is-admin" : "")" @onclick="() => ToggleAdmin(player)" disabled="@(!CanControl)" title="@(player.IsAdmin ? "Admin" : "Make admin")">
                                 <span class="oi oi-star"></span>
                             </button>
                         </td>
-                        <td>
+                        <td class="action-cell">
                             @if (CanControl)
                             {
                                 <button class="kick-btn btn float-right" @onclick="() => Kick(player.PublicId)">
@@ -79,6 +88,7 @@
                         <th></th>
                         <th></th>
                         <th></th>
+                        <th></th>
                     </tr>
                 </thead>
                 <tbody>
@@ -89,7 +99,10 @@
                         <td>
                             @player.Name
                         </td>
-                        <td>
+                        <td class="action-cell">
+                            @SleepButton(player)
+                        </td>
+                        <td class="action-cell">
                             @if (CurrentPlayer.PublicId == player.PublicId)
                             {
                                 <button class="changetype-btn btn float-right" @onclick="() => ChangeType(PlayerType.Participant)" disabled="@PlayerHasVoted()">
@@ -97,12 +110,12 @@
                                 </button>
                             }
                         </td>
-                        <td>
+                        <td class="action-cell">
                             <button class="admin-btn btn float-right @(player.IsAdmin ? "is-admin" : "")" @onclick="() => ToggleAdmin(player)" disabled="@(!CanControl)" title="@(player.IsAdmin ? "Admin" : "Make admin")">
                                 <span class="oi oi-star"></span>
                             </button>
                         </td>
-                        <td>
+                        <td class="action-cell">
                             @if (CanControl)
                             {
                                 <button class="kick-btn btn float-right" @onclick="() => Kick(player.PublicId)">
@@ -145,6 +158,37 @@
 
     [Parameter]
     public bool CanControl { get; set; }
+
+    private const string QuestionCard = "?";
+
+    RenderFragment SleepButton(PlayerViewModel player) => __builder =>
+    {
+        var isSelf = CurrentPlayer.PublicId == player.PublicId;
+        var isAsleep = player.Mode == PlayerMode.Asleep;
+        if (isSelf)
+        {
+            <button class="sleep-btn btn float-right @(isAsleep ? "is-asleep" : "")" @onclick="() => SetSleep(player, !isAsleep)" title="@(isAsleep ? "I'm back" : "Take a break")">
+                <span class="oi @(isAsleep ? "oi-sun" : "oi-moon")"></span>
+            </button>
+        }
+        else if (CanControl && !isAsleep)
+        {
+            <button class="sleep-btn btn float-right" @onclick="() => SetSleep(player, true)" title="Put to sleep">
+                <span class="oi oi-moon"></span>
+            </button>
+        }
+    };
+
+    // Before votes are shown, every vote is masked as "?", so only a revealed "?" means the player has questions.
+    bool HasQuestion(string vote)
+    {
+        return Server?.CurrentSession?.IsShown == true && vote == QuestionCard;
+    }
+
+    Task SetSleep(PlayerViewModel player, bool asleep)
+    {
+        return HubClient.SetSleep(Id, player.PublicId, asleep);
+    }
 
     Task ToggleAdmin(PlayerViewModel player)
     {
