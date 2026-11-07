@@ -84,6 +84,11 @@ namespace PlanningPoker.Hub.Client
             return _hubConnection.InvokeAsync(HubEndpointRoutes.SetAdmin, serverId, playerPublicId, isAdmin);
         }
 
+        public Task SetSleep(Guid serverId, int playerPublicId, bool asleep)
+        {
+            return _hubConnection.InvokeAsync(HubEndpointRoutes.SetSleep, serverId, playerPublicId, asleep);
+        }
+
         public void OnSessionUpdated(Action<PokerServerViewModel> onSessionUpdatedHandler)
         {
             _hubConnection.On(BroadcastChannels.UPDATED, onSessionUpdatedHandler);

@@ -33,6 +33,8 @@ namespace PlanningPoker.Hub.Client.Abstractions
         Task SetAutoShow(Guid serverId, bool enabled);
         Task SetAdmin(Guid serverId, int playerPublicId, bool isAdmin);
 
+        Task SetSleep(Guid serverId, int playerPublicId, bool asleep);
+
         void OnSessionUpdated(Action<PokerServerViewModel> onSessionUpdatedHandler);
 
         void OnPlayerKicked(Action<PlayerViewModel> onPlayerKickedHandler);

@@ -33,8 +33,9 @@ namespace PlanningPoker.Server.Infrastructure.HostedServices
                 if (cancellationToken.IsCancellationRequested) break;
 
                 var isOld = createdThreshold > server.Created;
-                var isEmptyOrAsleep = server.Players.All(p => p.Value.Mode != PlayerMode.Awake);
-                if (isOld && isEmptyOrAsleep)
+                // Players sleeping by choice are still connected, so their room is kept.
+                var isEmptyOrDisconnected = server.Players.All(p => !p.Value.IsConnected);
+                if (isOld && isEmptyOrDisconnected)
                 {
                     _serverStore.Remove(server);
                 }

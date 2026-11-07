@@ -26,6 +26,7 @@ namespace PlanningPoker.Engine.Core
         Player ChangePlayerType(Guid serverId, string playerPrivateId, PlayerType newType);
         void SetAutoShow(Guid serverId, string playerPrivateId, bool enabled);
         void SetAdmin(Guid serverId, string initiatingPlayerPrivateId, int playerPublicId, bool isAdmin);
+        void SetSleep(Guid serverId, string initiatingPlayerPrivateId, int playerPublicId, bool asleep);
     }
 
     public class PlanningPokerEngine : IPlanningPokerEngine
@@ -115,11 +116,16 @@ namespace PlanningPoker.Engine.Core
 
             var player = server.GetPlayer(playerPrivateId);
             if (player.Type == PlayerType.Observer) throw new VoteException($"Player is of type '{player.Type}' and cannot vote.");
-            if (player.Mode == PlayerMode.Asleep) throw new VoteException($"Player is in mode '{player.Mode}', and cannot vote.");
+            if (!player.IsConnected) throw new VoteException($"Player is disconnected, and cannot vote.");
+
+            // Voting is a clear sign the player is back, so it ends a chosen sleep.
+            var wokeUp = player.IsSleepingByChoice;
+            player.IsSleepingByChoice = false;
 
             server.CurrentSession.SetVote(player.PublicId, vote);
             var autoShown = TryAutoShow(server);
             RaiseRoomUpdated(server.Id, server);
+            if (wokeUp) RaiseLogUpdated(server.Id, player.Name, "Is back.");
             RaiseLogUpdated(server.Id, player.Name, "Voted.");
             RaiseAutoShownLogIfApplicable(server, autoShown);
         }
@@ -132,7 +138,7 @@ namespace PlanningPoker.Engine.Core
 
             var player = server.GetPlayer(playerPrivateId);
             if (player.Type == PlayerType.Observer) throw new VoteException($"Player is of type '{player.Type}' and cannot vote.");
-            if (player.Mode == PlayerMode.Asleep) throw new VoteException($"Player is in mode '{player.Mode}', and cannot vote.");
+            if (!player.IsConnected) throw new VoteException($"Player is disconnected, and cannot unvote.");
 
             server.CurrentSession.RemoveVote(player.PublicId);
             RaiseRoomUpdated(server.Id, server);
@@ -227,6 +233,32 @@ namespace PlanningPoker.Engine.Core
             RaiseLogUpdated(server.Id, initiatingPlayer.Name, isAdmin ? $"Made {targetPlayer.Name} admin." : $"Removed {targetPlayer.Name} as admin.");
         }
 
+        public void SetSleep(Guid serverId, string initiatingPlayerPrivateId, int playerPublicId, bool asleep)
+        {
+            var server = _serverStore.Get(serverId);
+            var initiatingPlayer = server.GetPlayer(initiatingPlayerPrivateId);
+            var targetPlayer = server.GetPlayerByPublicId(playerPublicId);
+            if (targetPlayer == null) throw new PermissionException("Player is not part of session.");
+
+            var isSelf = targetPlayer == initiatingPlayer;
+            if (!isSelf)
+            {
+                if (!asleep) throw new PermissionException("Only the player can wake themselves up.");
+                EnsureCanControl(server, initiatingPlayer);
+            }
+
+            if (targetPlayer.IsSleepingByChoice == asleep) return;
+
+            targetPlayer.IsSleepingByChoice = asleep;
+            var autoShown = TryAutoShow(server);
+            RaiseRoomUpdated(server.Id, server);
+            var logMessage = isSelf
+                ? (asleep ? "Is taking a break." : "Is back.")
+                : $"Put {targetPlayer.Name} to sleep.";
+            RaiseLogUpdated(server.Id, initiatingPlayer.Name, logMessage);
+            RaiseAutoShownLogIfApplicable(server, autoShown);
+        }
+
         private static void EnsureCanControl(PokerServer server, Player player)
         {
             if (!server.CanControl(player)) throw new PermissionException("Only admins can control this room.");
@@ -237,7 +269,7 @@ namespace PlanningPoker.Engine.Core
             var serversWithUser = servers.Where(s => s.Players.ContainsKey(playerPrivateId)).ToList();
             foreach (var server in serversWithUser)
             {
-                server.SleepPlayer(playerPrivateId);
+                server.DisconnectPlayer(playerPrivateId);
             }
 
             return serversWithUser;
