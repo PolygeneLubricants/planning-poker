@@ -14,5 +14,6 @@
         public const string ChangePlayerType = "ChangePlayerType";
         public const string SetAutoShow = "SetAutoShow";
         public const string SetAdmin = "SetAdmin";
+        public const string SetSleep = "SetSleep";
     }
 }

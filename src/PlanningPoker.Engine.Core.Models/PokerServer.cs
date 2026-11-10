@@ -33,7 +33,7 @@ namespace PlanningPoker.Engine.Core.Models
                 // When a player disconnects and reconnects, the connection id / private ID can change.
                 // Therefore, the caller sends along a recovery ID to recover / change the id to the new connection id.
                 RecoverPlayer(recoveryId, playerPrivateId);
-                player = WakePlayer(playerPrivateId);
+                player = ConnectPlayer(playerPrivateId);
             }
             else
             {
@@ -87,21 +87,23 @@ namespace PlanningPoker.Engine.Core.Models
             return player;
         }
 
-        public Player SleepPlayer(string playerPrivateId)
-        {
-            return SetPlayerMode(playerPrivateId, PlayerMode.Asleep);
-        }
-
-        public Player WakePlayer(string playerPrivateId)
-        {
-            return SetPlayerMode(playerPrivateId, PlayerMode.Awake);
-        }
-
-        private Player SetPlayerMode(string playerPrivateId, PlayerMode mode)
+        public Player DisconnectPlayer(string playerPrivateId)
         {
             var player = GetPlayer(playerPrivateId);
-            player.Mode = mode;
+            player.IsConnected = false;
             return player;
+        }
+
+        public Player ConnectPlayer(string playerPrivateId)
+        {
+            var player = GetPlayer(playerPrivateId);
+            player.IsConnected = true;
+            return player;
+        }
+
+        public Player? GetPlayerByPublicId(int playerPublicId)
+        {
+            return Players.Values.FirstOrDefault(p => p.PublicId == playerPublicId);
         }
 
         private void RecoverPlayer(Guid recoveryId, string newPlayerPrivateId)

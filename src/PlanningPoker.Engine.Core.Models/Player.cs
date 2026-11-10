@@ -16,7 +16,7 @@ namespace PlanningPoker.Engine.Core.Models
             PublicId = publicId;
             Name = name;
             Type = type;
-            Mode = PlayerMode.Awake;
+            IsConnected = true;
         }
         
         public string Id { get; set; }
@@ -29,7 +29,11 @@ namespace PlanningPoker.Engine.Core.Models
 
         public PlayerType Type { get; set; }
 
-        public PlayerMode Mode { get; set; }
+        public bool IsConnected { get; set; }
+
+        public bool IsSleepingByChoice { get; set; }
+
+        public PlayerMode Mode => IsConnected && !IsSleepingByChoice ? PlayerMode.Awake : PlayerMode.Asleep;
 
         public bool IsAdmin { get; set; }
     }
